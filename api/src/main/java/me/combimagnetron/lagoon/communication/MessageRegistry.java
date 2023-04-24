@@ -1,0 +1,125 @@
+package me.combimagnetron.lagoon.communication;
+
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
+import me.combimagnetron.lagoon.communication.message.impl.instancebound.InstanceBoundCreateGameLevelMessage;
+import me.combimagnetron.lagoon.communication.message.impl.instancebound.InstanceBoundKeepAliveMessage;
+import me.combimagnetron.lagoon.communication.message.impl.instancebound.InstanceBoundMessage;
+import me.combimagnetron.lagoon.communication.message.impl.proxybound.ProxyBoundMessage;
+import me.combimagnetron.lagoon.communication.message.impl.proxybound.ProxyBoundMoveGameLevelMessage;
+import me.combimagnetron.lagoon.communication.message.impl.proxybound.ProxyBoundMovePlayerMessage;
+import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundMessage;
+import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundRegisterInstanceMessage;
+import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundTestIncrementMessage;
+import org.reflections.Reflections;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class MessageRegistry {
+    private static final ScheduledExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor();
+    private static final ConcurrentHashMap<Integer, Class<? extends InstanceBoundMessage>> INSTANCE_BOUND_MESSAGE_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Integer, Class<? extends ServiceBoundMessage>> SERVICE_BOUND_MESSAGE_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Integer, Class<? extends ProxyBoundMessage>> PROXY_BOUND_MESSAGE_MAP = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Class<? extends Message>, List<MessageListener>> LISTENER_MAP = new ConcurrentHashMap<>();
+
+    static {
+        INSTANCE_BOUND_MESSAGE_MAP.put(0, InstanceBoundKeepAliveMessage.class);
+        INSTANCE_BOUND_MESSAGE_MAP.put(2, InstanceBoundCreateGameLevelMessage.class);
+        PROXY_BOUND_MESSAGE_MAP.put(0, ProxyBoundMovePlayerMessage.class);
+        PROXY_BOUND_MESSAGE_MAP.put(1, ProxyBoundMoveGameLevelMessage.class);
+        PROXY_BOUND_MESSAGE_MAP.put(2, InstanceBoundKeepAliveMessage.Response.class);
+        SERVICE_BOUND_MESSAGE_MAP.put(0, ServiceBoundRegisterInstanceMessage.class);
+        SERVICE_BOUND_MESSAGE_MAP.put(1, ServiceBoundTestIncrementMessage.class);
+    }
+
+    public static void init() {
+        String callerClass = getCallerClass();
+        if (callerClass != null) {
+            String[] strings = callerClass.split("\\.");
+            if (!(strings.length < 3))
+                registerListenerClassPath(strings[0] + "." + strings[1] + "." + strings[2]);
+        }
+    }
+
+    //@Nullable
+    public static void read(byte[] channel, byte[] bytes) {
+        try {
+            /*return*/ EXECUTOR.submit(() -> {
+                final String channelName = new String(channel);
+                ByteArrayDataInput input = ByteStreams.newDataInput(bytes);
+                int messageId = input.readInt();
+                int type = input.readInt();
+                Message message = switch (type) {
+                    default -> construct(INSTANCE_BOUND_MESSAGE_MAP.get(messageId), bytes);
+                    case 0x01 -> construct(PROXY_BOUND_MESSAGE_MAP.get(messageId), bytes);
+                    case 0x02 -> construct(SERVICE_BOUND_MESSAGE_MAP.get(messageId), bytes);
+                };
+                LISTENER_MAP.putIfAbsent(message.getClass(), new ArrayList<>());
+                LISTENER_MAP.get(message.getClass()).forEach(listener -> {
+                    MessageHandler annotation = listener.getClass().getAnnotation(MessageHandler.class);
+                    if (!annotation.channel().equals(channelName)) {
+                        return;
+                    }
+                    listener.onReceive(message);
+                });
+                //return message;
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Message construct(Class<?> clazz, byte[] bytes) {
+        try {
+            return (Message) clazz.getConstructor(byte[].class).newInstance((Object) bytes);
+        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void registerListenerClassPath(String string) {
+        Reflections reflections = new Reflections(string);
+        Set<Class<?>> classSet = reflections.getTypesAnnotatedWith(MessageHandler.class);
+        classSet.forEach(clazz -> {
+            Object object;
+            try {
+                object = clazz.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
+                     IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            MessageHandler annotation = clazz.getAnnotation(MessageHandler.class);
+            Class<? extends Message> packetType = annotation.filter();
+            MessageListener<?> listener = (MessageListener<?>) object;
+            LISTENER_MAP.putIfAbsent(packetType, new ArrayList<>());
+            if (LISTENER_MAP.get(packetType) != null)
+                LISTENER_MAP.get(packetType).add(listener);
+        });
+    }
+
+    private static String getCallerClass() {
+        StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
+        int size = stElements.length;
+        for (int i = 1; i < size; i++) {
+            StackTraceElement ste = stElements[i];
+            if (!ste.getClassName().equals(MessageRegistry.class.getName())&& ste.getClassName().indexOf("java.lang.Thread")!=0) {
+                return ste.getClassName();
+            }
+        }
+        return null;
+    }
+
+    public static ConcurrentHashMap<Class<? extends Message>, List<MessageListener>> listeners() {
+        return LISTENER_MAP;
+    }
+
+
+}
