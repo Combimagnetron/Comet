@@ -6,10 +6,8 @@ group = "org.example"
 version = "unspecified"
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    compileOnly("com.velocitypowered:velocity-api:3.1.1")
+    annotationProcessor("com.velocitypowered:velocity-api:3.1.1")
+    implementation("com.github.retrooper.packetevents:velocity:2.0-SNAPSHOT")
 }
 
-tasks.test {
-    useJUnitPlatform()
-}

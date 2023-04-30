@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/paper-plugin" />
             <option value="$PROJECT_DIR$/paper-v1_19_R3" />
             <option value="$PROJECT_DIR$/proxy-plugin" />
+            <option value="$PROJECT_DIR$/service-sharding" />
           </set>
         </option>
       </GradleProjectSettings>

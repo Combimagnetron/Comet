@@ -20,3 +20,4 @@ pluginManagement {
         mavenCentral()
     }
 }
+include("service-sharding")

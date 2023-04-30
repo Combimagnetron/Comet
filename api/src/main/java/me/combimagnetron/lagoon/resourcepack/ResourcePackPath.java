@@ -24,9 +24,9 @@ public class ResourcePackPath implements Comparable<ResourcePackPath> {
     }
 
     public JsonElement toJson() {
-        JsonElement element = new JsonObject();
-
-        return element;
+        JsonObject object = new JsonObject();
+        object.addProperty("path", path.toString());
+        return object;
     }
 
 }
