@@ -1,5 +1,6 @@
 package me.combimagnetron.lagoon.operation;
 
+import me.combimagnetron.lagoon.feature.entity.Duration;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -39,6 +40,14 @@ public class Operations {
 
     public static <T> Routine asyncRepeating(Operation<T> operation, long delay, long interval, TimeUnit unit) {
         return new Routine(EXECUTOR_SERVICE.scheduleAtFixedRate(() -> async(operation), delay, interval, unit));
+    }
+
+    public static <T> T asyncDelayed(Operation<T> operation, Duration duration) {
+        try {
+            return EXECUTOR_SERVICE.schedule(() -> async(operation), duration.time(), duration.unit()).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

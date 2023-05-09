@@ -1,6 +1,8 @@
 package me.combimagnetron.lagoon.communication;
 
 import me.combimagnetron.lagoon.communication.message.MessageChannel;
+import me.combimagnetron.lagoon.communication.message.pulsar.PulsarMessageChannel;
+import me.combimagnetron.lagoon.communication.message.pulsar.PulsarMessageClient;
 import me.combimagnetron.lagoon.communication.message.redis.RedisMessageClient;
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.operation.Operation;
@@ -28,8 +30,12 @@ public interface MessageClient {
         return RedisMessageClient.of(host, port, password);
     }
 
+    static PulsarMessageClient pulsar(String connectionString) {
+        return PulsarMessageClient.of(connectionString);
+    }
+
     enum Type {
-        REDIS
+        REDIS, PULSAR
     }
 
     @ConfigSerializable

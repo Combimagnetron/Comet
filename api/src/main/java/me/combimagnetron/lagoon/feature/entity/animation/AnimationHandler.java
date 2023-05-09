@@ -1,0 +1,4 @@
+package me.combimagnetron.lagoon.feature.entity.animation;
+
+public interface AnimationHandler {
+}

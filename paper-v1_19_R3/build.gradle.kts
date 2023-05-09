@@ -1,15 +1,20 @@
 plugins {
     id("java")
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("io.papermc.paperweight.userdev") version "1.5.4"
 }
 
 group = "org.example"
-version = "unspecified"
+version = "1.0-SNAPSHOT"
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    paperweight.paperDevBundle("1.19.4-R0.1-SNAPSHOT")
+    implementation(project(":api"))
 }
 
-tasks.test {
-    useJUnitPlatform()
+
+tasks {
+    build {
+        dependsOn(reobfJar)
+    }
 }

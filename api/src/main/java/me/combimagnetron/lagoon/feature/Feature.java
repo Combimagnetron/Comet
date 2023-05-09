@@ -6,8 +6,12 @@ public interface Feature {
 
     Identifier identifier();
 
-    void start();
+    void start(StartUpArgument... startUpArguments);
 
     void terminate();
+
+    interface StartUpArgument {
+
+    }
 
 }

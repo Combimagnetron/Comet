@@ -7,9 +7,11 @@ group = "me.combimagnetron"
 version = "1.0-SNAPSHOT"
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
+    implementation("org.jetbrains:annotations:24.0.0")
+    compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
     implementation("org.spongepowered:configurate-hocon:4.0.0")
     implementation(project(":api"))
+    implementation(project(":paper-v1_19_R3", configuration = "reobfjar"))
 }
 
 bukkit {

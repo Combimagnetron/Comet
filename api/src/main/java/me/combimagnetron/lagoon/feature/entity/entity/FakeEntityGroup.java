@@ -1,0 +1,23 @@
+package me.combimagnetron.lagoon.feature.entity.entity;
+
+import me.combimagnetron.lagoon.feature.entity.math.Point;
+import me.combimagnetron.lagoon.operation.Operation;
+import me.combimagnetron.lagoon.player.GlobalPlayer;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.util.EulerAngle;
+
+import java.util.Collection;
+
+public interface FakeEntityGroup {
+
+    Operation<Void> show(GlobalPlayer<?> player);
+
+    Operation<Void> teleport(Point point, World world);
+
+    Operation<Void> rotate(EulerAngle angle);
+
+    Collection<FakeEntity> members();
+
+    Operation<Void> update(GlobalPlayer<?> player);
+}

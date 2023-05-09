@@ -21,7 +21,6 @@ public class RedisMessageChannel extends RedisPubSubAdapter<byte[], byte[]> impl
     @Override
     public void message(byte[] channel, byte[] message){
         MessageRegistry.read(channel, message);
-        LoggerFactory.getLogger(RedisMessageChannel.class).info("Received from: " + new String(channel));
     }
 
     protected RedisMessageChannel(RedisMessageClient client, Identifier identifier) {

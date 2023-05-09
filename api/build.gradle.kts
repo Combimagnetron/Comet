@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    //kotlin("jvm") version "1.8.21"
 }
 
 group = "org.example"
@@ -15,4 +16,15 @@ dependencies {
     implementation("io.lettuce:lettuce-core:6.2.2.RELEASE")
     implementation("org.reflections:reflections:0.10.2")
     implementation("org.spongepowered:configurate-hocon:4.0.0")
+    implementation("org.joml:joml:1.10.5")
+    implementation("org.jetbrains:annotations:24.0.0")
+    implementation("org.apache.pulsar:pulsar-client:3.0.0")
+    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
+    //implementation(kotlin("stdlib-jdk8"))
 }
+repositories {
+    mavenCentral()
+}
+//kotlin {
+//    jvmToolchain(19)
+//}

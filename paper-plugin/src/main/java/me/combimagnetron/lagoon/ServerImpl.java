@@ -1,8 +1,10 @@
 package me.combimagnetron.lagoon;
 
 import me.combimagnetron.lagoon.communication.MessageClient;
+import me.combimagnetron.lagoon.communication.message.pulsar.PulsarMessageClient;
 import me.combimagnetron.lagoon.communication.message.redis.RedisMessageClient;
 import me.combimagnetron.lagoon.data.Identifier;
+import me.combimagnetron.lagoon.feature.Feature;
 import me.combimagnetron.lagoon.game.level.GameLevel;
 import me.combimagnetron.lagoon.instance.Instance;
 import me.combimagnetron.lagoon.operation.Operation;
@@ -10,6 +12,7 @@ import me.combimagnetron.lagoon.player.GlobalPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
@@ -17,12 +20,10 @@ import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 
 public class ServerImpl implements Server {
+    private final transient Set<Feature> featureSet = Collections.synchronizedSet(new HashSet<>());
     private final Map<MessageClient.Type, MessageClient> messageClientMap = new TreeMap<>();
     private final ConfigSummary summary;
 
@@ -56,6 +57,16 @@ public class ServerImpl implements Server {
         return messageClientMap.get(type);
     }
 
+    @Override
+    public @Nullable Feature feature(Identifier identifier) {
+        return null;
+    }
+
+    @Override
+    public Feature startFeature(Feature feature) {
+        return null;
+    }
+
     void registerMessageClient(MessageClient.Type type, MessageClient client) {
         messageClientMap.put(type, client);
     }
@@ -82,6 +93,10 @@ public class ServerImpl implements Server {
                     default -> {
                         RedisMessageClient client = MessageClient.redis(messageClientSettings.host(), messageClientSettings.port(), messageClientSettings.password());
                         summary.messageClientMap().put(MessageClient.Type.REDIS, client);
+                    }
+                    case PULSAR -> {
+                        PulsarMessageClient client = MessageClient.pulsar(messageClientSettings.uri());
+                        summary.messageClientMap().put(MessageClient.Type.PULSAR, client);
                     }
                 }
             }
