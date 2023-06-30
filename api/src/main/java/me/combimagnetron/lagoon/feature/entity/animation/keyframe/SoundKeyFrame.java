@@ -1,6 +1,6 @@
 package me.combimagnetron.lagoon.feature.entity.animation.keyframe;
 
-import me.combimagnetron.lagoon.animation.effect.SoundEffect;
+import me.combimagnetron.lagoon.feature.entity.animation.effect.SoundEffect;
 import org.bukkit.Sound;
 
 public final class SoundKeyFrame extends KeyFrame {

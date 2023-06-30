@@ -14,8 +14,10 @@ public interface Instance {
 
     int playerCount();
 
-    boolean isProxy();
-
     Platform platform();
+
+    default boolean isProxy() {
+        return platform().isProxy();
+    }
 
 }

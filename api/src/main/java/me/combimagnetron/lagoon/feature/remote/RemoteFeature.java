@@ -9,6 +9,8 @@ import me.combimagnetron.lagoon.communication.message.MessageChannel;
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.feature.Feature;
 import me.combimagnetron.lagoon.instance.Platform;
+import me.combimagnetron.lagoon.service.Service;
+import me.combimagnetron.lagoon.service.config.StringStringParameter;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -16,7 +18,7 @@ import java.util.Set;
 import static me.combimagnetron.lagoon.operation.Operations.async;
 
 @MessageHandler
-public abstract class RemoteFeature implements Feature, MessageListener<Message>, Serializable {
+public abstract class RemoteFeature implements Feature, MessageListener<Message>, Serializable, Service<StringStringParameter> {
     private final MessageClient client = Lagoon.messageClient(MessageClient.Type.REDIS);
     private final MessageChannel channel = async(client.channel(Identifier.of("remote-feature", identifier().key().string())));
     private final Platform platform;

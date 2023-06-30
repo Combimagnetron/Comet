@@ -5,7 +5,6 @@ import me.combimagnetron.lagoon.communication.message.pulsar.PulsarMessageClient
 import me.combimagnetron.lagoon.communication.message.redis.RedisMessageClient;
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.feature.Feature;
-import me.combimagnetron.lagoon.game.level.GameLevel;
 import me.combimagnetron.lagoon.instance.Instance;
 import me.combimagnetron.lagoon.operation.Operation;
 import me.combimagnetron.lagoon.player.GlobalPlayer;
@@ -64,6 +63,16 @@ public class ServerImpl implements Server {
 
     @Override
     public Feature startFeature(Feature feature) {
+        return null;
+    }
+
+    @Override
+    public Instance instance(Identifier identifier) {
+        return null;
+    }
+
+    @Override
+    public Instance instance(UUID uuid) {
         return null;
     }
 

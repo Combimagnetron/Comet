@@ -12,6 +12,12 @@ dependencies {
     implementation(project(":api"))
 }
 
+repositories {
+    mavenCentral()
+}
+
+
+
 
 tasks {
     build {

@@ -40,7 +40,7 @@ public interface Operation<V> {
         private Consumer<Void> consumer = unused -> {};
         private OperationState state = OperationState.IDLE;
 
-        SimpleOperation(SimpleOperationConsumer consumer) {
+        public SimpleOperation(SimpleOperationConsumer consumer) {
             this.simpleOperationConsumer = consumer;
         }
 
@@ -74,7 +74,7 @@ public interface Operation<V> {
         void run();
     }
 
-    final class ExecutableOperation<T> implements Operation<T> {
+    public final class ExecutableOperation<T> implements Operation<T> {
         private final SimpleReturningConsumer<T> executableCode;
         private Consumer<T> consumer = t -> {};
         private OperationState state = OperationState.IDLE;

@@ -1,7 +1,7 @@
 package me.combimagnetron.lagoon.resourcepack.font.sprite;
 
 import me.combimagnetron.lagoon.image.PixelRaster;
-import me.combimagnetron.lagoon.menu.Pos2D;
+import me.combimagnetron.lagoon.feature.menu.menu.Pos2D;
 import me.combimagnetron.lagoon.data.Identifier;
 
 import java.awt.*;

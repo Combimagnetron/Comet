@@ -1,6 +1,6 @@
 package me.combimagnetron.lagoon.image;
 
-import me.combimagnetron.lagoon.menu.Pos2D;
+import me.combimagnetron.lagoon.feature.menu.menu.Pos2D;
 import me.combimagnetron.lagoon.operation.Operation;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;

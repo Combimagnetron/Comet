@@ -10,7 +10,8 @@ import me.combimagnetron.lagoon.communication.message.impl.proxybound.ProxyBound
 import me.combimagnetron.lagoon.communication.message.impl.proxybound.ProxyBoundMovePlayerMessage;
 import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundMessage;
 import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundRegisterInstanceMessage;
-import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundTestIncrementMessage;
+import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundRequestInstanceBlueprintsMessage;
+import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundRequestServiceStatusChangeMessage;
 import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
@@ -32,12 +33,14 @@ public class MessageRegistry {
 
     static {
         INSTANCE_BOUND_MESSAGE_MAP.put(0, InstanceBoundKeepAliveMessage.class);
-        INSTANCE_BOUND_MESSAGE_MAP.put(2, InstanceBoundCreateGameLevelMessage.class);
+        INSTANCE_BOUND_MESSAGE_MAP.put(1, InstanceBoundCreateGameLevelMessage.class);
+        INSTANCE_BOUND_MESSAGE_MAP.put(2, ServiceBoundRequestInstanceBlueprintsMessage.Response.class);
         PROXY_BOUND_MESSAGE_MAP.put(0, ProxyBoundMovePlayerMessage.class);
         PROXY_BOUND_MESSAGE_MAP.put(1, ProxyBoundMoveGameLevelMessage.class);
         PROXY_BOUND_MESSAGE_MAP.put(2, InstanceBoundKeepAliveMessage.Response.class);
         SERVICE_BOUND_MESSAGE_MAP.put(0, ServiceBoundRegisterInstanceMessage.class);
-        SERVICE_BOUND_MESSAGE_MAP.put(1, ServiceBoundTestIncrementMessage.class);
+        SERVICE_BOUND_MESSAGE_MAP.put(1, ServiceBoundRequestServiceStatusChangeMessage.class);
+        SERVICE_BOUND_MESSAGE_MAP.put(2, ServiceBoundRequestInstanceBlueprintsMessage.class);
     }
 
     public static void init() {
@@ -49,7 +52,6 @@ public class MessageRegistry {
         }
     }
 
-    //@Nullable
     public static void read(byte[] channel, byte[] bytes) {
         try {
             /*return*/ EXECUTOR.submit(() -> {

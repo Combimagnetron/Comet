@@ -3,7 +3,7 @@ package me.combimagnetron.lagoon;
 import me.combimagnetron.lagoon.communication.MessageClient;
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.feature.Feature;
-import me.combimagnetron.lagoon.game.level.GameLevel;
+import me.combimagnetron.lagoon.feature.tempworld.level.GameLevel;
 import me.combimagnetron.lagoon.instance.Instance;
 import me.combimagnetron.lagoon.operation.Operation;
 import me.combimagnetron.lagoon.player.GlobalPlayer;
@@ -28,5 +28,9 @@ public interface Server {
     Feature feature(Identifier identifier);
 
     Feature startFeature(Feature feature);
+
+    Instance instance(Identifier identifier);
+
+    Instance instance(UUID uuid);
 
 }

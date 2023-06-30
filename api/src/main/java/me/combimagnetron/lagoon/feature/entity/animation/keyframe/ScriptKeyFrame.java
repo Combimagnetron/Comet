@@ -1,6 +1,8 @@
 package me.combimagnetron.lagoon.feature.entity.animation.keyframe;
 
 
+import me.combimagnetron.lagoon.feature.entity.animation.effect.ScriptEffect;
+
 public final class ScriptKeyFrame extends KeyFrame {
     private final String scriptType;
     private final String scriptArgs;

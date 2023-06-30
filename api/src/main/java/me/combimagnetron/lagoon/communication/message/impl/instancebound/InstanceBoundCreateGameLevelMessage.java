@@ -1,9 +1,6 @@
 package me.combimagnetron.lagoon.communication.message.impl.instancebound;
 
-import com.google.gson.JsonObject;
-import me.combimagnetron.lagoon.communication.Message;
-import me.combimagnetron.lagoon.game.level.GameLevel;
-import me.combimagnetron.lagoon.game.level.GameLevelSettings;
+import me.combimagnetron.lagoon.feature.tempworld.level.GameLevelSettings;
 import me.combimagnetron.lagoon.instance.Instance;
 import org.jetbrains.annotations.Nullable;
 
