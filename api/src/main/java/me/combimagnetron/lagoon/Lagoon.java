@@ -25,6 +25,10 @@ public class Lagoon {
         return server.messageClient(type);
     }
 
+    public static MessageClient messageClient() {
+        return server.messageClient(MessageClient.Type.REDIS);
+    }
+
     public static Instance instance(Identifier identifier) {
         return server.instance(identifier);
     }
