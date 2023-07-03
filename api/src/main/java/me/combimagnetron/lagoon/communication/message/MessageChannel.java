@@ -5,6 +5,7 @@ import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.operation.Operation;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 
 public interface MessageChannel {
 
@@ -20,7 +21,8 @@ public interface MessageChannel {
     /**
      * @return All the message recipients currently listening to the channel.
      */
-    Operation<Collection<MessageRecipient>> receipients();
+    Operation<Collection<MessageRecipient>> recipients();
 
+    Operation<Void> awaitMessage(Class<? extends Message> type, Consumer<Message> execute);
 
 }

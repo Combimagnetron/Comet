@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public interface Operation<V> {
@@ -33,6 +34,10 @@ public interface Operation<V> {
 
     static <V> Operation<V> executable(SimpleReturningConsumer<V> executableCode) {
         return new ExecutableOperation<>(executableCode);
+    }
+
+    static <V> Operation<V> await(SimpleReturningConsumer<V> executableCode, SimpleReturningConsumer<Boolean> holdCondition) {
+        return new AwaitingOperation<>(executableCode, holdCondition);
     }
 
     final class SimpleOperation implements Operation<Void> {
@@ -74,7 +79,15 @@ public interface Operation<V> {
         void run();
     }
 
-    public final class ExecutableOperation<T> implements Operation<T> {
+    final class AwaitingOperation<T> extends ExecutableOperation<T> {
+        private final Checker checker;
+        AwaitingOperation(SimpleReturningConsumer<T> executableCode, SimpleReturningConsumer<Boolean> holdCondition) {
+            super(executableCode);
+            this.checker = new Checker(executableCode, holdCondition);
+        }
+    }
+
+    class ExecutableOperation<T> implements Operation<T> {
         private final SimpleReturningConsumer<T> executableCode;
         private Consumer<T> consumer = t -> {};
         private OperationState state = OperationState.IDLE;
@@ -112,4 +125,22 @@ public interface Operation<V> {
     interface SimpleReturningConsumer<T> {
         T run();
     }
+
+    final class Checker {
+        private final Operation<Boolean> checkerOperation;
+        private Operations.Routine routine;
+
+        Checker(SimpleReturningConsumer<?> simpleReturningConsumer, SimpleReturningConsumer<Boolean> condition) {
+            this.checkerOperation = Operation.executable(() -> {
+                if (condition.run()) {
+                    simpleReturningConsumer.run();
+                    Operations.async(routine.stop());
+                    return true;
+                }
+                return false;
+            });
+            this.routine = Operations.asyncRepeating(checkerOperation, 0L, 3L, TimeUnit.MILLISECONDS);
+        }
+    }
+
 }
