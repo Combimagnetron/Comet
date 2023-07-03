@@ -44,17 +44,18 @@ public class MessageRegistry {
     }
 
     public static void init() {
-        String callerClass = getCallerClass();
+        /*String callerClass = getCallerClass();
         if (callerClass != null) {
             String[] strings = callerClass.split("\\.");
             if (!(strings.length < 3))
-                registerListenerClassPath(strings[0] + "." + strings[1] + "." + strings[2]);
-        }
+                registerListeners(strings[0] + "." + strings[1] + "." + strings[2]);
+        }*/ //TODO Remove if the option below works as intended.
+        registerListeners(StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().getPackageName());
     }
 
-    public static void read(byte[] channel, byte[] bytes) {
+    public static Message read(byte[] channel, byte[] bytes) {
         try {
-            /*return*/ EXECUTOR.submit(() -> {
+            return EXECUTOR.submit(() -> {
                 final String channelName = new String(channel);
                 ByteArrayDataInput input = ByteStreams.newDataInput(bytes);
                 int messageId = input.readInt();
@@ -70,9 +71,9 @@ public class MessageRegistry {
                     if (!annotation.channel().equals(channelName)) {
                         return;
                     }
-                    listener.onReceive(message);
+                    listener.receive(message);
                 });
-                //return message;
+                return message;
             }).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
@@ -87,7 +88,7 @@ public class MessageRegistry {
         }
     }
 
-    private static void registerListenerClassPath(String string) {
+    private static void registerListeners(String string) {
         Reflections reflections = new Reflections(string);
         Set<Class<?>> classSet = reflections.getTypesAnnotatedWith(MessageHandler.class);
         classSet.forEach(clazz -> {

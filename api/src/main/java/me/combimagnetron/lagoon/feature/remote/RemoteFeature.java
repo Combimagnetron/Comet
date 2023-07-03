@@ -34,7 +34,7 @@ public abstract class RemoteFeature implements Feature, MessageListener<Message>
     }
 
     @Override
-    public void onSend(Message message) {
+    public void send(Message message) {
         if (!messagesInUse.contains(message)) {
             return;
         }
@@ -42,7 +42,7 @@ public abstract class RemoteFeature implements Feature, MessageListener<Message>
     }
 
     @Override
-    public void onReceive(Message message) {
+    public void receive(Message message) {
         if (!messagesInUse.contains(message)) {
             return;
         }
