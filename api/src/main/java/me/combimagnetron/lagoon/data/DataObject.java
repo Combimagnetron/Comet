@@ -1,8 +1,10 @@
 package me.combimagnetron.lagoon.data;
 
 import me.combimagnetron.lagoon.data.type.DataType;
+import me.combimagnetron.lagoon.event.EventBus;
+import me.combimagnetron.lagoon.event.impl.spigot.SpigotEvent;
 
-public abstract class DataObject<T, V> {
+public class DataObject<T, V> {
     private final V value;
     private final DataType<T> type;
 
@@ -11,8 +13,12 @@ public abstract class DataObject<T, V> {
         this.type = type;
     }
 
-    public abstract DataType<T> type();
+    public DataType<T> type() {
+        return type;
+    }
 
-    public abstract V value();
+    public V value() {
+        return value;
+    }
 
 }

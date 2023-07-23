@@ -7,9 +7,8 @@ import me.combimagnetron.lagoon.feature.entity.entity.FakeEntity;
 import me.combimagnetron.lagoon.feature.entity.math.Point;
 import me.combimagnetron.lagoon.feature.entity.model.Cube;
 import me.combimagnetron.lagoon.operation.Operation;
-import me.combimagnetron.lagoon.player.GlobalPlayer;
+import me.combimagnetron.lagoon.user.User;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 
@@ -62,13 +61,11 @@ public class Bone {
                 innerObject.get("mirror_uv").getAsBoolean(),
                 children
         );
-    }
-
-    public Operation<Boolean> show(Collection<GlobalPlayer<?>> players) {
+    }    public Operation<Boolean> show(Collection<User<?>> players) {
         return fakeEntity.show(players);
     }
 
-    public Operation<Boolean> hide(Collection<GlobalPlayer<?>> players) {
+    public Operation<Boolean> hide(Collection<User<?>> players) {
         return fakeEntity.show(players);
     }
 

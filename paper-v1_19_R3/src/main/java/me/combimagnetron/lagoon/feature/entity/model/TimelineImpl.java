@@ -52,4 +52,9 @@ public class TimelineImpl implements Timeline {
     protected Animation currentlyPlaying() {
         return currentlyPlaying;
     }
+
+    public void animation(Animation animation) {
+        this.currentlyPlaying = animation;
+    }
+
 }

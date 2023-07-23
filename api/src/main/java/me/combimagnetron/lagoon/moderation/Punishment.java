@@ -1,15 +1,14 @@
 package me.combimagnetron.lagoon.moderation;
 
-import me.combimagnetron.lagoon.player.GlobalPlayer;
+import me.combimagnetron.lagoon.user.User;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Punishment {
-    private final GlobalPlayer<?> player;
+    private final User<?> player;
     private final Duration duration;
 
-    public Punishment(GlobalPlayer<?> player, Duration duration) {
+    public Punishment(User<?> player, Duration duration) {
         this.player = player;
         this.duration = duration;
         handle();
@@ -17,7 +16,7 @@ public abstract class Punishment {
 
     abstract void handle();
 
-    public GlobalPlayer<?> player() {
+    public User<?> player() {
         return this.player;
     }
 

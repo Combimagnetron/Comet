@@ -6,11 +6,11 @@ import me.combimagnetron.lagoon.communication.message.redis.RedisMessageClient;
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.feature.Feature;
 import me.combimagnetron.lagoon.instance.Instance;
-import me.combimagnetron.lagoon.operation.Operation;
-import me.combimagnetron.lagoon.player.GlobalPlayer;
+import me.combimagnetron.lagoon.user.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurationNode;
@@ -24,30 +24,29 @@ import java.util.*;
 public class ServerImpl implements Server {
     private final transient Set<Feature> featureSet = Collections.synchronizedSet(new HashSet<>());
     private final Map<MessageClient.Type, MessageClient> messageClientMap = new TreeMap<>();
+    private final UserManager userManager = new UserManager();
     private final ConfigSummary summary;
+    private final JavaPlugin plugin;
 
-    ServerImpl(Path configurationPath) throws SerializationException {
+    ServerImpl(Path configurationPath, JavaPlugin plugin) throws SerializationException {
         this.summary = ConfigLoader.read(configurationPath);
         this.messageClientMap.putAll(summary.messageClientMap());
+        this.plugin = plugin;
+        Bukkit.getPluginManager().registerEvents(userManager, plugin);
     }
 
     @Override
-    public GlobalPlayer<?> playerByUniqueId(UUID uuid) {
+    public User<?> playerByUniqueId(UUID uuid) {
+        return userManager.user(uuid);
+    }
+
+    @Override
+    public Collection<User<?>> playersOnInstance(Instance instance) {
         return null;
     }
 
     @Override
-    public Collection<GlobalPlayer<?>> playersOnInstance(Instance instance) {
-        return null;
-    }
-
-    @Override
-    public Collection<GlobalPlayer<?>> onlinePlayers() {
-        return null;
-    }
-
-    @Override
-    public Operation<GameLevel> createGameLevel(Identifier identifier) {
+    public Collection<User<?>> onlinePlayers() {
         return null;
     }
 
@@ -58,6 +57,11 @@ public class ServerImpl implements Server {
 
     @Override
     public @Nullable Feature feature(Identifier identifier) {
+        return null;
+    }
+
+    @Override
+    public <T extends Feature> T feature(Class<T> clazz) {
         return null;
     }
 
@@ -74,6 +78,11 @@ public class ServerImpl implements Server {
     @Override
     public Instance instance(UUID uuid) {
         return null;
+    }
+
+    @Override
+    public JavaPlugin javaPlugin() {
+        return plugin;
     }
 
     void registerMessageClient(MessageClient.Type type, MessageClient client) {
@@ -106,6 +115,9 @@ public class ServerImpl implements Server {
                     case PULSAR -> {
                         PulsarMessageClient client = MessageClient.pulsar(messageClientSettings.uri());
                         summary.messageClientMap().put(MessageClient.Type.PULSAR, client);
+                    }
+                    case NONE -> {
+
                     }
                 }
             }

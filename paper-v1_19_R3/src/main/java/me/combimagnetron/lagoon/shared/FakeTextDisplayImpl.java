@@ -5,7 +5,7 @@ import me.combimagnetron.lagoon.feature.entity.entity.FakeTextDisplay;
 import me.combimagnetron.lagoon.feature.entity.math.Point;
 import me.combimagnetron.lagoon.feature.entity.math.Quaternion;
 import me.combimagnetron.lagoon.operation.Operation;
-import me.combimagnetron.lagoon.player.GlobalPlayer;
+import me.combimagnetron.lagoon.user.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.network.protocol.Packet;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 public class FakeTextDisplayImpl implements FakeTextDisplay {
-    private final Collection<GlobalPlayer<?>> observers = new LinkedHashSet<>();
+    private final Collection<User<?>> observers = new LinkedHashSet<>();
     private final Display.TextDisplay itemDisplay;
 
     public FakeTextDisplayImpl(EulerAngle headRot, World world) {
@@ -39,7 +39,7 @@ public class FakeTextDisplayImpl implements FakeTextDisplay {
     }
 
     @Override
-    public Operation<Boolean> show(Collection<GlobalPlayer<?>> players) {
+    public Operation<Boolean> show(Collection<User<?>> players) {
         return Operation.executable(() -> {
             players.forEach(this::spawn);
             observers.addAll(players);
@@ -48,7 +48,7 @@ public class FakeTextDisplayImpl implements FakeTextDisplay {
     }
 
     @Override
-    public Operation<Boolean> hide(Collection<GlobalPlayer<?>> players) {
+    public Operation<Boolean> hide(Collection<User<?>> players) {
         return Operation.executable(() -> {
             players.forEach(this::hide);
             observers.removeAll(players);
@@ -99,7 +99,7 @@ public class FakeTextDisplayImpl implements FakeTextDisplay {
     }
 
     @Override
-    public Operation<Collection<GlobalPlayer<?>>> viewers() {
+    public Operation<Collection<User<?>>> viewers() {
         return Operation.executable(() -> observers);
     }
 
@@ -126,16 +126,16 @@ public class FakeTextDisplayImpl implements FakeTextDisplay {
         itemDisplay.setInterpolationDelay(-1);
     }
 
-    private void spawn(GlobalPlayer<?> player) {
+    private void spawn(User<?> player) {
         send(serverPlayer(player), spawn());
         update(player);
     }
 
-    private void hide(GlobalPlayer<?> player) {
+    private void hide(User<?> player) {
         send(serverPlayer(player), Set.of(new ClientboundRemoveEntitiesPacket(itemDisplay.getId())));
     }
 
-    protected void update(GlobalPlayer<?> player) {
+    protected void update(User<?> player) {
         itemDisplay.getEntityData().refresh(serverPlayer(player));
         send(serverPlayer(player), Set.of(
                     new ClientboundTeleportEntityPacket(itemDisplay)
@@ -149,7 +149,7 @@ public class FakeTextDisplayImpl implements FakeTextDisplay {
         );
     }
 
-    private ServerPlayer serverPlayer(GlobalPlayer<?> player) {
+    private ServerPlayer serverPlayer(User<?> player) {
         return ((CraftPlayer) player.platformSpecificPlayer()).getHandle();
     }
 

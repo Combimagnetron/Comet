@@ -3,7 +3,7 @@ package me.combimagnetron.lagoon.shared;
 import com.mojang.math.Transformation;
 import me.combimagnetron.lagoon.feature.entity.entity.FakeItemDisplay;
 import me.combimagnetron.lagoon.operation.Operation;
-import me.combimagnetron.lagoon.player.GlobalPlayer;
+import me.combimagnetron.lagoon.user.User;
 import me.combimagnetron.lagoon.feature.entity.math.Point;
 import me.combimagnetron.lagoon.feature.entity.math.Quaternion;
 import net.minecraft.network.protocol.Packet;
@@ -13,10 +13,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemDisplayContext;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,16 +27,24 @@ import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class FakeItemDisplayImpl implements FakeItemDisplay {
-    private final Collection<GlobalPlayer<?>> observers = new LinkedHashSet<>();
+    private final Collection<User<?>> observers = new LinkedHashSet<>();
     private final Display.ItemDisplay itemDisplay;
 
     public FakeItemDisplayImpl(EulerAngle headRot, World world) {
         this.itemDisplay = new Display.ItemDisplay(EntityType.ITEM_DISPLAY ,((CraftWorld) world).getHandle());
         this.itemDisplay.setTransformation(new Transformation(null, Quaternion.quaternion(Point.of(headRot.getX(), headRot.getY(), headRot.getZ())).toF(), null, null));
+        this.headItem(new ItemStack(Material.PAPER)).async();
+    }
+
+    public FakeItemDisplayImpl(Point position, EulerAngle headRot, World world) {
+        this.itemDisplay = new Display.ItemDisplay(EntityType.ITEM_DISPLAY ,((CraftWorld) world).getHandle());
+        this.itemDisplay.setTransformation(new Transformation(null, Quaternion.quaternion(Point.of(headRot.getX(), headRot.getY(), headRot.getZ())).toF(), null, null));
+        this.teleport(position).async();
+        this.headItem(new ItemStack(Material.PAPER)).async();
     }
 
     @Override
-    public Operation<Boolean> show(Collection<GlobalPlayer<?>> players) {
+    public Operation<Boolean> show(Collection<User<?>> players) {
         return Operation.executable(() -> {
             players.forEach(this::spawn);
             observers.addAll(players);
@@ -42,7 +53,7 @@ public class FakeItemDisplayImpl implements FakeItemDisplay {
     }
 
     @Override
-    public Operation<Boolean> hide(Collection<GlobalPlayer<?>> players) {
+    public Operation<Boolean> hide(Collection<User<?>> players) {
         return Operation.executable(() -> {
             players.forEach(this::hide);
             observers.removeAll(players);
@@ -87,7 +98,7 @@ public class FakeItemDisplayImpl implements FakeItemDisplay {
     }
 
     @Override
-    public Operation<Collection<GlobalPlayer<?>>> viewers() {
+    public Operation<Collection<User<?>>> viewers() {
         return Operation.executable(() -> observers);
     }
 
@@ -145,16 +156,20 @@ public class FakeItemDisplayImpl implements FakeItemDisplay {
         itemDisplay.setInterpolationDelay(-1);
     }
 
-    private void spawn(GlobalPlayer<?> player) {
+    private void spawn(User<?> player) {
+        Bukkit.getLogger().info("spawn1");
         send(serverPlayer(player), spawn());
+        Bukkit.getLogger().info("spawn2");
         update(player);
+        Bukkit.getLogger().info("spawn3");
     }
 
-    private void hide(GlobalPlayer<?> player) {
+    private void hide(User<?> player) {
         send(serverPlayer(player), Set.of(new ClientboundRemoveEntitiesPacket(itemDisplay.getId())));
     }
 
-    protected void update(GlobalPlayer<?> player) {
+    protected void update(User<?> player) {
+        Bukkit.getLogger().info("spawn4");
         itemDisplay.getEntityData().refresh(serverPlayer(player));
         send(serverPlayer(player), Set.of(
                     new ClientboundTeleportEntityPacket(itemDisplay)
@@ -168,7 +183,7 @@ public class FakeItemDisplayImpl implements FakeItemDisplay {
         );
     }
 
-    private ServerPlayer serverPlayer(GlobalPlayer<?> player) {
+    private ServerPlayer serverPlayer(User<?> player) {
         return ((CraftPlayer) player.platformSpecificPlayer()).getHandle();
     }
 

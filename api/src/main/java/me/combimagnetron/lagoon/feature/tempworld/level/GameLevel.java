@@ -2,19 +2,17 @@ package me.combimagnetron.lagoon.feature.tempworld.level;
 
 import com.google.gson.JsonObject;
 import me.combimagnetron.lagoon.data.Identifier;
-import me.combimagnetron.lagoon.feature.tempworld.level.GameLevelData;
 
 import java.util.UUID;
 
 public abstract class GameLevel {
     private final UUID uuid = UUID.randomUUID();
     private final Identifier identifier;
-    private final GameLevelData data;
+    private GameLevelData data;
     private GameLevelSettings settings;
 
-    public GameLevel(Identifier identifier) {
+    public GameLevel(Identifier identifier, GameLevelData data) {
         this.identifier = identifier;
-        this.data = null;
     }
 
     public Identifier identifier() {

@@ -3,32 +3,33 @@ package me.combimagnetron.lagoon.service.config;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.nio.file.Path;
 
-public class StringStringParameter extends Parameter<String, String> {
+public class StringStringParameter implements Parameter<String, String> {
     private String first, second;
 
     @Override
-    String first() {
+    public String first() {
         return first;
     }
 
     @Override
-    String second() {
+    public String second() {
         return second;
     }
 
     @Override
-    String first(String s) {
-        return this.first = s;
+    public void first(String s) {
+        this.first = s;
     }
 
     @Override
-    String second(String s) {
-        return this.second = s;
+    public void second(String s) {
+        this.second = s;
     }
 
     @Override
-    @Nullable File location() {
+    public @Nullable Path location() {
         return null;
     }
 }

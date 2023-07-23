@@ -1,17 +1,37 @@
 package me.combimagnetron.lagoon.feature.menu.style;
 
+import me.combimagnetron.lagoon.feature.menu.snapshot.Snapshot;
+import net.kyori.adventure.text.Component;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public interface Style {
 
-    Style style(StyleFeature styleFeature);
+    Map<String, StyleFeature> appliedFeatures();
 
-    static StyleBuilder style() {
-        return new StyleBuilder();
+    void apply(String label, StyleFeature styleFeature);
+
+    interface StyleFeature {
+        Component apply(Snapshot<Component> snapshot);
     }
 
-    class StyleBuilder {
+    static Style style() {
+        return new StyleImpl();
+    }
 
+    class StyleImpl implements Style {
+        private final Map<String, StyleFeature> appliedFeatures = new HashMap<>();
 
+        @Override
+        public Map<String, StyleFeature> appliedFeatures() {
+            return appliedFeatures;
+        }
 
+        @Override
+        public void apply(String label, StyleFeature styleFeature) {
+            appliedFeatures.put(label, styleFeature);
+        }
     }
 
 }
