@@ -1,6 +1,7 @@
 package me.combimagnetron.lagoon.feature;
 
 import me.combimagnetron.lagoon.data.Identifier;
+import me.combimagnetron.lagoon.file.Folder;
 
 public interface Feature {
 
@@ -13,5 +14,11 @@ public interface Feature {
     interface StartUpArgument {
 
     }
+
+    static void deploy(Feature feature) {
+
+    }
+
+    Folder folder();
 
 }

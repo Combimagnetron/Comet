@@ -1,16 +1,13 @@
 package me.combimagnetron.lagoon.instance;
 
-import me.combimagnetron.lagoon.Lagoon;
-import me.combimagnetron.lagoon.communication.MessageListener;
+import me.combimagnetron.lagoon.Comet;
 import me.combimagnetron.lagoon.communication.message.MessageChannel;
 import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundRequestInstanceBlueprintsMessage;
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.util.VersionCollection;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static me.combimagnetron.lagoon.operation.Operations.async;
@@ -32,7 +29,7 @@ public class InstanceBlueprint implements Serializable {
     }
 
     public static VersionCollection<InstanceBlueprint> request(Identifier identifier) {
-        final MessageChannel channel = async(Lagoon.messageClient().channel(Identifier.of("service", "pilot")));
+        final MessageChannel channel = async(Comet.messageClient().channel(Identifier.of("service", "pilot")));
         async(channel.send(new ServiceBoundRequestInstanceBlueprintsMessage(identifier)));
         AtomicReference<VersionCollection<InstanceBlueprint>> atomicReference = new AtomicReference<>();
         channel.awaitMessage(ServiceBoundRequestInstanceBlueprintsMessage.Response.class, (message) -> {

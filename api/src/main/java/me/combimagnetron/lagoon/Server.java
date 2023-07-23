@@ -3,10 +3,10 @@ package me.combimagnetron.lagoon;
 import me.combimagnetron.lagoon.communication.MessageClient;
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.feature.Feature;
-import me.combimagnetron.lagoon.feature.tempworld.level.GameLevel;
 import me.combimagnetron.lagoon.instance.Instance;
 import me.combimagnetron.lagoon.operation.Operation;
-import me.combimagnetron.lagoon.player.GlobalPlayer;
+import me.combimagnetron.lagoon.user.User;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -14,23 +14,27 @@ import java.util.UUID;
 
 public interface Server {
 
-    GlobalPlayer<?> playerByUniqueId(UUID uuid);
+    User<?> playerByUniqueId(UUID uuid);
 
-    Collection<GlobalPlayer<?>> playersOnInstance(Instance instance);
+    Collection<User<?>> playersOnInstance(Instance instance);
 
-    Collection<GlobalPlayer<?>> onlinePlayers();
+    Collection<User<?>> onlinePlayers();
 
-    Operation<GameLevel> createGameLevel(Identifier identifier);
+    //Operation<GameLevel> createGameLevel(Identifier identifier);
 
     MessageClient messageClient(MessageClient.Type type);
 
     @Nullable
     Feature feature(Identifier identifier);
 
+    <T extends Feature> T feature(Class<T> clazz);
+
     Feature startFeature(Feature feature);
 
     Instance instance(Identifier identifier);
 
     Instance instance(UUID uuid);
+
+    JavaPlugin javaPlugin();
 
 }

@@ -6,13 +6,14 @@ import me.combimagnetron.lagoon.feature.entity.math.Point;
 import me.combimagnetron.lagoon.feature.entity.model.bone.Bone;
 import me.combimagnetron.lagoon.operation.Operation;
 import me.combimagnetron.lagoon.operation.Operations;
-import me.combimagnetron.lagoon.player.GlobalPlayer;
+import me.combimagnetron.lagoon.user.User;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBundlePacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityLinkPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
@@ -33,7 +34,7 @@ public class FakeEntityGroupImpl implements FakeEntityGroup {
     }
 
     @Override
-    public Operation<Void> show(GlobalPlayer<?> player) {
+    public Operation<Void> show(User<?> player) {
         return Operation.simple(() -> {
             entityHashMap.forEach((bone, fakeEntity) -> Operations.async(fakeEntity.show(Set.of(player))));
             Collection<Packet<?>> packets = ridePackets();
@@ -63,8 +64,9 @@ public class FakeEntityGroupImpl implements FakeEntityGroup {
     }
 
     @Override
-    public Operation<Void> update(GlobalPlayer<?> player) {
+    public Operation<Void> update(User<?> player) {
         return Operation.simple(() -> {
+            Bukkit.getLogger().info("boo");
             ServerPlayer serverPlayer = serverPlayer(player);
             Set<Packet<ClientGamePacketListener>> packets = new HashSet<>();
             entityHashMap.forEach((bone, fakeEntity) -> {
@@ -94,7 +96,7 @@ public class FakeEntityGroupImpl implements FakeEntityGroup {
         return ((CraftEntity) entity).getHandle();
     }
 
-    private ServerPlayer serverPlayer(GlobalPlayer<?>  player) {
+    private ServerPlayer serverPlayer(User<?>  player) {
         return ((CraftPlayer) player.platformSpecificPlayer()).getHandle();
     }
 

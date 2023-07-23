@@ -1,6 +1,5 @@
 plugins {
     id("java")
-    kotlin("jvm") version "1.8.21"
 }
 
 group = "org.example"
@@ -20,9 +19,4 @@ dependencies {
     implementation("org.jetbrains:annotations:24.0.0")
     implementation("org.apache.pulsar:pulsar-client:3.0.0")
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
-    implementation(kotlin("stdlib"))
-}
-
-kotlin {
-   jvmToolchain(17)
 }

@@ -1,4 +1,4 @@
-package me.combimagnetron.lagoon.player;
+package me.combimagnetron.lagoon.user;
 
 import me.combimagnetron.lagoon.data.impl.PlayerDataContainer;
 import me.combimagnetron.lagoon.instance.Instance;
@@ -7,11 +7,11 @@ import net.kyori.adventure.text.Component;
 
 import java.util.UUID;
 
-public interface GlobalPlayer<T extends Audience> {
+public interface User<T extends Audience> {
 
      T platformSpecificPlayer();
 
-     void sendMessage(Component component);
+     void message(Component component);
 
      Instance instance();
 

@@ -3,7 +3,7 @@ package me.combimagnetron.lagoon.shared;
 import me.combimagnetron.lagoon.feature.entity.entity.FakeArmorStand;
 import me.combimagnetron.lagoon.feature.entity.math.Point;
 import me.combimagnetron.lagoon.operation.Operation;
-import me.combimagnetron.lagoon.player.GlobalPlayer;
+import me.combimagnetron.lagoon.user.User;
 import net.minecraft.core.Rotations;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -25,7 +25,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class FakeArmorStandImpl implements FakeArmorStand {
-    private final Collection<GlobalPlayer<?>> observers = new LinkedHashSet<>();
+    private final Collection<User<?>> observers = new LinkedHashSet<>();
     private final ArmorStand armorStand;
 
     public FakeArmorStandImpl(Point point, EulerAngle headRot, World world) {
@@ -34,7 +34,7 @@ public class FakeArmorStandImpl implements FakeArmorStand {
     }
 
     @Override
-    public Operation<Boolean> show(Collection<GlobalPlayer<?>> players) {
+    public Operation<Boolean> show(Collection<User<?>> players) {
         return Operation.executable(() -> {
             players.forEach(this::spawn);
             observers.addAll(players);
@@ -43,7 +43,7 @@ public class FakeArmorStandImpl implements FakeArmorStand {
     }
 
     @Override
-    public Operation<Boolean> hide(Collection<GlobalPlayer<?>> players) {
+    public Operation<Boolean> hide(Collection<User<?>> players) {
         return Operation.executable(() -> {
             players.forEach(this::hide);
             observers.removeAll(players);
@@ -69,7 +69,7 @@ public class FakeArmorStandImpl implements FakeArmorStand {
     }
 
     @Override
-    public Operation<Collection<GlobalPlayer<?>>> viewers() {
+    public Operation<Collection<User<?>>> viewers() {
         return Operation.executable(() -> observers);
     }
 
@@ -86,15 +86,15 @@ public class FakeArmorStandImpl implements FakeArmorStand {
         });
     }
 
-    private void spawn(GlobalPlayer<?> player) {
+    private void spawn(User<?> player) {
         send(serverPlayer(player), spawn());
     }
 
-    private void hide(GlobalPlayer<?> player) {
+    private void hide(User<?> player) {
         send(serverPlayer(player), Set.of(new ClientboundRemoveEntitiesPacket(armorStand.getId())));
     }
 
-    private void update(GlobalPlayer<?> player) {
+    private void update(User<?> player) {
         send(serverPlayer(player), Set.of(
                     new ClientboundSetEntityDataPacket(armorStand.getId(), armorStand.getEntityData().packDirty()),
                     new ClientboundTeleportEntityPacket(armorStand)
@@ -109,7 +109,7 @@ public class FakeArmorStandImpl implements FakeArmorStand {
         );
     }
 
-    private ServerPlayer serverPlayer(GlobalPlayer<?> player) {
+    private ServerPlayer serverPlayer(User<?> player) {
         return ((CraftPlayer) player.platformSpecificPlayer()).getHandle();
     }
 

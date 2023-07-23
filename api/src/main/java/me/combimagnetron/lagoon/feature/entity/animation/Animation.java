@@ -10,6 +10,7 @@ import me.combimagnetron.lagoon.feature.entity.model.ModelTemplate;
 import me.combimagnetron.lagoon.feature.entity.model.Timeline;
 import me.combimagnetron.lagoon.feature.entity.model.bone.Bone;
 import me.combimagnetron.lagoon.operation.Operation;
+import org.bukkit.Bukkit;
 import org.bukkit.util.EulerAngle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
@@ -51,28 +52,29 @@ public final class Animation implements Timeline.LifeCycle {
         this.loopDelay = loopDelay;
         this.animators = animators;
         Set<Animator> animatorSet = Arrays.stream(animators()).collect(Collectors.toCollection(LinkedHashSet::new));
+        Bukkit.getLogger().info(animatorSet.size() + " animators");
         for (Animator animator : animatorSet) {
             KeyFrame[] frames = animator.keyFrames();
             Set<KeyFrame> frameSet = Arrays.stream(frames).collect(Collectors.toCollection(LinkedHashSet::new));
             for (KeyFrame keyFrame : frameSet) {
                 long time = keyFrame.time();
                 if (keyFrame instanceof PositionKeyFrame positionKeyFrame) {
-                    positions.computeIfAbsent(animator.boneIdentifier(), k -> new LinkedList<>());
+                    positions.putIfAbsent(animator.boneIdentifier(), new LinkedList<>());
                     positions.get(animator.boneIdentifier()).add(Map.entry(time, positionKeyFrame.point()));
                 } else if (keyFrame instanceof RotationKeyFrame rotationKeyFrame) {
-                    rotations.computeIfAbsent(animator.boneIdentifier(), k -> new LinkedList<>());
+                    rotations.putIfAbsent(animator.boneIdentifier(), new LinkedList<>());
                     rotations.get(animator.boneIdentifier()).add(Map.entry(time, rotationKeyFrame.eulerAngle()));
                 } else if (keyFrame instanceof ScaleKeyFrame scaleKeyFrame) {
-                    scales.computeIfAbsent(animator.boneIdentifier(), k -> new LinkedList<>());
+                    scales.putIfAbsent(animator.boneIdentifier(), new LinkedList<>());
                     scales.get(animator.boneIdentifier()).add(Map.entry(time, scaleKeyFrame.scaleAxis()));
                 } else if (keyFrame instanceof ParticleKeyFrame particleKeyFrame) {
-                    effects.computeIfAbsent(time, k -> new LinkedList<>());
+                    effects.putIfAbsent(time, new LinkedList<>());
                     effects.get(time).add(particleKeyFrame.asEffect());
                 } else if (keyFrame instanceof SoundKeyFrame soundKeyFrame) {
-                    effects.computeIfAbsent(time, k -> new LinkedList<>());
+                    effects.putIfAbsent(time, new LinkedList<>());
                     effects.get(time).add(soundKeyFrame.asEffect());
                 } else if (keyFrame instanceof ScriptKeyFrame scriptKeyFrame) {
-                    effects.computeIfAbsent(time, k -> new LinkedList<>());
+                    effects.putIfAbsent(time, new LinkedList<>());
                     effects.get(time).add(scriptKeyFrame.asEffect());
                 }
             }
@@ -98,6 +100,7 @@ public final class Animation implements Timeline.LifeCycle {
             animators.add(animator);
         });
         Animator[] children = animators.toArray(new Animator[0]);
+        Bukkit.getLogger().info(children.length + " animators2 size");
         return new Animation(animationUuid, name, mode, override, length, snapping, selected, animTimeUpdate, blendWeight, startDelay, loopDelay, children);
     }
 

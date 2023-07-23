@@ -44,12 +44,6 @@ public class MessageRegistry {
     }
 
     public static void init() {
-        /*String callerClass = getCallerClass();
-        if (callerClass != null) {
-            String[] strings = callerClass.split("\\.");
-            if (!(strings.length < 3))
-                registerListeners(strings[0] + "." + strings[1] + "." + strings[2]);
-        }*/ //TODO Remove if the option below works as intended.
         registerListeners(StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().getPackageName());
     }
 

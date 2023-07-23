@@ -1,6 +1,6 @@
 package me.combimagnetron.lagoon.feature.remote;
 
-import me.combimagnetron.lagoon.Lagoon;
+import me.combimagnetron.lagoon.Comet;
 import me.combimagnetron.lagoon.communication.Message;
 import me.combimagnetron.lagoon.communication.MessageClient;
 import me.combimagnetron.lagoon.communication.MessageHandler;
@@ -19,7 +19,7 @@ import static me.combimagnetron.lagoon.operation.Operations.async;
 
 @MessageHandler
 public abstract class RemoteFeature implements Feature, MessageListener<Message>, Serializable, Service<StringStringParameter> {
-    private final MessageClient client = Lagoon.messageClient(MessageClient.Type.REDIS);
+    private final MessageClient client = Comet.messageClient(MessageClient.Type.REDIS);
     private final MessageChannel channel = async(client.channel(Identifier.of("remote-feature", identifier().key().string())));
     private final Platform platform;
     private final Set<? extends Message> messagesInUse;

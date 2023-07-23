@@ -35,7 +35,7 @@ public interface MessageClient {
     }
 
     enum Type {
-        REDIS, PULSAR
+        REDIS, PULSAR, NONE
     }
 
     @ConfigSerializable

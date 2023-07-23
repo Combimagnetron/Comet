@@ -1,24 +1,24 @@
 package me.combimagnetron.lagoon.communication.message.impl.proxybound;
 
 import me.combimagnetron.lagoon.instance.Instance;
-import me.combimagnetron.lagoon.player.GlobalPlayer;
+import me.combimagnetron.lagoon.user.User;
 import org.jetbrains.annotations.Nullable;
 
 public class ProxyBoundMovePlayerMessage extends ProxyBoundMessage {
-    private final GlobalPlayer<?> globalPlayer;
+    private final User<?> user;
     private final Instance to;
     private final Instance from;
 
     public ProxyBoundMovePlayerMessage(byte[] data) {
         super(data);
-        this.globalPlayer = null;
+        this.user = null;
         this.to = null;
         this.from = null;
     }
 
-    public ProxyBoundMovePlayerMessage(GlobalPlayer<?> globalPlayer, Instance to, Instance from) {
+    public ProxyBoundMovePlayerMessage(User<?> user, Instance to, Instance from) {
         super(0x00, to, from);
-        this.globalPlayer = globalPlayer;
+        this.user = user;
         this.to = to;
         this.from = from;
         write();
@@ -31,13 +31,13 @@ public class ProxyBoundMovePlayerMessage extends ProxyBoundMessage {
 
     @Override
     public void write() {
-        writeUUID(globalPlayer.uniqueIdentifier());
+        writeUUID(user.uniqueIdentifier());
         writeUUID(to.uniqueIdentifier());
         writeUUID(from.uniqueIdentifier());
     }
 
-    public GlobalPlayer<?> globalPlayer() {
-        return globalPlayer;
+    public User<?> globalPlayer() {
+        return user;
     }
 
     public Instance to() {

@@ -2,13 +2,17 @@ package me.combimagnetron.lagoon.feature.entity;
 
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.feature.Feature;
-import me.combimagnetron.lagoon.feature.entity.model.ModelTemplate;
 import me.combimagnetron.lagoon.feature.entity.parser.ModelParser;
-import me.combimagnetron.lagoon.feature.entity.parser.blockbench.BlockBenchParser;
 
 import java.io.File;
 
 public class EntityFeature implements Feature {
+    private final ExternalEntityFeatureComponent externalEntityFeatureComponent;
+
+    public EntityFeature(ExternalEntityFeatureComponent externalEntityFeatureComponent) {
+        this.externalEntityFeatureComponent = externalEntityFeatureComponent;
+    }
+
     @Override
     public Identifier identifier() {
         return Identifier.of("feature", "entity");
@@ -16,12 +20,9 @@ public class EntityFeature implements Feature {
 
     @Override
     public void start(StartUpArgument... startUpArguments) {
-        if (!(startUpArguments[0] instanceof FileStartUpArgument) && !(startUpArguments[1] instanceof ModelParserStartUpArgument)) {
+        if (!(startUpArguments[1] instanceof ModelParserStartUpArgument)) {
             return;
         }
-        ModelParser parser = switch (((ModelParserStartUpArgument) startUpArguments[1]).parser()) {
-            default -> BlockBenchParser.read(((FileStartUpArgument) startUpArguments[0]).file());
-        };
     }
 
     @Override

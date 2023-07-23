@@ -28,6 +28,10 @@ public interface Operation<V> {
         return this;
     }
 
+    default V async() {
+        return Operations.async(this);
+    }
+
     static Operation<Void> simple(SimpleOperationConsumer consumer) {
         return new SimpleOperation(consumer);
     }

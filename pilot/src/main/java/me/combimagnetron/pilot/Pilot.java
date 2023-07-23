@@ -4,14 +4,11 @@ import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1Deployment;
-import io.kubernetes.client.openapi.models.V1NodeList;
 import io.kubernetes.client.util.Config;
-import me.combimagnetron.lagoon.Lagoon;
 import me.combimagnetron.lagoon.communication.MessageClient;
 import me.combimagnetron.lagoon.communication.MessageRegistry;
 import me.combimagnetron.lagoon.communication.message.MessageChannel;
 import me.combimagnetron.lagoon.data.Identifier;
-import me.combimagnetron.lagoon.instance.Instance;
 import me.combimagnetron.lagoon.operation.Operation;
 import me.combimagnetron.lagoon.operation.Operations;
 import me.combimagnetron.lagoon.service.Action;
@@ -23,9 +20,8 @@ import org.kohsuke.github.GitHubBuilder;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.UUID;
 
-@AutoService(name = "pilot")
+@AutoService(name = "pilot", parameters = MessageClient.class)
 public class Pilot implements Service<StringStringParameter> {
     private static final GitHub GIT_HUB;
     private final MessageClient client;

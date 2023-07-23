@@ -6,7 +6,7 @@ public interface DataContainer {
 
     <T> Operation<DataObject<T, ?>> request(Identifier identifier);
 
-    <T> Operation<DataObject<T, ?>> add(Identifier identifier, T t);
+    <T> Operation<DataObject<T, ?>> add(Identifier identifier, DataObject<T, ?> object);
 
     Operation<Integer> size();
 

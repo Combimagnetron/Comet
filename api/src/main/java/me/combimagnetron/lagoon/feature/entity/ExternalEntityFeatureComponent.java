@@ -4,7 +4,7 @@ import me.combimagnetron.lagoon.feature.ExternalFeatureComponent;
 import me.combimagnetron.lagoon.feature.entity.model.ModelTemplate;
 import me.combimagnetron.lagoon.feature.entity.model.ModeledEntity;
 import me.combimagnetron.lagoon.operation.Operation;
-import me.combimagnetron.lagoon.player.GlobalPlayer;
+import me.combimagnetron.lagoon.user.User;
 import org.bukkit.entity.Entity;
 
 public abstract class ExternalEntityFeatureComponent extends ExternalFeatureComponent {
@@ -12,6 +12,6 @@ public abstract class ExternalEntityFeatureComponent extends ExternalFeatureComp
         super(feature, OutsourceReason.VERSION_DEPENDENT_IMPLEMENTATION);
     }
 
-    public abstract Operation<ModeledEntity> spawnModel(GlobalPlayer<?> player, ModelTemplate template, Entity baseEntity);
+    public abstract Operation<ModeledEntity> spawnModel(User<?> player, ModelTemplate template, Entity baseEntity);
 
 }

@@ -1,5 +1,6 @@
 package me.combimagnetron.lagoon.feature.entity.math;
 
+import org.bukkit.Location;
 import org.jetbrains.annotations.UnknownNullability;
 import org.joml.Vector3f;
 
@@ -17,6 +18,10 @@ public record Point(double x, double y, double z, double pitch, double yaw) {
     public static Point of(int[] ints) {
         if (ints.length != 3) return null;
         return new Point(ints[0], ints[1], ints[2], 0, 0);
+    }
+
+    public static Point from(Location location) {
+        return new Point(location.x(), location.y(), location.z(), 0, 0);
     }
 
     public Vector3f vector3f() {
