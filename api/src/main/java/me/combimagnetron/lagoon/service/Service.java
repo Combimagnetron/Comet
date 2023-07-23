@@ -16,4 +16,8 @@ public interface Service<P extends Parameter<?, ?>> {
 
     P config();
 
+    static <T extends Parameter<?, ?>> Service<T> deploy(Service<T> service) {
+        return null;
+    }
+
 }

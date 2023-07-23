@@ -7,10 +7,11 @@ import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceB
 @MessageHandler(filter = ServiceBoundRequestServiceStatusChangeMessage.class, channel = "service:pilot")
 public class ServiceStatusChangeMessageListener implements MessageListener<ServiceBoundRequestServiceStatusChangeMessage> {
     @Override
-    public void onSend(ServiceBoundRequestServiceStatusChangeMessage message) {}
+    public void send(ServiceBoundRequestServiceStatusChangeMessage message) {}
 
     @Override
-    public void onReceive(ServiceBoundRequestServiceStatusChangeMessage message) {
+    public void receive(ServiceBoundRequestServiceStatusChangeMessage message) {
+
     }
 
     @Override

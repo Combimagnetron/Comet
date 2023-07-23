@@ -5,9 +5,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
+import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.feature.entity.animation.Animation;
 import me.combimagnetron.lagoon.feature.entity.math.Point;
 import me.combimagnetron.lagoon.feature.entity.model.Cube;
+import me.combimagnetron.lagoon.feature.entity.model.ModelTemplate;
 import me.combimagnetron.lagoon.feature.entity.model.bone.Bone;
 import me.combimagnetron.lagoon.operation.Operation;
 import me.combimagnetron.lagoon.feature.entity.parser.ModelParser;
@@ -29,12 +31,28 @@ public class BlockBenchParser implements ModelParser {
 
     @Override
     public Operation<Collection<Bone>> bones() {
-        return null;
+        return Operation.executable(bones::values);
     }
 
     @Override
     public Operation<Collection<Animation>> animations() {
-        return null;
+        return Operation.executable(animations::values);
+    }
+
+    public TreeMap<UUID, Animation> animation() {
+        return animations;
+    }
+
+    public TreeMap<UUID, Bone> bone() {
+        return bones;
+    }
+    public Operation<ModelTemplate> template(Identifier identifier) {
+        return Operation.executable(() -> {
+            ModelTemplate modelTemplate = new ModelTemplate(identifier);
+            modelTemplate.animations().putAll(animations);
+            modelTemplate.bones().putAll(bones);
+            return modelTemplate;
+        });
     }
 
     protected BlockBenchParser(File file) throws FileNotFoundException {
@@ -104,7 +122,11 @@ public class BlockBenchParser implements ModelParser {
         TreeMap<UUID, Animation> animations = new TreeMap<>();
         this.jsonObject.get("animations").getAsJsonArray().forEach(element -> {
             Animation animation = Animation.fromJson(element, bones);
+            Bukkit.getLogger().info(animation.name());
             animations.put(animation.uuid(), animation);
+        });
+        animations.values().forEach(animation -> {
+            Bukkit.getLogger().info(animation.name());
         });
         this.animations.putAll(animations);
     }

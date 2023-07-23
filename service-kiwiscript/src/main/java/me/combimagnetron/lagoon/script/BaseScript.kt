@@ -1,6 +1,10 @@
 package me.combimagnetron.lagoon.script
 
+import me.combimagnetron.lagoon.Comet
+import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundRequestInstanceBlueprintsMessage
+import me.combimagnetron.lagoon.data.Identifier
 import me.combimagnetron.lagoon.event.Event
+import me.combimagnetron.lagoon.instance.InstanceBlueprint
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -9,9 +13,13 @@ import java.lang.IllegalArgumentException
 import java.nio.file.Path
 import java.util.*
 import kotlin.reflect.KClass
+import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 open class BaseScript {
     private val functionRegistry = FunctionRegistry()
+    val nil = Function.Type(null)
+    val text = Function.Type(String)
+    val number = Function.Type(0)
 
     fun test() : BaseScript {
         return script {
@@ -28,14 +36,28 @@ open class BaseScript {
                 reader = "EventScript.kt"
             }
 
+            "blueprint_block_impl" follows "blueprint_block"
+
             block {
                 "example_block" {
-                    "example" wants arguments(Argument(), Argument()) whenever conditions(Condition(), Condition()) returns nil does {
+                    public function "example" wants arguments(Argument(), Argument()) whenever conditions(Condition(), Condition()) returns nil does {
                         val text = text("a")
                         val num = number(text.length + 6)
                         returns(text + num)
                     }
                 }
+
+                blueprint block "blueprint_block" with {
+                    constant field "branch_name" stays Identifier.of("Cosmorise", "comet")
+
+                    guarded function "latest_version" wants arguments(Argument()) returns text does {
+                        val versionCollection = InstanceBlueprint.request(field("branch_name"))
+                        val blueprint = versionCollection.newest()
+                    }
+
+                    required function "required" returns text
+                }
+
             }
 
             event {
@@ -47,12 +69,12 @@ open class BaseScript {
             }
 
             function {
-                "another_example_function" wants arguments(Argument(), Argument()) whenever conditions(Condition(), Condition()) returns text does {
+                "another_example_function" wants arguments(TextArgument()) returns text does {
                     val entity = Bukkit.getWorld("world")?.getEntity(UUID.randomUUID())
                     entity?.customName(Component.text("aaaa"))
                     returns(text(entity?.customName))
                 }
-                "we_the_best_music" wants arguments(PlayerArgument(Bukkit.getOnlinePlayers().first()), TextArgument("a")) returns nil does {
+                "we_the_best_music" wants arguments(PlayerArgument(), TextArgument()) returns nil does {
                     function("another_example_function") with arguments(PlayerArgument(Bukkit.getOnlinePlayers().first()))
                     val player = arguments[0] as Player
                     val text = arguments[1] as String
@@ -63,27 +85,36 @@ open class BaseScript {
 
     }
 
+    infix fun String.follows(value: String) {
+
+    }
+
     class ExampleEvent : Event {
         override fun eventType(): Class<out Event> {
-            TODO("Not yet implemented")
+            return this.javaClass
         }
 
     }
 
-    class PlayerArgument(value : Player) : Argument()
+    class PlayerArgument() : Argument() {
+        constructor(value : Player?) : this()
+    }
 
-    class TextArgument(value : String) : Argument()
+    class TextArgument() : Argument() {
+        constructor(value : String) : this()
+    }
 
     class BukkitEvent(private var clazz : KClass<out org.bukkit.event.Event>) : Event {
+
         override fun eventType(): Class<out Event> {
-            return javaClass
+            return this.javaClass
         }
     }
 
     class InfoBuilder {
         var name : String = ""
         var author : String = ""
-        var reader : String = "default"
+        var reader : String = "BaseScript.kt"
     }
 
     class DependencyBuilder {
@@ -137,9 +168,6 @@ open class BaseScript {
         private val arguments: MutableList<Argument> = mutableListOf()
         private var returnType: Type = Type(Any())
         private lateinit var functioninfo: FunctionInfo
-        val nil = Type(null)
-        val text = Type(String)
-        val number = Type(0)
 
         infix fun Any?.returns(value: Type) {
             returnType = value
@@ -184,22 +212,102 @@ open class BaseScript {
 
     class BlockRegistryBuilder {
         val function = Function.FunctionIdentifierDirty()
+        val blueprint = BlueprintDummy()
 
         operator fun String.invoke(initializer: Block.() -> Unit) : Block {
             return Block().apply(initializer)
         }
 
-        open class Block : Function()
+        infix fun Any?.with(value : BlueprintBlock.() -> Unit) : BlueprintBlock {
+            return BlueprintBlock().apply(value)
+        }
+
+        infix fun BlueprintDummy.block(value : Any?) : Any? {
+            return null
+        }
+
+        open class Block : Function() {
+            var fields : MutableMap<String, Any> = mutableMapOf();
+            var public = Blueprint.TypeAccessLevel.PublicTypeAccessLevel()
+            var guarded = Blueprint.TypeAccessLevel.GuardedTypeAccessLevel()
+            var required = Blueprint.TypeAccessLevel.RequiredTypeAccessLevel()
+            var constant = Blueprint.Constant()
+            var requiredDummy = RequiredDummy()
+
+            fun <T> field(value : String) : T {
+                return fields.get(value)!! as T
+            }
+
+            infix fun Blueprint.TypeAccessLevel.function(value: String) : String {
+                return String()
+            }
+
+            infix fun String.invoke(initializer: Function.() -> Unit) : Function {
+                return Function().apply(initializer)
+            }
+
+            infix fun Blueprint.TypeAccessLevel.RequiredTypeAccessLevel.function(value : String) : RequiredDummy {
+                return requiredDummy
+            }
+
+            infix fun RequiredDummy.returns(value : Function.Type) {
+
+            }
+
+            infix fun Blueprint.Constant.field(value : String) : ConstantDummy {
+                return ConstantDummy(value)
+            }
+
+            infix fun ConstantDummy.stays(value : Any) {
+                fields.put(this.value, value)
+            }
+
+            class RequiredDummy
+
+            class ConstantDummy(var value : String)
+
+        }
+
+        class BlueprintDummy {
+
+        }
+
+        class Blueprint {
+
+            open class TypeAccessLevel {
+                class PublicTypeAccessLevel : TypeAccessLevel()
+                class GuardedTypeAccessLevel : TypeAccessLevel()
+                class RequiredTypeAccessLevel : TypeAccessLevel()
+            }
+
+            class Constant
+        }
+
+        class BlueprintBlock : Block() {
+
+
+
+        }
+
     }
+
 
     class FunctionRegistryBuilder : Function()
 
     class FunctionInfo(var author: String, var projectName: String)
 
-    class FunctionRegistry {
-        private var functions: MutableList<Function> = mutableListOf()
+    class FunctionRegistry : Registry<Function>() {
 
 
+
+    }
+
+    class BlueprintRegistry : Registry<BlockRegistryBuilder.Blueprint>() {
+
+    }
+
+    abstract class Registry<T>() {
+        private var collection: MutableCollection<T> = mutableSetOf();
 
     }
 

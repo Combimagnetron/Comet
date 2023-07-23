@@ -3,17 +3,18 @@ package me.combimagnetron.lagoon.service.config;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.nio.file.Path;
 
-public abstract class Parameter<V, T> {
-    abstract V first();
+public interface Parameter<V, T> {
+    V first();
 
-    abstract T second();
+    T second();
 
-    abstract V first(V v);
+    void first(V v);
 
-    abstract T second(T t);
+    void second(T t);
 
-    abstract @Nullable File location();
+    @Nullable Path location();
 
 
 

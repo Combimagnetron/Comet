@@ -1,13 +1,15 @@
 package me.combimagnetron.lagoon.feature.entity;
 
-import me.combimagnetron.lagoon.feature.entity.EntityFeature;
-import me.combimagnetron.lagoon.feature.entity.ExternalEntityFeatureComponent;
+import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.feature.entity.model.ModelTemplate;
 import me.combimagnetron.lagoon.feature.entity.model.ModeledEntity;
 import me.combimagnetron.lagoon.feature.entity.model.ModeledEntityImpl;
 import me.combimagnetron.lagoon.operation.Operation;
-import me.combimagnetron.lagoon.player.GlobalPlayer;
+import me.combimagnetron.lagoon.service.Action;
+import me.combimagnetron.lagoon.user.User;
 import org.bukkit.entity.Entity;
+
+import java.util.Set;
 
 public class ExternalEntityFeatureComponentImpl extends ExternalEntityFeatureComponent {
     public ExternalEntityFeatureComponentImpl(EntityFeature feature) {
@@ -15,7 +17,27 @@ public class ExternalEntityFeatureComponentImpl extends ExternalEntityFeatureCom
     }
 
     @Override
-    public Operation<ModeledEntity> spawnModel(GlobalPlayer<?> player, ModelTemplate template, Entity baseEntity) {
+    public Operation<ModeledEntity> spawnModel(User<?> player, ModelTemplate template, Entity baseEntity) {
         return Operation.executable(() -> new ModeledEntityImpl(template, baseEntity));
+    }
+
+    @Override
+    public Identifier identifier() {
+        return null;
+    }
+
+    @Override
+    public Operation<Void> restart() {
+        return null;
+    }
+
+    @Override
+    public Set<Class<? extends Action<?, ?>>> actions() {
+        return null;
+    }
+
+    @Override
+    public FeatureOutsourceReasonParameter config() {
+        return null;
     }
 }

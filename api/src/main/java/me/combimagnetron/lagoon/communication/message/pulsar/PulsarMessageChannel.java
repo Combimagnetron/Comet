@@ -56,7 +56,12 @@ public class PulsarMessageChannel extends Thread implements MessageChannel {
     }
 
     @Override
-    public Operation<Collection<MessageRecipient>> receipients() {
+    public Operation<Collection<MessageRecipient>> recipients() {
+        return null;
+    }
+
+    @Override
+    public Operation<Void> awaitMessage(Class<? extends Message> type, java.util.function.Consumer<Message> execute) {
         return null;
     }
 }

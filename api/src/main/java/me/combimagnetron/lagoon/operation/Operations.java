@@ -1,6 +1,7 @@
 package me.combimagnetron.lagoon.operation;
 
 import me.combimagnetron.lagoon.feature.entity.Duration;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -9,8 +10,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("unchecked")
 public class Operations {
-    private static final ScheduledExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
-    private static final String PLUGIN_NAME = "Anubis";
+    private static final ScheduledExecutorService EXECUTOR_SERVICE = Executors.newScheduledThreadPool(4);
+    private static final String PLUGIN_NAME = "Lagoon";
 
     @UnknownNullability
     public static <T> T async(Operation<T> operation) {
@@ -31,15 +32,23 @@ public class Operations {
     public static <T> T sync(Operation<T> operation) {
         if (operation == null) return null;
         AtomicReference<T> t = new AtomicReference<>();
-        /*Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin(PLUGIN_NAME), () -> {
+        Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin(PLUGIN_NAME), () -> {
             t.set(operation.complete());
-            operation.chained().forEach(Operations::sync);
-        });*/
+            //operation.chained().forEach(Operations::sync);
+        });
         return t.get();
     }
 
     public static <T> Routine asyncRepeating(Operation<T> operation, long delay, long interval, TimeUnit unit) {
         return new Routine(EXECUTOR_SERVICE.scheduleAtFixedRate(() -> async(operation), delay, interval, unit));
+    }
+
+    public static <T> void asyncRepeating(Operation<T> operation, Duration duration) {
+        try {
+            EXECUTOR_SERVICE.scheduleAtFixedRate(operation::complete, 0L, duration.time(), duration.unit()).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static <T> T asyncDelayed(Operation<T> operation, Duration duration) {

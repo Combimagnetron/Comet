@@ -15,7 +15,7 @@ public interface ModeledEntity {
 
     Identifier identifier();
 
-    me.combimagnetron.lagoon.feature.entity.model.Timeline timeline();
+    Timeline timeline();
 
     Collection<Bone> bones();
 
@@ -23,7 +23,7 @@ public interface ModeledEntity {
 
     Animation fallback();
 
-    me.combimagnetron.lagoon.feature.entity.model.ModelTemplate template();
+    ModelTemplate template();
 
     Operation<Void> teleport(Point point);
 
@@ -39,6 +39,6 @@ public interface ModeledEntity {
 
     Operation<Point> position();
 
-    Operation<Void> tick();
+    Operation<Boolean> tick();
 
 }
