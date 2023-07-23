@@ -3,11 +3,14 @@ package me.combimagnetron.lagoon.feature.entity;
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.feature.Feature;
 import me.combimagnetron.lagoon.feature.entity.parser.ModelParser;
+import me.combimagnetron.lagoon.file.Folder;
 
 import java.io.File;
 
 public class EntityFeature implements Feature {
+    private final Folder folder = Folder.empty("entity-feature");
     private final ExternalEntityFeatureComponent externalEntityFeatureComponent;
+
 
     public EntityFeature(ExternalEntityFeatureComponent externalEntityFeatureComponent) {
         this.externalEntityFeatureComponent = externalEntityFeatureComponent;
@@ -30,21 +33,9 @@ public class EntityFeature implements Feature {
 
     }
 
-    public static class FileStartUpArgument implements StartUpArgument {
-        private final File file;
-
-        protected FileStartUpArgument(File file) {
-            this.file = file;
-        }
-
-        public File file() {
-            return file;
-        }
-
-        public static FileStartUpArgument argument(File file) {
-            return new FileStartUpArgument(file);
-        }
-
+    @Override
+    public Folder folder() {
+        return folder;
     }
 
     public static class ModelParserStartUpArgument implements StartUpArgument {
