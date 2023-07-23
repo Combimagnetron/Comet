@@ -1,8 +1,8 @@
 package me.combimagnetron.lagoon.feature.entity.model;
 
+import me.combimagnetron.lagoon.Comet;
 import me.combimagnetron.lagoon.data.Identifier;
-import me.combimagnetron.lagoon.feature.entity.FakeEntityGroupImpl;
-import me.combimagnetron.lagoon.feature.entity.FakeItemDisplayImpl;
+import me.combimagnetron.lagoon.feature.entity.Duration;
 import me.combimagnetron.lagoon.feature.entity.animation.Animation;
 import me.combimagnetron.lagoon.feature.entity.animation.keyframe.KeyFrame;
 import me.combimagnetron.lagoon.feature.entity.animation.keyframe.PositionKeyFrame;
@@ -16,7 +16,11 @@ import me.combimagnetron.lagoon.feature.entity.model.bone.Bone;
 import me.combimagnetron.lagoon.feature.entity.model.bone.HeadBone;
 import me.combimagnetron.lagoon.feature.entity.model.bone.MountBone;
 import me.combimagnetron.lagoon.operation.Operation;
-import me.combimagnetron.lagoon.player.GlobalPlayer;
+import me.combimagnetron.lagoon.operation.Operations;
+import me.combimagnetron.lagoon.shared.FakeEntityGroupImpl;
+import me.combimagnetron.lagoon.shared.FakeItemDisplayImpl;
+import me.combimagnetron.lagoon.user.User;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
@@ -26,15 +30,16 @@ import org.bukkit.util.EulerAngle;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static me.combimagnetron.lagoon.operation.Operations.async;
 
 
 public class ModeledEntityImpl implements ModeledEntity {
-    private final Set<GlobalPlayer<?>> observers = new HashSet<>();
+    private final Set<User<?>> observers = new HashSet<>();
     private final Map<Bone, FakeEntity> bones = new LinkedHashMap<>();
+    private final TimelineImpl timeline = new TimelineImpl(this);
     private final FakeEntityGroup group;
-    private final Timeline timeline = new TimelineImpl(this);
     private final Identifier identifier;
     private final ModelTemplate modelTemplate;
     private final Entity baseEntity;
@@ -45,17 +50,27 @@ public class ModeledEntityImpl implements ModeledEntity {
         this.identifier = modelTemplate.identifier();
         this.modelTemplate = modelTemplate;
         this.baseEntity = baseEntity;
+        this.world = baseEntity.getWorld();
+        this.position = Point.of(baseEntity.getLocation().x(), baseEntity.getLocation().y(), baseEntity.getLocation().z());
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            observers.add(Comet.userByUniqueId(player.getUniqueId()));
+        });
         constructBones();
         this.group = FakeEntityGroupImpl.create(bones);
+        Bukkit.getLogger().info("baa");
+        timeline.animation(modelTemplate.animations().values().stream().findAny().orElseThrow());
+        Operations.asyncRepeating(this.tick(), Duration.of(50L, TimeUnit.MILLISECONDS));
     }
 
     private void constructBones() {
+        Bukkit.getLogger().info("bones: " + modelTemplate.bones().size());
         Collection<Bone> boneSet = modelTemplate.bones().values();
         boneSet.forEach(bone -> {
-            FakeItemDisplayImpl itemDisplay = new FakeItemDisplayImpl(bone.rotation(), world);
+            FakeEntity itemDisplay = new FakeItemDisplayImpl(position, bone.rotation(), world); //new FakeItemDisplayImpl(bone.rotation(), world);
+            itemDisplay.show(observers).async();
             bones.put(bone, itemDisplay);
         });
-        baseEntity.getPersistentDataContainer().set(new NamespacedKey("we", "model"), PersistentDataType.STRING, identifier.string());
+        baseEntity.getPersistentDataContainer().set(new NamespacedKey("comet", "model"), PersistentDataType.STRING, identifier.string());
     }
 
     @Override
@@ -75,12 +90,12 @@ public class ModeledEntityImpl implements ModeledEntity {
 
     @Override
     public Bone bone(String name) {
-        return modelTemplate.bones().get(name);
+        return modelTemplate.bones().values().stream().filter(bone -> bone.name().equals(name)).findFirst().orElseThrow();
     }
 
     @Override
     public Animation fallback() {
-        return null;
+        return modelTemplate.animations().values().stream().findAny().orElseThrow();
     }
 
     @Override
@@ -117,14 +132,14 @@ public class ModeledEntityImpl implements ModeledEntity {
 
     @Override
     public Operation<Point> position() {
-        return null;
+        return Operation.executable(() -> position);
     }
 
     @Override
-    public Operation<Void> tick() {
-        return Operation.simple(() -> {
+    public Operation<Boolean> tick() {
+        return Operation.executable(() -> {
             Animation animation = ((TimelineImpl) timeline).currentlyPlaying() == null ? ((TimelineImpl) timeline).currentlyPlaying() : fallback();
-            if (animation == null) return;
+            if (animation == null) return false;
             async(animation.tick());
             bones.forEach((bone, fakeEntity) -> {
                 Point updated = animation.posAt(bone.name(), animation.currentTick());
@@ -135,6 +150,7 @@ public class ModeledEntityImpl implements ModeledEntity {
                 }
             });
             observers.forEach(observer -> async(group.update(observer)));
+            return true;
         });
     }
 

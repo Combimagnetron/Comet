@@ -12,7 +12,7 @@ public interface Instance {
 
     void restart();
 
-    int playerCount();
+    int userCount();
 
     Platform platform();
 
