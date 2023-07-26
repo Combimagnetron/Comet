@@ -2,7 +2,7 @@ plugins {
     id("java")
 }
 
-group = "org.example"
+group = "me.combimagnetron"
 version = "1.0-SNAPSHOT"
 
 dependencies {
@@ -18,5 +18,8 @@ dependencies {
     implementation("org.joml:joml:1.10.5")
     implementation("org.jetbrains:annotations:24.0.0")
     implementation("org.apache.pulsar:pulsar-client:3.0.0")
+    implementation("io.github.jglrxavpok.hephaistos:common:2.5.3")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.8.21")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.21")
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
 }
