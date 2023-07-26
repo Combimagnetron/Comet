@@ -1,31 +1,25 @@
 package me.combimagnetron.lagoon.command;
 
 import me.combimagnetron.lagoon.Comet;
-import me.combimagnetron.lagoon.command.annotations.Command;
-import me.combimagnetron.lagoon.command.annotations.Execute;
-import me.combimagnetron.lagoon.command.annotations.Requires;
-import me.combimagnetron.lagoon.command.annotations.SubCommand;
-import me.combimagnetron.lagoon.command.argument.impl.StringArgument;
+import me.combimagnetron.lagoon.command.annotations.*;
 import me.combimagnetron.lagoon.feature.entity.generator.EntityModelGenerator;
 import me.combimagnetron.lagoon.feature.entity.parser.blockbench.BlockBenchModel;
 import me.combimagnetron.lagoon.user.User;
 
-import java.nio.file.Path;
-
 @Command(command = "c")
 public class AdminCommand {
+    private static final String[] suggestions = Comet.onlineUsers().stream().map(User::username).toList().toArray(new String[]{});
 
     @Execute
-    public void execute(User<?> user, StringArgument stringArgument) {
-        BlockBenchModel model = BlockBenchModel.read(Path.of(Comet.javaPlugin().getDataFolder().getPath(), "frog.bbmodel"));
-        new EntityModelGenerator().generate(model);
+    public void execute(User<?> user) {
+
     }
 
-    @SubCommand(command = "test")
+    @SubCommand(command = "model")
     @Requires(condition = "user.group.weight >= 6")
-    public void subCommand(User<?> user, StringArgument stringArgument) {
-
+    public void subCommand(User<?> user, String string) {
+        BlockBenchModel model = BlockBenchModel.read(Comet.dataFolder().resolve(string));
+        EntityModelGenerator.generate(model);
     }
-
 
 }

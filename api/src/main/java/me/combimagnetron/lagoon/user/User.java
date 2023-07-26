@@ -11,6 +11,8 @@ public interface User<T extends Audience> {
 
      T platformSpecificPlayer();
 
+     String username();
+
      void message(Component component);
 
      Instance instance();
