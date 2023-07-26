@@ -1,7 +1,5 @@
 package me.combimagnetron.lagoon.script
 
-import me.combimagnetron.lagoon.Comet
-import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundRequestInstanceBlueprintsMessage
 import me.combimagnetron.lagoon.data.Identifier
 import me.combimagnetron.lagoon.event.Event
 import me.combimagnetron.lagoon.instance.InstanceBlueprint
@@ -9,11 +7,9 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerMoveEvent
-import java.lang.IllegalArgumentException
 import java.nio.file.Path
 import java.util.*
 import kotlin.reflect.KClass
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 open class BaseScript {
     private val functionRegistry = FunctionRegistry()
