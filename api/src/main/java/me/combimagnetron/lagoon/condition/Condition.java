@@ -14,7 +14,7 @@ public interface Condition {
             return new Result(value);
         }
     }
-    
+
     static <T> Condition of(String condition) {
         try {
             return new SimpleCondition(condition);
