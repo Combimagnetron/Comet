@@ -7,6 +7,7 @@ import me.combimagnetron.lagoon.instance.Instance;
 import me.combimagnetron.lagoon.user.User;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -18,6 +19,10 @@ public class Comet {
             throw new RuntimeException("Can't initialize the Server singleton twice!");
         }
         Comet.server = server;
+    }
+
+    public static Path dataFolder() {
+        return Path.of(javaPlugin().getDataFolder().getPath());
     }
 
     public static User<?> userByUniqueId(UUID uuid) {
