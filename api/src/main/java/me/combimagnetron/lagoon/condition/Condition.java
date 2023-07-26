@@ -14,12 +14,7 @@ public interface Condition {
             return new Result(value);
         }
     }
-
-    default void a() {
-        Condition condition = Condition.of("user.uuid == 7320ba28-1d76-43aa-a72e-9649af484f1d");
-        Result result = condition.eval(Supplier.of(Comet.userByUniqueId(UUID.fromString("7320ba28-1d76-43aa-a72e-9649af484f1d"))));
-    }
-
+    
     static <T> Condition of(String condition) {
         try {
             return new SimpleCondition(condition);
