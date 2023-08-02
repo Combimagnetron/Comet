@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 public interface Argument<T> {
     Argument<Integer> INTEGER = of(Integer::parseInt);
-    Argument<User<?>> USER = of(string -> Comet.onlineUsers().stream().filter(user -> Objects.equals(user.username(), string)).findAny().get());
+    Argument<User<?>> USER = of(string -> Comet.onlineUsers().stream().filter(user -> Objects.equals(user.name(), string)).findAny().get());
     Argument<Double> DOUBLE = of(Double::parseDouble);
     Argument<String> STRING = of(string -> string);
 
