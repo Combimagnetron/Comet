@@ -1,13 +1,14 @@
 package me.combimagnetron.lagoon.condition;
 
-import me.combimagnetron.lagoon.Comet;
-
 import java.lang.reflect.Method;
-import java.util.UUID;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public interface Condition {
 
-    Result eval(Supplier<?> value);
+    Result eval(Supplier<?>... value);
 
     record Result(boolean value) {
         public static Result of(boolean value, String reason) {
@@ -17,6 +18,9 @@ public interface Condition {
 
     static <T> Condition of(String condition) {
         try {
+            if (condition.contains(" && ")) {
+                return new ComplexCondition(condition);
+            }
             return new SimpleCondition(condition);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
@@ -42,9 +46,9 @@ public interface Condition {
             return String.join("", parts) + " " + operator.operator() + " " + evalSplit[1];
         }
 
-        Method findMethod(Supplier<?> value) throws NoSuchMethodException {
+        Method findMethod(Supplier<?>... value) throws NoSuchMethodException {
             String[] path = condition.split(operator.operatorWithSpaces())[0].split("\\(\\)\\.");
-            String variableName = value.value().getClass().getName().toLowerCase();
+            String variableName = value[0].value().getClass().getName().toLowerCase();
             if (!path[0].equals(variableName)) {
                 return null;
             }
@@ -54,7 +58,7 @@ public interface Condition {
                     continue;
                 }
                 if (lastMethod == null) {
-                    lastMethod = value.value().getClass().getDeclaredMethod(s);
+                    lastMethod = value[0].value().getClass().getDeclaredMethod(s);
                 }
                 lastMethod = lastMethod.getClass().getDeclaredMethod(s);
             }
@@ -62,15 +66,48 @@ public interface Condition {
         }
 
         @Override
-        public Condition.Result eval(Supplier<?> value) {
+        public Condition.Result eval(Supplier<?>... value) {
             try {
                 this.method = findMethod(value);
                 ConditionTypeAdapter<?> typeAdapter = ConditionTypeAdapter.find(this.method.getReturnType());
                 Object object = typeAdapter.get().apply(condition.split(operator.operatorWithSpaces())[1]);
-                return operator.eval(this.method.invoke(value.value()), object);
+                return operator.eval(this.method.invoke(value[0].value()), object);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    class ComplexCondition implements Condition {
+        private final Collection<SimpleCondition> simpleConditions = new HashSet<>();
+        private final int amount;
+
+
+        ComplexCondition(String condition) throws ReflectiveOperationException {
+            String[] conditions = condition.split(" && ");
+            this.amount = conditions.length;
+            for (String c : conditions) {
+                simpleConditions.add(new SimpleCondition(c));
+            }
+        }
+
+        @Override
+        public Condition.Result eval(Supplier<?>... value) {
+            if (value.length > amount) {
+                return null;
+            }
+            Set<Boolean> result = new LinkedHashSet<>();
+            int i = 0;
+            for (Condition condition : simpleConditions) {
+                result.add(condition.eval(value[i]).value());
+                i++;
+            }
+            for (boolean bool : result) {
+                if (!bool) {
+                    return Result.of(false, "");
+                }
+            }
+            return Result.of(true, "All conditions passed.");
         }
     }
 
