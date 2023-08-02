@@ -10,7 +10,7 @@ public record Supplier<T>(T value) {
     }
 
     public static Supplier<?>[] of(Object... values) {
-        return Arrays.stream(values).map(Supplier::of).collect(Collectors.toUnmodifiableSet()).toArray(new Supplier[0]);
+        return Arrays.stream(values).map(Supplier::of).collect(Collectors.toUnmodifiableSet()).toArray(Supplier[]::new);
     }
 
 }
