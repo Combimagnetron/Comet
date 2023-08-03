@@ -37,7 +37,7 @@ public interface Condition {
             this.condition = adaptString(condition);
         }
 
-        String adaptString(String string) {
+        private String adaptString(String string) {
             if (string.contains("().")) {
                 return string;
             }
@@ -46,7 +46,7 @@ public interface Condition {
             return String.join("", parts) + " " + operator.operator() + " " + evalSplit[1];
         }
 
-        Method findMethod(Supplier<?>... value) throws NoSuchMethodException {
+        private Method findMethod(Supplier<?>... value) throws NoSuchMethodException {
             String[] path = condition.split(operator.operatorWithSpaces())[0].split("\\(\\)\\.");
             String variableName = value[0].value().getClass().getName().toLowerCase();
             if (!path[0].equals(variableName)) {
