@@ -1,19 +1,19 @@
 package me.combimagnetron.lagoon.world;
 
 
+import org.bukkit.generator.ChunkGenerator;
 import org.jetbrains.annotations.Nullable;
 import org.jglrxavpok.hephaistos.nbt.NBTCompound;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * A Java type representing the latest version of the chunk format.
  */
-public record PolarChunk(
+public record MeridianChunk(
         int x,
         int z,
-        PolarSection[] sections,
+        MeridianSection[] sections,
         Collection<BlockEntity> blockEntities,
         byte[][] heightmaps,
         byte[] userData

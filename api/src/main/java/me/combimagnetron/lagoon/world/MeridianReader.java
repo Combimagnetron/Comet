@@ -9,19 +9,19 @@ import org.jglrxavpok.hephaistos.nbt.*;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class PolarReader {
-    private PolarReader() {}
+public class MeridianReader {
+    private MeridianReader() {}
 
-    public static @NotNull PolarWorld read(byte @NotNull [] data) {
+    public static @NotNull MeridianWorld read(byte @NotNull [] data) {
         ByteBuffer buffer = new ByteBuffer();
         buffer.read(data);
         var magicNumber = buffer.readInt();
-        assertThat(magicNumber == PolarWorld.MAGIC_NUMBER, "Invalid magic number");
+        assertThat(magicNumber == MeridianWorld.MAGIC_NUMBER, "Invalid magic number");
 
         short version = buffer.readShort();
         validateVersion(version);
 
-        PolarWorld.CompressionType compression = PolarWorld.CompressionType.fromId(buffer.readByte());
+        MeridianWorld.CompressionType compression = MeridianWorld.CompressionType.fromId(buffer.readByte());
         assertThat(compression != null, "Invalid compression type");
         int compressedDataLength = buffer.readVarInt();
 
@@ -33,24 +33,24 @@ public class PolarReader {
 
         var chunks = buffer.readCollection(b -> readChunk(version, b, maxSection - minSection + 1));
 
-        return new PolarWorld(version, compression, minSection, maxSection, chunks);
+        return new MeridianWorld(version, compression, minSection, maxSection, chunks);
     }
 
-    private static @NotNull PolarChunk readChunk(short version, ByteBuffer buffer, int sectionCount) {
+    private static @NotNull MeridianChunk readChunk(short version, ByteBuffer buffer, int sectionCount) {
         int chunkX = buffer.readVarInt();
         int chunkZ = buffer.readVarInt();
 
-        PolarSection[] sections = new PolarSection[sectionCount];
+        MeridianSection[] sections = new MeridianSection[sectionCount];
         for (int i = 0; i < sectionCount; i++) {
             sections[i] = readSection(version, buffer);
         }
 
         var blockEntities = buffer.readCollection(b -> readBlockEntity(version, b));
 
-        var heightmaps = new byte[PolarChunk.HEIGHTMAP_BYTE_SIZE][PolarChunk.HEIGHTMAPS.length];
+        var heightmaps = new byte[MeridianChunk.HEIGHTMAP_BYTE_SIZE][MeridianChunk.HEIGHTMAPS.length];
         int heightmapMask = buffer.readInt();
-        for (int i = 0; i < PolarChunk.HEIGHTMAPS.length; i++) {
-            if ((heightmapMask & PolarChunk.HEIGHTMAPS[i]) == 0)
+        for (int i = 0; i < MeridianChunk.HEIGHTMAPS.length; i++) {
+            if ((heightmapMask & MeridianChunk.HEIGHTMAPS[i]) == 0)
                 continue;
 
             heightmaps[i] = buffer.readByteArray(32);
@@ -58,10 +58,10 @@ public class PolarReader {
 
         // Objects
         byte[] userData = new byte[0];
-        if (version > PolarWorld.VERSION_USERDATA_OPT_BLOCK_ENT_NBT)
+        if (version > MeridianWorld.VERSION_USERDATA_OPT_BLOCK_ENT_NBT)
             userData = buffer.readByteArray();
 
-        return new PolarChunk(
+        return new MeridianChunk(
                 chunkX, chunkZ,
                 sections,
                 blockEntities,
@@ -70,33 +70,33 @@ public class PolarReader {
         );
     }
 
-    private static @NotNull PolarSection readSection(short version, @NotNull ByteBuffer buffer) {
+    private static @NotNull MeridianSection readSection(short version, @NotNull ByteBuffer buffer) {
         // If section is empty exit immediately
-        if (buffer.readBoolean()) return new PolarSection();
+        if (buffer.readBoolean()) return new MeridianSection();
 
         var blockPalette = buffer.readCollection(ByteBuffer::readString).toArray(String[]::new);
         int[] blockData = null;
         if (blockPalette.length > 1) {
-            blockData = new int[PolarSection.BLOCK_PALETTE_SIZE];
+            blockData = new int[MeridianSection.BLOCK_PALETTE_SIZE];
 
             var rawBlockData = buffer.readCollection(ByteBuffer::readLong).toArray(Long[]::new);
-            var bitsPerEntry = rawBlockData.length * 64 / PolarSection.BLOCK_PALETTE_SIZE;
+            var bitsPerEntry = rawBlockData.length * 64 / MeridianSection.BLOCK_PALETTE_SIZE;
             PaletteUtil.unpack(blockData, rawBlockData, bitsPerEntry);
         }
 
         var biomePalette = buffer.readCollection(ByteBuffer::readString).toArray(String[]::new);
         int[] biomeData = null;
         if (biomePalette.length > 1) {
-            biomeData = new int[PolarSection.BIOME_PALETTE_SIZE];
+            biomeData = new int[MeridianSection.BIOME_PALETTE_SIZE];
 
             var rawBiomeData = buffer.readCollection(ByteBuffer::readLong).toArray(Long[]::new);
-            var bitsPerEntry = rawBiomeData.length * 64 / PolarSection.BIOME_PALETTE_SIZE;
+            var bitsPerEntry = rawBiomeData.length * 64 / MeridianSection.BIOME_PALETTE_SIZE;
             PaletteUtil.unpack(biomeData, rawBiomeData, bitsPerEntry);
         }
 
         byte[] blockLight = null, skyLight = null;
 
-        if (version > PolarWorld.VERSION_UNIFIED_LIGHT) {
+        if (version > MeridianWorld.VERSION_UNIFIED_LIGHT) {
             if (buffer.readBoolean())
                 blockLight = buffer.readByteArray(2048);
             if (buffer.readBoolean())
@@ -106,18 +106,18 @@ public class PolarReader {
             skyLight = buffer.readByteArray(2048);
         }
 
-        return new PolarSection(blockPalette, blockData, biomePalette, biomeData, blockLight, skyLight);
+        return new MeridianSection(blockPalette, blockData, biomePalette, biomeData, blockLight, skyLight);
     }
 
-    private static @NotNull PolarChunk.BlockEntity readBlockEntity(int version, @NotNull ByteBuffer buffer) {
+    private static @NotNull MeridianChunk.BlockEntity readBlockEntity(int version, @NotNull ByteBuffer buffer) {
         int posIndex = buffer.readInt();
         var id = buffer.readBoolean() ? buffer.readString() : null;
 
         NBTCompound nbt = null;
-        if (version <= PolarWorld.VERSION_USERDATA_OPT_BLOCK_ENT_NBT || buffer.readBoolean())
+        if (version <= MeridianWorld.VERSION_USERDATA_OPT_BLOCK_ENT_NBT || buffer.readBoolean())
             nbt = (NBTCompound) readNbt(buffer);
 
-        return new PolarChunk.BlockEntity(
+        return new MeridianChunk.BlockEntity(
                 ChunkUtils.blockIndexToChunkPositionX(posIndex),
                 ChunkUtils.blockIndexToChunkPositionY(posIndex),
                 ChunkUtils.blockIndexToChunkPositionZ(posIndex),
@@ -149,11 +149,11 @@ public class PolarReader {
 
     private static void validateVersion(int version) {
         var invalidVersionError = String.format("Unsupported Polar version. Up to %d is supported, found %d.",
-                PolarWorld.LATEST_VERSION, version);
-        assertThat(version <= PolarWorld.LATEST_VERSION, invalidVersionError);
+                MeridianWorld.LATEST_VERSION, version);
+        assertThat(version <= MeridianWorld.LATEST_VERSION, invalidVersionError);
     }
 
-    private static @NotNull ByteBuffer decompressBuffer(@NotNull ByteBuffer buffer, @NotNull PolarWorld.CompressionType compression, int length) {
+    private static @NotNull ByteBuffer decompressBuffer(@NotNull ByteBuffer buffer, @NotNull MeridianWorld.CompressionType compression, int length) {
         return switch (compression) {
             case NONE -> buffer;
             case ZSTD -> {

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  * This class should be considered immutable.
  */
 @ApiStatus.Internal
-public class PolarSection {
+public class MeridianSection {
     public static final int BLOCK_PALETTE_SIZE = 4096;
     public static final int BIOME_PALETTE_SIZE = 64;
 
@@ -27,7 +27,7 @@ public class PolarSection {
     private final byte @Nullable [] blockLight;
     private final byte @Nullable [] skyLight;
 
-    public PolarSection() {
+    public MeridianSection() {
         this.empty = true;
 
         this.blockPalette = new String[]{"minecraft:air"};
@@ -39,7 +39,7 @@ public class PolarSection {
         this.skyLight = null;
     }
 
-    public PolarSection(
+    public MeridianSection(
             String @NotNull [] blockPalette, int @Nullable [] blockData,
             String @NotNull [] biomePalette, int @Nullable [] biomeData,
             byte @Nullable [] blockLight, byte @Nullable [] skyLight

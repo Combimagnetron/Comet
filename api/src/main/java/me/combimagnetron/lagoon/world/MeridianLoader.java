@@ -26,11 +26,11 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @SuppressWarnings("UnstableApiUsage")
-public class PolarLoader implements IChunkLoader {
+public class MeridianLoader implements IChunkLoader {
     private static final BlockManager BLOCK_MANAGER = MinecraftServer.getBlockManager();
     private static final BiomeManager BIOME_MANAGER = MinecraftServer.getBiomeManager();
     private static final ExceptionManager EXCEPTION_HANDLER = MinecraftServer.getExceptionManager();
-    private static final Logger logger = LoggerFactory.getLogger(PolarLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(MeridianLoader.class);
 
     // Account for changes between main Minestom and minestom-ce.
     private static final ChunkSupplierShim CHUNK_SUPPLIER = ChunkSupplierShim.select();
@@ -39,38 +39,38 @@ public class PolarLoader implements IChunkLoader {
 
     private final Path savePath;
     private final ReentrantReadWriteLock worldDataLock = new ReentrantReadWriteLock();
-    private final PolarWorld worldData;
+    private final MeridianWorld worldData;
 
     private PolarWorldAccess worldAccess = null;
     private boolean parallel = false;
 
-    public PolarLoader(@NotNull Path path) throws IOException {
+    public MeridianLoader(@NotNull Path path) throws IOException {
         this.savePath = path;
         if (Files.exists(path)) {
-            this.worldData = PolarReader.read(Files.readAllBytes(path));
+            this.worldData = MeridianReader.read(Files.readAllBytes(path));
         } else {
-            this.worldData = new PolarWorld();
+            this.worldData = new MeridianWorld();
         }
     }
 
-    public PolarLoader(@NotNull InputStream inputStream) throws IOException {
+    public MeridianLoader(@NotNull InputStream inputStream) throws IOException {
         try (inputStream) {
-            this.worldData = PolarReader.read(inputStream.readAllBytes());
+            this.worldData = MeridianReader.read(inputStream.readAllBytes());
             this.savePath = null;
         }
     }
 
-    public PolarLoader(@NotNull PolarWorld world) {
+    public MeridianLoader(@NotNull MeridianWorld world) {
         this.worldData = world;
         this.savePath = null;
     }
 
-    public @NotNull PolarWorld world() {
+    public @NotNull MeridianWorld world() {
         return worldData;
     }
 
     @Contract("_ -> this")
-    public @NotNull PolarLoader setWorldAccess(@NotNull PolarWorldAccess worldAccess) {
+    public @NotNull MeridianLoader setWorldAccess(@NotNull PolarWorldAccess worldAccess) {
         this.worldAccess = worldAccess;
         return this;
     }
@@ -86,7 +86,7 @@ public class PolarLoader implements IChunkLoader {
      * @return this
      */
     @Contract("_ -> this")
-    public @NotNull PolarLoader setParallel(boolean parallel) {
+    public @NotNull MeridianLoader setParallel(boolean parallel) {
         this.parallel = parallel;
         return this;
     }
@@ -144,7 +144,7 @@ public class PolarLoader implements IChunkLoader {
         return CompletableFuture.completedFuture(chunk);
     }
 
-    private void loadSection(@NotNull PolarSection sectionData, @NotNull Section section) {
+    private void loadSection(@NotNull MeridianSection sectionData, @NotNull Section section) {
         // assumed that section is _not_ empty
 
         // Blocks
@@ -207,7 +207,7 @@ public class PolarLoader implements IChunkLoader {
             section.setSkyLight(sectionData.skyLight());
     }
 
-    private void loadBlockEntity(@NotNull PolarChunk.BlockEntity blockEntity, @NotNull Chunk chunk) {
+    private void loadBlockEntity(@NotNull MeridianChunk.BlockEntity blockEntity, @NotNull Chunk chunk) {
         // Fetch the block type, we can ignore Handler/NBT since we are about to replace it
         var block = chunk.getBlock(blockEntity.x(), blockEntity.y(), blockEntity.z(), Block.Getter.Condition.TYPE);
 
@@ -248,7 +248,7 @@ public class PolarLoader implements IChunkLoader {
         if (savePath != null) {
             return CompletableFuture.runAsync(() -> {
                 try {
-                    Files.write(savePath, PolarWriter.write(worldData),
+                    Files.write(savePath, MeridianWriter.write(worldData),
                             StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 } catch (IOException e) {
                     EXCEPTION_HANDLER.handleException(new RuntimeException("Failed to save world", e));
@@ -262,11 +262,11 @@ public class PolarLoader implements IChunkLoader {
     private void updateChunkData(@NotNull Short2ObjectMap<String> blockCache, @NotNull Chunk chunk) {
         var dimension = chunk.getInstance().getDimensionType();
 
-        var blockEntities = new ArrayList<PolarChunk.BlockEntity>();
-        var sections = new PolarSection[dimension.getHeight() / Chunk.CHUNK_SECTION_SIZE];
+        var blockEntities = new ArrayList<MeridianChunk.BlockEntity>();
+        var sections = new MeridianSection[dimension.getHeight() / Chunk.CHUNK_SECTION_SIZE];
         assert sections.length == chunk.getSections().size(): "World height mismatch";
 
-        var heightmaps = new byte[32][PolarChunk.HEIGHTMAPS.length];
+        var heightmaps = new byte[32][MeridianChunk.HEIGHTMAPS.length];
 
         var userData = new byte[0];
 
@@ -282,7 +282,7 @@ public class PolarLoader implements IChunkLoader {
                     // Short circuit empty palette
                     blockPalette.add("air");
                 } else {
-                    var localBlockData = new int[PolarSection.BLOCK_PALETTE_SIZE];
+                    var localBlockData = new int[MeridianSection.BLOCK_PALETTE_SIZE];
 
                     section.blockPalette().getAll((x, sectionLocalY, z, blockStateId) -> {
                         final int blockIndex = x + sectionLocalY * 16 * 16 + z * 16;
@@ -309,7 +309,7 @@ public class PolarLoader implements IChunkLoader {
 
                                 var handlerId = block.handler() == null ? null : block.handler().getNamespaceId().asString();
                                 if (handlerId != null || block.hasNbt()) {
-                                    blockEntities.add(new PolarChunk.BlockEntity(
+                                    blockEntities.add(new MeridianChunk.BlockEntity(
                                             x, y, z, handlerId, block.nbt()
                                     ));
                                 }
@@ -319,7 +319,7 @@ public class PolarLoader implements IChunkLoader {
                 }
 
                 var biomePalette = new ArrayList<String>();
-                var biomeData = new int[PolarSection.BIOME_PALETTE_SIZE];
+                var biomeData = new int[MeridianSection.BIOME_PALETTE_SIZE];
 
                 section.biomePalette().getAll((x, y, z, id) -> {
                     var biomeId = BIOME_MANAGER.getById(id).name().asString();
@@ -340,7 +340,7 @@ public class PolarLoader implements IChunkLoader {
                     skyLight = null;
                 }
 
-                sections[i] = new PolarSection(
+                sections[i] = new MeridianSection(
                         blockPalette.toArray(new String[0]), blockData,
                         biomePalette.toArray(new String[0]), biomeData,
                         blockLight, skyLight
@@ -358,7 +358,7 @@ public class PolarLoader implements IChunkLoader {
         worldData.updateChunkAt(
                 chunk.getChunkX(),
                 chunk.getChunkZ(),
-                new PolarChunk(
+                new MeridianChunk(
                         chunk.getChunkX(),
                         chunk.getChunkZ(),
                         sections,

@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class AnvilPolar {
-    private static final Logger logger = LoggerFactory.getLogger(AnvilPolar.class);
+public class AnvilMeridian {
+    private static final Logger logger = LoggerFactory.getLogger(AnvilMeridian.class);
 
     private static final boolean FILE_RW_MODE = Boolean.getBoolean("polar.anvil_rw_mode");
     public static final String FILE_RW_MODE_ERROR = """
@@ -43,7 +43,7 @@ public class AnvilPolar {
      * @return The Polar world representing the given Anvil world
      * @throws IOException If there was an error reading the anvil world
      */
-    public static @NotNull PolarWorld anvilToPolar(@NotNull Path path) throws IOException {
+    public static @NotNull MeridianWorld anvilToPolar(@NotNull Path path) throws IOException {
         return anvilToPolar(path, -4, 19, ChunkSelector.all());
     }
 
@@ -58,7 +58,7 @@ public class AnvilPolar {
      * @return The Polar world representing the given Anvil world
      * @throws IOException If there was an error reading the anvil world
      */
-    public static @NotNull PolarWorld anvilToPolar(@NotNull Path path, @NotNull ChunkSelector selector) throws IOException {
+    public static @NotNull MeridianWorld anvilToPolar(@NotNull Path path, @NotNull ChunkSelector selector) throws IOException {
         return anvilToPolar(path, -4, 19, selector);
     }
 
@@ -75,7 +75,7 @@ public class AnvilPolar {
      * @return The Polar world representing the given Anvil world
      * @throws IOException If there was an error reading the anvil world
      */
-    public static @NotNull PolarWorld anvilToPolar(@NotNull Path path, int minSection, int maxSection) throws IOException {
+    public static @NotNull MeridianWorld anvilToPolar(@NotNull Path path, int minSection, int maxSection) throws IOException {
         return anvilToPolar(path, minSection, maxSection, ChunkSelector.all());
     }
 
@@ -93,8 +93,8 @@ public class AnvilPolar {
      * @return The Polar world representing the given Anvil world
      * @throws IOException If there was an error reading the anvil world
      */
-    public static @NotNull PolarWorld anvilToPolar(@NotNull Path path, int minSection, int maxSection, @NotNull ChunkSelector selector) throws IOException {
-        var chunks = new ArrayList<PolarChunk>();
+    public static @NotNull MeridianWorld anvilToPolar(@NotNull Path path, int minSection, int maxSection, @NotNull ChunkSelector selector) throws IOException {
+        var chunks = new ArrayList<MeridianChunk>();
         try (var files = Files.walk(path.resolve("region"), 1)) {
             for (var regionFile : files.toList()) {
                 if (!regionFile.getFileName().toString().endsWith(".mca")) continue;
@@ -116,16 +116,16 @@ public class AnvilPolar {
             throw new IOException(e);
         }
 
-        return new PolarWorld(
-                PolarWorld.LATEST_VERSION,
-                PolarWorld.DEFAULT_COMPRESSION,
+        return new MeridianWorld(
+                MeridianWorld.LATEST_VERSION,
+                MeridianWorld.DEFAULT_COMPRESSION,
                 (byte) minSection, (byte) maxSection,
                 chunks
         );
     }
 
-    private static @NotNull List<PolarChunk> readAnvilChunks(@NotNull RegionFile regionFile, int minSection, int maxSection, @NotNull ChunkSelector selector) throws AnvilException, IOException {
-        var chunks = new ArrayList<PolarChunk>();
+    private static @NotNull List<MeridianChunk> readAnvilChunks(@NotNull RegionFile regionFile, int minSection, int maxSection, @NotNull ChunkSelector selector) throws AnvilException, IOException {
+        var chunks = new ArrayList<MeridianChunk>();
         for (int x = 0; x < 32; x++) {
             for (int z = 0; z < 32; z++) {
                 int chunkX = x + (regionFile.getRegionX() * 32);
@@ -138,7 +138,7 @@ public class AnvilPolar {
 
                 var chunkReader = new ChunkReader(chunkData);
 
-                var sections = new PolarSection[maxSection - minSection + 1];
+                var sections = new MeridianSection[maxSection - minSection + 1];
                 for (var sectionData : chunkReader.getSections()) {
                     var sectionReader = new ChunkSectionReader(chunkReader.getMinecraftVersion(), sectionData);
 
@@ -165,9 +165,9 @@ public class AnvilPolar {
                         // Single block palette, no block data.
                         blockPalette = new String[]{readBlock(blockInfo.get(0))};
                     } else {
-                        blockData = new int[PolarSection.BLOCK_PALETTE_SIZE];
+                        blockData = new int[MeridianSection.BLOCK_PALETTE_SIZE];
                         Long[] rawBlockData = Arrays.stream(sectionReader.getCompactedBlockStates().copyArray()).boxed().toArray(Long[]::new);
-                        var bitsPerEntry = rawBlockData.length * 64 / PolarSection.BLOCK_PALETTE_SIZE;
+                        var bitsPerEntry = rawBlockData.length * 64 / MeridianSection.BLOCK_PALETTE_SIZE;
                         PaletteUtil.unpack(blockData, rawBlockData, bitsPerEntry);
 
 //                        blockData = sectionReader.getUncompressedBlockStateIDs();
@@ -193,7 +193,7 @@ public class AnvilPolar {
                     } else {
                         // Full palette case, convert from 64 strings provided by anvil to a normal palette (split data + palette)
                         var palette = new ArrayList<String>();
-                        biomeData = new int[PolarSection.BIOME_PALETTE_SIZE];
+                        biomeData = new int[MeridianSection.BIOME_PALETTE_SIZE];
                         for (int i = 0; i < biomeData.length; i++) {
                             var biome = biomeInfo.getBiomes()[i];
                             var paletteId = palette.indexOf(biome);
@@ -217,7 +217,7 @@ public class AnvilPolar {
                         skyLight = sectionReader.getSkyLight().copyArray();
                     }
 
-                    sections[sectionReader.getY() - minSection] = new PolarSection(
+                    sections[sectionReader.getY() - minSection] = new MeridianSection(
                             blockPalette, blockData,
                             biomePalette, biomeData,
                             blockLight, skyLight
@@ -226,16 +226,16 @@ public class AnvilPolar {
                 // Fill in the remaining sections with empty sections
                 for (int i = 0; i < sections.length; i++) {
                     if (sections[i] != null) continue;
-                    sections[i] = new PolarSection();
+                    sections[i] = new MeridianSection();
                 }
 
-                var blockEntities = new ArrayList<PolarChunk.BlockEntity>();
+                var blockEntities = new ArrayList<MeridianChunk.BlockEntity>();
                 for (var blockEntityCompound : chunkReader.getBlockEntities()) {
                     var blockEntity = convertBlockEntity(blockEntityCompound);
                     if (blockEntity != null) blockEntities.add(blockEntity);
                 }
 
-                var heightmaps = new byte[PolarChunk.HEIGHTMAP_BYTE_SIZE][PolarChunk.HEIGHTMAPS.length];
+                var heightmaps = new byte[MeridianChunk.HEIGHTMAP_BYTE_SIZE][MeridianChunk.HEIGHTMAPS.length];
                 chunkData.getCompound("Heightmaps");
                 //todo: heightmaps
 //                MOTION_BLOCKING MOTION_BLOCKING_NO_LEAVES
@@ -244,7 +244,7 @@ public class AnvilPolar {
 
                 var userData = new byte[0];
 
-                chunks.add(new PolarChunk(
+                chunks.add(new MeridianChunk(
                         chunkReader.getChunkX(),
                         chunkReader.getChunkZ(),
                         sections,
@@ -257,7 +257,7 @@ public class AnvilPolar {
         return chunks;
     }
 
-    private static @Nullable PolarChunk.BlockEntity convertBlockEntity(@NotNull NBTCompound blockEntityCompound) {
+    private static @Nullable MeridianChunk.BlockEntity convertBlockEntity(@NotNull NBTCompound blockEntityCompound) {
         final var x = blockEntityCompound.getInt("x");
         final var y = blockEntityCompound.getInt("y");
         final var z = blockEntityCompound.getInt("z");
@@ -280,7 +280,7 @@ public class AnvilPolar {
         mutableCopy.remove("z");
         mutableCopy.remove("keepPacked");
 
-        return new PolarChunk.BlockEntity(x, y, z, blockEntityId, mutableCopy.toCompound());
+        return new MeridianChunk.BlockEntity(x, y, z, blockEntityId, mutableCopy.toCompound());
     }
 
     private static @NotNull String readBlock(@NotNull NBTCompound paletteEntry) {

@@ -11,18 +11,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-public class PolarWriter {
-    private PolarWriter() {}
+public class MeridianWriter {
+    private MeridianWriter() {}
 
-    public static byte[] write(@NotNull PolarWorld world) {
+    public static byte[] write(@NotNull MeridianWorld world) {
         // Write the compressed content first
         var content = new ByteBuffer();
         content.writeByte(world.minSection());
         content.writeByte(world.maxSection());
-        content.writeCollection(world.chunks(), PolarWriter::writeChunk);
+        content.writeCollection(world.chunks(), MeridianWriter::writeChunk);
         ByteBuffer byteBuf = new ByteBuffer();
-        byteBuf.writeInt(PolarWorld.MAGIC_NUMBER);
-        byteBuf.writeShort(PolarWorld.LATEST_VERSION);
+        byteBuf.writeInt(MeridianWorld.MAGIC_NUMBER);
+        byteBuf.writeShort(MeridianWorld.LATEST_VERSION);
         byteBuf.writeByte((byte) world.compression().ordinal());
         switch (world.compression()) {
             case NONE -> {
@@ -36,22 +36,22 @@ public class PolarWriter {
         return byteBuf.toBytes();
     }
 
-    private static void writeChunk(@NotNull ByteBuffer buffer, @NotNull PolarChunk chunk) {
+    private static void writeChunk(@NotNull ByteBuffer buffer, @NotNull MeridianChunk chunk) {
         buffer.writeVarInt(chunk.x());
         buffer.writeVarInt(chunk.z());
 
         for (var section : chunk.sections()) {
             writeSection(buffer, section);
         }
-        buffer.writeCollection(chunk.blockEntities(), PolarWriter::writeBlockEntity);
+        buffer.writeCollection(chunk.blockEntities(), MeridianWriter::writeBlockEntity);
 
         //todo heightmaps
-        buffer.writeInt(PolarChunk.HEIGHTMAP_NONE);
+        buffer.writeInt(MeridianChunk.HEIGHTMAP_NONE);
 
         buffer.writeByteArray(chunk.userData());
     }
 
-    private static void writeSection(@NotNull ByteBuffer buffer, @NotNull PolarSection section) {
+    private static void writeSection(@NotNull ByteBuffer buffer, @NotNull MeridianSection section) {
         buffer.writeBoolean(section.isEmpty());
         if (section.isEmpty()) return;
 
@@ -84,7 +84,7 @@ public class PolarWriter {
             buffer.writeByteArray(section.skyLight());
     }
 
-    private static void writeBlockEntity(@NotNull ByteBuffer buffer, @NotNull PolarChunk.BlockEntity blockEntity) {
+    private static void writeBlockEntity(@NotNull ByteBuffer buffer, @NotNull MeridianChunk.BlockEntity blockEntity) {
         var index = ChunkUtils.getBlockIndex(blockEntity.x(), blockEntity.y(), blockEntity.z());
         buffer.writeInt(index);
         buffer.writeBoolean(blockEntity.id() == null);

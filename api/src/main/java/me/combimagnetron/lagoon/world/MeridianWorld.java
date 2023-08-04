@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * A Java type representing the latest version of the world format.
  */
-public class PolarWorld {
+public class MeridianWorld {
     public static final int MAGIC_NUMBER = 0x506F6C72; // `Polr`
     public static final short LATEST_VERSION = 3;
 
@@ -29,17 +29,17 @@ public class PolarWorld {
     private final byte maxSection;
 
     // Chunk data
-    private final Long2ObjectMap<PolarChunk> chunks = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<MeridianChunk> chunks = new Long2ObjectOpenHashMap<>();
 
-    public PolarWorld() {
+    public MeridianWorld() {
         this(LATEST_VERSION, DEFAULT_COMPRESSION, (byte) -4, (byte) 19, List.of());
     }
 
-    public PolarWorld(
+    public MeridianWorld(
             short version,
             @NotNull CompressionType compression,
             byte minSection, byte maxSection,
-            @NotNull Collection<PolarChunk> chunks
+            @NotNull Collection<MeridianChunk> chunks
     ) {
         this.version = version;
         this.compression = compression;
@@ -72,14 +72,14 @@ public class PolarWorld {
         return maxSection;
     }
 
-    public @Nullable PolarChunk chunkAt(int x, int z) {
+    public @Nullable MeridianChunk chunkAt(int x, int z) {
         return chunks.getOrDefault(ChunkUtils.getChunkIndex(x, z), null);
     }
-    public void updateChunkAt(int x, int z, @NotNull PolarChunk chunk) {
+    public void updateChunkAt(int x, int z, @NotNull MeridianChunk chunk) {
         chunks.put(ChunkUtils.getChunkIndex(x, z), chunk);
     }
 
-    public @NotNull Collection<PolarChunk> chunks() {
+    public @NotNull Collection<MeridianChunk> chunks() {
         return chunks.values();
     }
 
