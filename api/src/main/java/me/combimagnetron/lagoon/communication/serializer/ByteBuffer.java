@@ -7,9 +7,16 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
-public abstract class ByteBuffer {
+public class ByteBuffer {
+    private static final int SEGMENT_BITS = 0x7F;
+    private static final int CONTINUE_BIT = 0x80;
     private ByteArrayDataInput byteArrayDataInput;
     private ByteArrayDataOutput byteArrayDataOutput;
 
@@ -21,69 +28,83 @@ public abstract class ByteBuffer {
         byteArrayDataInput = ByteStreams.newDataInput(bytes);
     }
 
-    protected void writeString(String string) {
+    public void writeString(String string) {
         checkNotNull();
         byteArrayDataOutput.writeUTF(string);
     }
 
-    protected void writeUUID(UUID uuid) {
+    public void writeUUID(UUID uuid) {
         checkNotNull();
         byteArrayDataOutput.writeLong(uuid.getMostSignificantBits());
         byteArrayDataOutput.writeLong(uuid.getLeastSignificantBits());
     }
 
-    protected void writeAdventureComponent(Component component) {
+    public void writeAdventureComponent(Component component) {
         checkNotNull();
         byteArrayDataOutput.writeUTF(GsonComponentSerializer.gson().serialize(component));
     }
 
-    protected void writeChar(char chr) {
+    public void writeChar(char chr) {
         checkNotNull();
         byteArrayDataOutput.writeChar(chr);
     }
 
-    protected void writeDouble(double dbl) {
+    public void writeDouble(double dbl) {
         checkNotNull();
         byteArrayDataOutput.writeDouble(dbl);
     }
 
-    protected void writeFloat(float flt) {
+    public void writeFloat(float flt) {
         checkNotNull();
         byteArrayDataOutput.writeFloat(flt);
     }
 
-    protected void writeLong(long lng) {
+    public void writeLong(long lng) {
         checkNotNull();
         byteArrayDataOutput.writeLong(lng);
     }
 
-    protected void writeInt(int i) {
+    public void writeInt(int i) {
         checkNotNull();
         byteArrayDataOutput.writeInt(i);
     }
 
-    protected void writeShort(short shrt) {
+    public void writeShort(short shrt) {
         checkNotNull();
         byteArrayDataOutput.writeShort(shrt);
     }
 
-    protected void writeByteArray(byte... bytes) {
+    public void writeByteArray(byte... bytes) {
         checkNotNull();
         byteArrayDataOutput.write(bytes.length);
         byteArrayDataOutput.write(bytes);
     }
 
-    protected void writeByte(byte bte) {
+    public void writeByte(byte bte) {
         checkNotNull();
         byteArrayDataOutput.write(bte);
     }
 
-    protected void writeBoolean(boolean bool) {
+    public void writeBoolean(boolean bool) {
         checkNotNull();
         byteArrayDataOutput.writeBoolean(bool);
     }
 
-    protected void writeObject(Object object) {
+    public void writeVarInt(int value) {
+        while (true) {
+            if ((value & ~SEGMENT_BITS) == 0) {
+                writeByte((byte) value);
+                return;
+            }
+
+            writeByte((byte) ((value & SEGMENT_BITS) | CONTINUE_BIT));
+
+            // Note: >>> means that the sign bit is shifted with the rest of the number rather than being left alone
+            value >>>= 7;
+        }
+    }
+
+    public void writeObject(Object object) {
         checkNotNull();
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
              ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
@@ -96,60 +117,105 @@ public abstract class ByteBuffer {
         }
     }
 
-    protected String readString() {
+    public String readString() {
         return byteArrayDataInput.readUTF();
     }
 
-    protected UUID readUUID() {
+    public UUID readUUID() {
         return new UUID(byteArrayDataInput.readLong(), byteArrayDataInput.readLong());
     }
 
-    protected Component readAdventureComponent() {
+    public Component readAdventureComponent() {
         return GsonComponentSerializer.gson().deserialize(readString());
     }
 
-    protected char readChar() {
+    public char readChar() {
         return byteArrayDataInput.readChar();
     }
 
-    protected double readDouble() {
+    public double readDouble() {
         return byteArrayDataInput.readDouble();
     }
 
-    protected float readFloat() {
+    public float readFloat() {
         return byteArrayDataInput.readFloat();
     }
 
-    protected long readLong() {
+    public long readLong() {
         return byteArrayDataInput.readLong();
     }
 
-    protected int readInt() {
+    public int readInt() {
         return byteArrayDataInput.readInt();
     }
 
-    protected short readShort() {
+    public short readShort() {
         return byteArrayDataInput.readShort();
     }
 
-    protected byte[] readByteArray(byte... bytes) {
+    public byte[] readByteArray() {
         int arraySize = readInt();
         byte[] byteArray = new byte[arraySize];
         for (int i = 0; i < arraySize; i++)
             byteArray[i] = readByte();
-
         return byteArray;
     }
 
-    protected byte readByte() {
+    public byte[] readByteArray(int length) {
+        byte[] byteArray = new byte[length];
+        for (int i = 0; i < length; i++)
+            byteArray[i] = readByte();
+        return byteArray;
+    }
+
+    public <T> void writeCollection(Collection<T> values, BiConsumer<ByteBuffer, T> consumer) {
+        if (values == null) {
+            writeByte((byte) 0);
+            return;
+        }
+        writeVarInt(values.size());
+        for (T value : values) {
+            consumer.accept(this, value);
+        }
+    }
+
+    public <T>  Collection<T> readCollection(Function<ByteBuffer, T> function) {
+        final int size = readInt();
+        List<T> values = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            values.add(function.apply(this));
+        }
+        return values;
+    }
+
+    public int readVarInt() {
+        int value = 0;
+        int position = 0;
+        byte currentByte;
+
+        while (true) {
+            currentByte = readByte();
+            value |= (currentByte & SEGMENT_BITS) << position;
+
+            if ((currentByte & CONTINUE_BIT) == 0) break;
+
+            position += 7;
+
+            if (position >= 32) throw new RuntimeException("VarInt is too big");
+        }
+
+        return value;
+    }
+
+    public byte readByte() {
         return byteArrayDataInput.readByte();
     }
 
-    protected boolean readBoolean() {
+    public boolean readBoolean() {
         return byteArrayDataInput.readBoolean();
     }
 
-    protected Object readObject() {
+    public Object readObject() {
         byte[] bytes = readByteArray();
         try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
              ObjectInput objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
