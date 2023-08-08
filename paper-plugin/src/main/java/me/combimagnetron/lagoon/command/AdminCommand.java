@@ -8,7 +8,6 @@ import me.combimagnetron.lagoon.user.User;
 
 @Command(command = "c")
 public class AdminCommand {
-    private static final String[] suggestions = Comet.onlineUsers().stream().map(User::username).toList().toArray(new String[]{});
 
     @Execute
     public void execute(User<?> user) {
@@ -16,7 +15,7 @@ public class AdminCommand {
     }
 
     @SubCommand(command = "model")
-    @Requires(condition = "user.group.weight >= 6")
+    @Requires(condition = "user.group.weight >= 6 && user.name != Herobrine")
     public void subCommand(User<?> user, String string) {
         BlockBenchModel model = BlockBenchModel.read(Comet.dataFolder().resolve(string));
         EntityModelGenerator.generate(model);

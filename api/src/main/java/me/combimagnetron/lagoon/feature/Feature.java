@@ -7,13 +7,9 @@ public interface Feature {
 
     Identifier identifier();
 
-    void start(StartUpArgument... startUpArguments);
+    void start(Object... arguments);
 
     void terminate();
-
-    interface StartUpArgument {
-
-    }
 
     static void deploy(Feature feature) {
 
