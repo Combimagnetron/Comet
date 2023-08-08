@@ -2,17 +2,16 @@ package me.combimagnetron.lagoon.command;
 
 import me.combimagnetron.lagoon.command.annotations.Command;
 import me.combimagnetron.lagoon.command.annotations.Execute;
+import me.combimagnetron.lagoon.command.annotations.Requires;
 import me.combimagnetron.lagoon.command.annotations.SubCommand;
 import me.combimagnetron.lagoon.command.argument.Argument;
+import me.combimagnetron.lagoon.condition.Condition;
 import me.combimagnetron.lagoon.user.User;
 import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public abstract class CommandHandler {
 
@@ -34,7 +33,8 @@ public abstract class CommandHandler {
         Collection<Argument<?>> arguments = arguments(clazz);
         Format format = Format.format(command, arguments.toArray(new Argument<?>[0]));
         Method execute = Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.isAnnotationPresent(Execute.class)).findFirst().orElseThrow();
-        return InternalCommand.Impl.of(format, subCommands, InternalCommand.ReflectionInfo.of(execute, clazz));
+        Optional<Condition> condition = requirement(clazz);
+        return InternalCommand.Impl.of(format, subCommands, InternalCommand.ReflectionInfo.of(execute, clazz), condition.get());
     }
 
     private Collection<InternalSubCommand> subCommands(Class<?> clazz) {
@@ -46,7 +46,8 @@ public abstract class CommandHandler {
             SubCommand subCommand = method.getAnnotation(SubCommand.class);
             Collection<Argument<?>> arguments = arguments(clazz);
             Format format = Format.format(subCommand.command(), arguments.toArray(new Argument<?>[0]));
-            subCommands.add(InternalSubCommand.Impl.of(format));
+            Optional<Condition> condition = requirement(method);
+            subCommands.add(InternalSubCommand.Impl.of(format, condition.get()));
         });
         return subCommands;
     }
@@ -56,17 +57,26 @@ public abstract class CommandHandler {
         Method executes = Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.isAnnotationPresent(Execute.class)).findFirst().orElseThrow();
         Class<?>[] parameters = executes.getParameterTypes();
         Arrays.stream(parameters).forEach(parameter -> {
-            if (parameter.equals(User.class) || !parameter.isAssignableFrom(Argument.class)) {
+            if (parameter.equals(User.class)) {
                 return;
             }
-            try {
-                arguments.add((Argument<?>) parameter.getDeclaredConstructor().newInstance());
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                     NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
+            arguments.add(Argument.Lookup.get(parameter));
         });
         return arguments;
+    }
+
+    private Optional<Condition> requirement(Method method) {
+        if (!method.isAnnotationPresent(Requires.class)) {
+            return Optional.empty();
+        }
+        return Optional.of(Condition.of(method.getAnnotation(Requires.class).condition()));
+    }
+
+    private Optional<Condition> requirement(Class<?> clazz) {
+        if (!clazz.isAnnotationPresent(Requires.class)) {
+            return Optional.empty();
+        }
+        return Optional.of(Condition.of(clazz.getAnnotation(Requires.class).condition()));
     }
 
 

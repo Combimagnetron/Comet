@@ -3,7 +3,6 @@ package me.combimagnetron.lagoon;
 import me.combimagnetron.lagoon.command.CommandHandler;
 import me.combimagnetron.lagoon.command.InternalCommand;
 import me.combimagnetron.lagoon.command.argument.Argument;
-import me.combimagnetron.lagoon.command.argument.impl.StringArgument;
 import me.combimagnetron.lagoon.user.User;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -13,8 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class PaperCommandHandler extends CommandHandler implements CommandExecutor, Listener {
     private final Collection<InternalCommand> commands;
@@ -55,6 +53,10 @@ public class PaperCommandHandler extends CommandHandler implements CommandExecut
             if (!(sender instanceof Player player)) {
                 return false;
             }
+            Set<Object> objectSet = new LinkedHashSet<>();
+            Arrays.stream(command.format().arguments()).forEach(argument -> {
+                objectSet.add(argument.)
+            });
             command.run(Comet.userByUniqueId(player.getUniqueId()), new StringArgument("frog.bbmodel")).async();
             return true;
         }

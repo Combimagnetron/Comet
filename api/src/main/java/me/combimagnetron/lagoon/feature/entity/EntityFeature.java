@@ -22,10 +22,7 @@ public class EntityFeature implements Feature {
     }
 
     @Override
-    public void start(StartUpArgument... startUpArguments) {
-        if (!(startUpArguments[1] instanceof ModelParserStartUpArgument)) {
-            return;
-        }
+    public void start(Object... arguments) {
     }
 
     @Override
@@ -36,23 +33,6 @@ public class EntityFeature implements Feature {
     @Override
     public Folder folder() {
         return folder;
-    }
-
-    public static class ModelParserStartUpArgument implements StartUpArgument {
-        private final ModelParser.Parser parser;
-
-        protected ModelParserStartUpArgument(ModelParser.Parser parser) {
-            this.parser = parser;
-        }
-
-        public ModelParser.Parser parser() {
-            return parser;
-        }
-
-        public static ModelParserStartUpArgument argument(ModelParser.Parser parser) {
-            return new ModelParserStartUpArgument(parser);
-        }
-
     }
 
 }

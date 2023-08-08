@@ -23,7 +23,11 @@ public class EntityModelGenerator implements ResourcePackFeature<EntityModelGene
     private static int modelDataCursor = 0;
     private final Map<Integer, String> textureStringMap = new HashMap<>();
 
-    public void generate(BlockBenchModel model) {
+    public static void generate(BlockBenchModel model) {
+        new EntityModelGenerator().generateModel(model);
+    }
+
+    private void generateModel(BlockBenchModel model) {
         ASSETS_FOLDER.toFile().mkdirs();
         for (BlockBenchTexture texture : model.textures()) {
             ASSETS_FOLDER.resolve("textures/entity").toFile().mkdirs();

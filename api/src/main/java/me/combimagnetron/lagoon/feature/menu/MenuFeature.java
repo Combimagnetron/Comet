@@ -13,7 +13,7 @@ public class MenuFeature implements Feature {
     }
 
     @Override
-    public void start(StartUpArgument... startUpArguments) {
+    public void start(Object... arguments) {
 
     }
 
