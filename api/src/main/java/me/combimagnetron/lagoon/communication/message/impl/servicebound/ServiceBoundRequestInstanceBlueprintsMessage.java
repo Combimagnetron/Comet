@@ -11,16 +11,34 @@ import org.jetbrains.annotations.Nullable;
 public class ServiceBoundRequestInstanceBlueprintsMessage extends ServiceBoundMessage {
     private final Identifier identifier;
     private final String version;
+    private final Type type;
+
     public ServiceBoundRequestInstanceBlueprintsMessage(Identifier identifier) {
         super(2, null, null);
         this.identifier = identifier;
-        this.version = "main";
+        this.version = "latest";
+        this.type = Type.RELEASE;
+    }
+
+    public ServiceBoundRequestInstanceBlueprintsMessage(Identifier identifier, Type type) {
+        super(2, null, null);
+        this.identifier = identifier;
+        this.version = "latest";
+        this.type = type;
     }
 
     public ServiceBoundRequestInstanceBlueprintsMessage(Identifier identifier, String version) {
         super(2, null, null);
         this.identifier = identifier;
         this.version = version;
+        this.type = Type.RELEASE;
+    }
+
+    public ServiceBoundRequestInstanceBlueprintsMessage(Identifier identifier, String version, Type type) {
+        super(2, null, null);
+        this.identifier = identifier;
+        this.version = version;
+        this.type = type;
     }
 
     public ServiceBoundRequestInstanceBlueprintsMessage(byte[] bytes) {
@@ -28,6 +46,7 @@ public class ServiceBoundRequestInstanceBlueprintsMessage extends ServiceBoundMe
         final String[] id = readString().split(":");
         this.identifier = Identifier.of(id[0], id[1]);
         this.version = readString();
+        this.type = Type.valueOf(readString());
     }
 
     @Override
@@ -39,6 +58,7 @@ public class ServiceBoundRequestInstanceBlueprintsMessage extends ServiceBoundMe
     public void write() {
         writeString(identifier.string());
         writeString(version);
+        writeString(type.name());
     }
 
     public Identifier identifier() {
@@ -47,6 +67,14 @@ public class ServiceBoundRequestInstanceBlueprintsMessage extends ServiceBoundMe
 
     public String version() {
         return this.version;
+    }
+
+    public Type type() {
+        return this.type;
+    }
+
+    public enum Type {
+        DEV, STAGING, RELEASE
     }
 
     public static class Response extends InstanceBoundMessage {
