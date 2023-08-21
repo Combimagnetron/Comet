@@ -1,18 +1,37 @@
 package me.combimagnetron.lagoon.world;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import me.combimagnetron.lagoon.data.Identifier;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.server.level.progress.ChunkProgressListener;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.datafix.DataFixers;
+import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.valueproviders.IntProviderType;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.*;
+import net.minecraft.world.level.biome.BiomeManager;
+import net.minecraft.world.level.biome.BiomeSource;
+import net.minecraft.world.level.biome.Climate;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
+import net.minecraft.world.level.levelgen.GenerationStep;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.WorldOptions;
+import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 import org.apache.commons.io.FileUtils;
@@ -22,6 +41,7 @@ import org.bukkit.block.Biome;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.WorldInfo;
+import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +49,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.function.IntSupplier;
+import java.util.stream.Stream;
 
 public class GameLevel {
     private final ServerLevel serverLevel;
@@ -41,8 +65,8 @@ public class GameLevel {
                 LevelAccess.levelStorageAccess(),
                 LevelData.primaryLevelData(),
                 Level.END,
-                LevelStem.END,
-                new ChunkProgressListenerDummy(),
+                LevelDimensionStem.levelStem(),
+                ChunkProgressListenerDummy.chunkProgressListenerDummy(),
                 false,
                 0L,
                 List.of(),
@@ -89,6 +113,51 @@ public class GameLevel {
             );
         }
 
+    }
+
+    static final class LevelDimensionStem {
+
+        public static LevelStem levelStem() {
+            IntProvider intProvider = new IntProvider() {
+                @Override
+                public int sample(RandomSource random) {
+                    return 15;
+                }
+
+                @Override
+                public int getMinValue() {
+                    return 15;
+                }
+
+                @Override
+                public int getMaxValue() {
+                    return 15;
+                }
+
+                @Override
+                public @NotNull IntProviderType<?> getType() {
+                    return IntProviderType.CONSTANT;
+                }
+            };
+            DimensionType dimensionType = new DimensionType(
+                    OptionalLong.of(0L),
+                    false,
+                    false,
+                    false,
+                    true,
+                    1.0,
+                    true,
+                    false,
+                    -64,
+                    255,
+                    64,
+                    TagKey.create(Registries.BLOCK, ResourceLocation.of("air", ' ')),
+                    ResourceLocation.of("", ' '),
+                    0.20f,
+                    new DimensionType.MonsterSettings(true, false, intProvider, 15)
+            );
+            return new LevelStem(Holder.direct(dimensionType), null);
+        }
     }
 
     static final class ChunkGeneratorImpl extends org.bukkit.generator.ChunkGenerator {
@@ -148,6 +217,10 @@ public class GameLevel {
     }
 
     static final class ChunkProgressListenerDummy implements ChunkProgressListener {
+
+        public static ChunkProgressListenerDummy chunkProgressListenerDummy() {
+            return new ChunkProgressListenerDummy();
+        }
 
         @Override
         public void updateSpawnPos(ChunkPos spawnPos) {
