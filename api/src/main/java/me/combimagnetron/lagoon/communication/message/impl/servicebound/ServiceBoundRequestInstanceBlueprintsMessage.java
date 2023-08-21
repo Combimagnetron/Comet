@@ -4,6 +4,7 @@ import me.combimagnetron.lagoon.communication.message.impl.instancebound.Instanc
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.instance.Instance;
 import me.combimagnetron.lagoon.instance.InstanceBlueprint;
+import me.combimagnetron.lagoon.internal.network.ByteBuffer;
 import me.combimagnetron.lagoon.util.VersionCollection;
 import net.kyori.adventure.identity.Identified;
 import org.jetbrains.annotations.Nullable;
@@ -25,9 +26,9 @@ public class ServiceBoundRequestInstanceBlueprintsMessage extends ServiceBoundMe
 
     public ServiceBoundRequestInstanceBlueprintsMessage(byte[] bytes) {
         super(bytes);
-        final String[] id = readString().split(":");
+        final String[] id = read(ByteBuffer.Adapter.STRING).split(":");
         this.identifier = Identifier.of(id[0], id[1]);
-        this.version = readString();
+        this.version = read(ByteBuffer.Adapter.STRING);
     }
 
     @Override
@@ -37,8 +38,8 @@ public class ServiceBoundRequestInstanceBlueprintsMessage extends ServiceBoundMe
 
     @Override
     public void write() {
-        writeString(identifier.string());
-        writeString(version);
+        write(ByteBuffer.Adapter.STRING, identifier.string());
+        write(ByteBuffer.Adapter.STRING, version);
     }
 
     public Identifier identifier() {
@@ -60,9 +61,9 @@ public class ServiceBoundRequestInstanceBlueprintsMessage extends ServiceBoundMe
         public Response(byte[] bytes) {
             super(bytes);
             final VersionCollection<InstanceBlueprint> collection = new VersionCollection<>();
-            final int size = readInt();
+            final int size = read(ByteBuffer.Adapter.INT);
             for (int i = 0; i < size + 1; i++) {
-                collection.add((InstanceBlueprint) readObject());
+                //collection.add((InstanceBlueprint) readObject());
             }
             this.versionCollection = collection;
         }
@@ -74,8 +75,8 @@ public class ServiceBoundRequestInstanceBlueprintsMessage extends ServiceBoundMe
 
         @Override
         public void write() {
-            writeInt(versionCollection.size() - 1);
-            versionCollection.forEach(this::writeObject);
+            write(ByteBuffer.Adapter.INT, versionCollection.size() - 1);
+            //versionCollection.forEach(this::writeObject);
         }
 
         public VersionCollection<InstanceBlueprint> versionCollection() {

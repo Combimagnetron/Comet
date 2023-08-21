@@ -1,6 +1,7 @@
 package me.combimagnetron.lagoon.communication.message.impl.proxybound;
 
 import me.combimagnetron.lagoon.instance.Instance;
+import me.combimagnetron.lagoon.internal.network.ByteBuffer;
 import me.combimagnetron.lagoon.user.User;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,9 +32,9 @@ public class ProxyBoundMovePlayerMessage extends ProxyBoundMessage {
 
     @Override
     public void write() {
-        writeUUID(user.uniqueIdentifier());
-        writeUUID(to.uniqueIdentifier());
-        writeUUID(from.uniqueIdentifier());
+        write(ByteBuffer.Adapter.UUID, user.uniqueIdentifier());
+        write(ByteBuffer.Adapter.UUID, to.uniqueIdentifier());
+        write(ByteBuffer.Adapter.UUID, from.uniqueIdentifier());
     }
 
     public User<?> globalPlayer() {

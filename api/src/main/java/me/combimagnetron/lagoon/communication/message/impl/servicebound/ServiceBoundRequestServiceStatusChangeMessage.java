@@ -1,8 +1,11 @@
 package me.combimagnetron.lagoon.communication.message.impl.servicebound;
 
 import me.combimagnetron.lagoon.instance.Instance;
+import me.combimagnetron.lagoon.internal.network.ByteBuffer;
 import me.combimagnetron.lagoon.service.Service;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 
 public class ServiceBoundRequestServiceStatusChangeMessage extends ServiceBoundMessage {
     private final Service<?> service;
@@ -17,8 +20,8 @@ public class ServiceBoundRequestServiceStatusChangeMessage extends ServiceBoundM
     public ServiceBoundRequestServiceStatusChangeMessage(byte[] bytes) {
         super(bytes);
         this.service = null;
-        readString();
-        this.status = Status.valueOf(readString());
+        read(ByteBuffer.Adapter.STRING);
+        this.status = buffer().readEnum(Status.class);
     }
 
     @Override
@@ -28,8 +31,8 @@ public class ServiceBoundRequestServiceStatusChangeMessage extends ServiceBoundM
 
     @Override
     public void write() {
-        writeString(service.identifier().string());
-        writeString(status.name());
+        write(ByteBuffer.Adapter.STRING, service.identifier().string());
+        write(ByteBuffer.Adapter.INT, status.ordinal());
     }
 
     public Service<?> service() {

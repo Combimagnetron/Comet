@@ -18,9 +18,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
-import org.bukkit.entity.Player;
+import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.util.EulerAngle;
 
 import java.lang.reflect.InvocationTargetException;
@@ -84,7 +83,7 @@ public class FakeTextDisplayImpl implements FakeTextDisplay {
     public Operation<Void> text(Component component) {
         return Operation.simple(() -> {
             itemDisplay.setText(net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.gson().serialize(component)));
-            itemDisplay.setLineWidth(Integer.MAX_VALUE);
+            itemDisplay.setWidth(Integer.MAX_VALUE);
             observers.forEach(this::update);
         });
     }

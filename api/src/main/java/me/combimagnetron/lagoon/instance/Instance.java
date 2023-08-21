@@ -16,8 +16,8 @@ public interface Instance {
 
     Platform platform();
 
-    default boolean isProxy() {
-        return platform().isProxy();
+    default boolean proxy() {
+        return platform().proxy();
     }
 
 }

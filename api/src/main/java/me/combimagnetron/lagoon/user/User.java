@@ -2,6 +2,7 @@ package me.combimagnetron.lagoon.user;
 
 import me.combimagnetron.lagoon.data.impl.UserDataContainer;
 import me.combimagnetron.lagoon.instance.Instance;
+import me.combimagnetron.lagoon.internal.network.Connection;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 
@@ -20,5 +21,7 @@ public interface User<T extends Audience> {
      UserDataContainer playerData();
 
      UUID uniqueIdentifier();
+
+     Connection connection();
 
 }

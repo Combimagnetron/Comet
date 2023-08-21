@@ -3,6 +3,7 @@ package me.combimagnetron.lagoon.communication.message.impl.instancebound;
 import me.combimagnetron.lagoon.communication.Message;
 import me.combimagnetron.lagoon.communication.message.impl.proxybound.ProxyBoundMessage;
 import me.combimagnetron.lagoon.instance.Instance;
+import me.combimagnetron.lagoon.internal.network.ByteBuffer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -16,8 +17,7 @@ public class InstanceBoundKeepAliveMessage extends InstanceBoundMessage {
     public InstanceBoundKeepAliveMessage(byte[] bytes) {
         super(bytes);
         this.target = null; //readUUID();
-        readUUID();
-        this.keepAliveId = KeepAliveId.from(readString());
+        this.keepAliveId = KeepAliveId.from(read(ByteBuffer.Adapter.STRING));
     }
 
     public InstanceBoundKeepAliveMessage(Instance target, KeepAliveId keepAliveId) {
@@ -41,8 +41,8 @@ public class InstanceBoundKeepAliveMessage extends InstanceBoundMessage {
 
     @Override
     public void write() {
-        writeUUID(target.uniqueIdentifier());
-        writeString(Arrays.toString(keepAliveId.data()));
+        //write(ByteBuffer.Adapter.UUID, target.uniqueIdentifier());
+        write(ByteBuffer.Adapter.STRING, Arrays.toString(keepAliveId.data()));
     }
 
     public record KeepAliveId(byte[] data) {
@@ -75,8 +75,8 @@ public class InstanceBoundKeepAliveMessage extends InstanceBoundMessage {
         public Response(byte[] bytes) {
             super(bytes);
             this.origin = null /*readUUID()*/;
-            this.keepAliveId = KeepAliveId.from(readString());
-            this.pingResponse = (PingResponse) readObject();
+            this.keepAliveId = KeepAliveId.from(read(ByteBuffer.Adapter.STRING));
+            this.pingResponse = PingResponse.from(read(ByteBuffer.Adapter.STRING));
         }
 
         public Response(Instance origin, InstanceBoundKeepAliveMessage keepAlivePacket, PingResponse pingResponse) {
@@ -95,11 +95,22 @@ public class InstanceBoundKeepAliveMessage extends InstanceBoundMessage {
 
         @Override
         public void write() {
-            writeUUID(target.uniqueIdentifier());
-            writeString(Arrays.toString(keepAliveId.data()));
-            writeObject(pingResponse);
+            write(ByteBuffer.Adapter.UUID, target.uniqueIdentifier());
+            write(ByteBuffer.Adapter.STRING, Arrays.toString(keepAliveId.data()));
+            write(ByteBuffer.Adapter.STRING, pingResponse.string());
         }
     }
 
-    public record PingResponse(int playerCount, String instanceName) { }
+    public record PingResponse(int playerCount, String instanceName) {
+
+        public static PingResponse from(String string) {
+            final String[] split = string.split("@");
+            return new PingResponse(Integer.parseInt(split[0]), split[1]);
+        }
+
+        public String string() {
+            return playerCount + "@" + instanceName;
+        }
+
+    }
 }

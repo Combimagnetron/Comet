@@ -30,7 +30,7 @@ public abstract class RemoteFeature implements Feature, MessageListener<Message>
     }
 
     public boolean proxyFeature() {
-        return platform.isProxy();
+        return platform.proxy();
     }
 
     @Override

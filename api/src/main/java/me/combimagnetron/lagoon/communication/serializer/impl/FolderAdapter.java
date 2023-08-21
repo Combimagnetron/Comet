@@ -1,7 +1,6 @@
 package me.combimagnetron.lagoon.communication.serializer.impl;
 
 import me.combimagnetron.lagoon.communication.serializer.Adapter;
-import me.combimagnetron.lagoon.communication.serializer.ByteBuffer;
 import me.combimagnetron.lagoon.file.File;
 import me.combimagnetron.lagoon.file.Folder;
 

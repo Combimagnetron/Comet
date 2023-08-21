@@ -1,0 +1,13 @@
+proxy-bound message UserSwitchServer {
+    Uuid user_id,
+    VarInt server_type
+}
+
+service-bound message ChangeServiceState {
+    Identifier service,
+    State state
+
+    type State {
+        ON, OFF, IDLE
+    }
+}

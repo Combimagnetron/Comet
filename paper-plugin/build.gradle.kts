@@ -12,6 +12,7 @@ dependencies {
     implementation("org.spongepowered:configurate-hocon:4.0.0")
     implementation(project(":api"))
     implementation(project(":paper-v1_19_R3", configuration = "reobf"))
+    implementation(project(mapOf("path" to ":paper-v1_19_R3")))
     //implementation(project(mapOf("path" to ":paper-v1_19_R3")))
     compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
 }

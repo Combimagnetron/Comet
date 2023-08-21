@@ -3,6 +3,7 @@ package me.combimagnetron.lagoon.communication.message.impl.proxybound;
 import com.google.gson.JsonObject;
 import me.combimagnetron.lagoon.feature.tempworld.level.GameLevel;
 import me.combimagnetron.lagoon.instance.Instance;
+import me.combimagnetron.lagoon.internal.network.ByteBuffer;
 import org.jetbrains.annotations.Nullable;
 
 public class ProxyBoundMoveGameLevelMessage extends ProxyBoundMessage {
@@ -27,6 +28,6 @@ public class ProxyBoundMoveGameLevelMessage extends ProxyBoundMessage {
     @Override
     public void write() {
         JsonObject object = gameLevel.serialize();
-        writeString(object.getAsString());
+        write(ByteBuffer.Adapter.STRING, object.getAsString());
     }
 }

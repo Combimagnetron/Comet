@@ -2,6 +2,7 @@ package me.combimagnetron.lagoon.communication.message.impl.servicebound;
 
 import me.combimagnetron.lagoon.communication.Message;
 import me.combimagnetron.lagoon.instance.Instance;
+import me.combimagnetron.lagoon.internal.network.ByteBuffer;
 import org.jetbrains.annotations.Nullable;
 
 public class ServiceBoundRegisterInstanceMessage extends ServiceBoundMessage {
@@ -25,6 +26,6 @@ public class ServiceBoundRegisterInstanceMessage extends ServiceBoundMessage {
 
     @Override
     public void write() {
-        writeUUID(instance.uniqueIdentifier());
+        write(ByteBuffer.Adapter.UUID, instance.uniqueIdentifier());
     }
 }

@@ -20,8 +20,6 @@ public class InstanceBlueprint implements Serializable {
         this.info = info;
     }
 
-
-
     public record Info(Identifier identifier, String version, Date created, String author) implements Serializable {
         public static Info info(Identifier identifier, String version, Date created, String author) {
             return new Info(identifier, version, created, author);

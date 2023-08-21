@@ -1,18 +1,11 @@
 package me.combimagnetron.lagoon.communication;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import me.combimagnetron.lagoon.communication.serializer.ByteBuffer;
 import me.combimagnetron.lagoon.instance.Instance;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import me.combimagnetron.lagoon.internal.network.ByteBuffer;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
-import java.util.UUID;
-
-public abstract class Message extends ByteBuffer {
+public abstract class Message {
+    private final ByteBuffer byteBuffer;
     private final int id;
     private Instance origin;
 
@@ -20,19 +13,32 @@ public abstract class Message extends ByteBuffer {
 
     public abstract void write();
 
+    public <T> void write(ByteBuffer.Adapter<T> adapter, T t) {
+        byteBuffer.write(adapter, t);
+    }
+
+    public <T> T read(ByteBuffer.Adapter<T> adapter) {
+        return byteBuffer.read(adapter);
+    }
+
     public Message(int id, Instance origin, Instance target) {
+        this.byteBuffer = ByteBuffer.empty();
         this.id = id;
         this.origin = origin;
-        writeInt(id);
+        write(ByteBuffer.Adapter.INT, id);
     }
 
     public Message(byte[] bytes) {
-        read(bytes);
-        this.id = readInt();
+        this.byteBuffer = ByteBuffer.of(bytes);
+        this.id = read(ByteBuffer.Adapter.INT);
     }
 
     public int id() {
         return id;
+    }
+
+    public ByteBuffer buffer() {
+        return byteBuffer;
     }
 
 }
