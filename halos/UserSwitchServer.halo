@@ -1,0 +1,4 @@
+proxy-bound message UserSwitchServer {
+    Uuid user_id,
+    Int server_type
+}

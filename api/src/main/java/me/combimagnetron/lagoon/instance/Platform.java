@@ -28,7 +28,7 @@ public interface Platform {
 
     interface Type {
         Type PAPER = Type.of(false, Identifier.of("comet", "paper"));
-        Type VELOCITY = Type.of(true, Identifier.of("comet", "velocity");
+        Type VELOCITY = Type.of(true, Identifier.of("comet", "velocity"));
 
         boolean proxy();
 

@@ -1,37 +1,17 @@
 package me.combimagnetron.lagoon.communication;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteStreams;
-import me.combimagnetron.lagoon.communication.message.impl.instancebound.InstanceBoundCreateGameLevelMessage;
-import me.combimagnetron.lagoon.communication.message.impl.instancebound.InstanceBoundKeepAliveMessage;
-import me.combimagnetron.lagoon.communication.message.impl.instancebound.InstanceBoundMessage;
-import me.combimagnetron.lagoon.communication.message.impl.proxybound.ProxyBoundMessage;
-import me.combimagnetron.lagoon.communication.message.impl.proxybound.ProxyBoundMoveGameLevelMessage;
-import me.combimagnetron.lagoon.communication.message.impl.proxybound.ProxyBoundMovePlayerMessage;
-import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundMessage;
-import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundRegisterInstanceMessage;
-import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundRequestInstanceBlueprintsMessage;
-import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundRequestServiceStatusChangeMessage;
-import org.reflections.Reflections;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class MessageRegistry {
     private static final ScheduledExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor();
-    private static final ConcurrentHashMap<Integer, Class<? extends InstanceBoundMessage>> INSTANCE_BOUND_MESSAGE_MAP = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<Integer, Class<? extends ServiceBoundMessage>> SERVICE_BOUND_MESSAGE_MAP = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<Integer, Class<? extends ProxyBoundMessage>> PROXY_BOUND_MESSAGE_MAP = new ConcurrentHashMap<>();
-    private static final ConcurrentHashMap<Class<? extends Message>, List<MessageListener>> LISTENER_MAP = new ConcurrentHashMap<>();
+    //private static final ConcurrentHashMap<Integer, Class<? extends InstanceBoundMessage>> INSTANCE_BOUND_MESSAGE_MAP = new ConcurrentHashMap<>();
+    //private static final ConcurrentHashMap<Integer, Class<? extends ServiceBoundMessage>> SERVICE_BOUND_MESSAGE_MAP = new ConcurrentHashMap<>();
+    //private static final ConcurrentHashMap<Integer, Class<? extends ProxyBoundMessage>> PROXY_BOUND_MESSAGE_MAP = new ConcurrentHashMap<>();
+    //private static final ConcurrentHashMap<Class<? extends Message>, List<MessageListener>> LISTENER_MAP = new ConcurrentHashMap<>();
 
-    static {
+    /*static {
         INSTANCE_BOUND_MESSAGE_MAP.put(0, InstanceBoundKeepAliveMessage.class);
         INSTANCE_BOUND_MESSAGE_MAP.put(1, InstanceBoundCreateGameLevelMessage.class);
         INSTANCE_BOUND_MESSAGE_MAP.put(2, ServiceBoundRequestInstanceBlueprintsMessage.Response.class);
@@ -41,13 +21,13 @@ public class MessageRegistry {
         SERVICE_BOUND_MESSAGE_MAP.put(0, ServiceBoundRegisterInstanceMessage.class);
         SERVICE_BOUND_MESSAGE_MAP.put(1, ServiceBoundRequestServiceStatusChangeMessage.class);
         SERVICE_BOUND_MESSAGE_MAP.put(2, ServiceBoundRequestInstanceBlueprintsMessage.class);
-    }
+    }*/
 
     public static void init() {
-        registerListeners(StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().getPackageName());
+        //registerListeners(StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass().getPackageName());
     }
 
-    public static Message read(byte[] channel, byte[] bytes) {
+    /*public static Message read(byte[] channel, byte[] bytes) {
         try {
             return EXECUTOR.submit(() -> {
                 final String channelName = new String(channel);
@@ -117,6 +97,6 @@ public class MessageRegistry {
     public static ConcurrentHashMap<Class<? extends Message>, List<MessageListener>> listeners() {
         return LISTENER_MAP;
     }
-
+*/
 
 }

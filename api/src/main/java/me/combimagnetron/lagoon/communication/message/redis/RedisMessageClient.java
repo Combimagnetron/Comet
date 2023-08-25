@@ -54,13 +54,13 @@ public class RedisMessageClient implements MessageClient {
 
     @Override
     public Operation<Void> send(Message packet, MessageChannel channel) {
-        return Operation.simple(() -> pubSub.sync().publish(channel.identifier().string().getBytes(), packet.toBytes()));
+        return Operation.simple(() -> pubSub.sync().publish(channel.identifier().string().getBytes(), packet.buffer().bytes()));
     }
 
     @Override
     public Operation<Void> send(Message packet, MessageChannel channel, ProtocolCallback callback) {
         return Operation.simple(() -> {
-            executor.execute(() -> pubSub.sync().publish(channel.identifier().string().getBytes(), packet.toBytes()));
+            executor.execute(() -> pubSub.sync().publish(channel.identifier().string().getBytes(), packet.buffer().bytes()));
             callback.onSucces();
         });
     }

@@ -37,7 +37,7 @@ public class PulsarMessageChannel extends Thread implements MessageChannel {
             while (!client.client().isClosed()) {
                 org.apache.pulsar.client.api.Message<byte[]> message = this.consumer.receive(500, TimeUnit.MILLISECONDS);
                 if (message == null) continue;
-                MessageRegistry.read(message.getTopicName().getBytes(), message.getData());
+                //MessageRegistry.read(message.getTopicName().getBytes(), message.getData());
             }
             this.close();
         } catch (PulsarClientException exception) {

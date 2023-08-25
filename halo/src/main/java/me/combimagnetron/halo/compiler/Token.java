@@ -1,20 +1,22 @@
 package me.combimagnetron.halo.compiler;
 
-import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
-public record Token(Type<?> type, String captured) {
+public record Token(Type type, String captured) {
 
-    public interface Type<T> {
-        Type<Object> OBJECT = Impl.of("/([A-Z]\\w*)/g");
-        Type<Method> METHOD_REFERENCE = Impl.of("/(\\.[a-z]+)*/g");
-        Type<String> TEXT = Impl.of("/\"(.*?)\"/g");
-        Type<Double> NUMBER = Impl.of("/[\\d\\.]+/g");
-        Type<?>[] ALL = new Type[]{OBJECT, METHOD_REFERENCE, TEXT, NUMBER};
+    public interface Type {
+        Type OBJECT = Impl.of("([A-Z]\\w*)");
+        Type METHOD_REFERENCE = Impl.of("([A-Z]\\w* ([a-z_]+)+)");
+        Type START = Impl.of("([a-z]\\w+-bound message \\w+ \\{)");
+        Type TYPE_ENUM = Impl.of("type \\w* {\\n\\s+(([A-Z]+)+,*\\s*)+}");
+        Type TYPE_CLASS = Impl.of("type \\w*\\(((.*?) ([a-z]+)+,*)*\\) {\\n+\\s+}");
+        Type CLASS = Impl.of("([a-z]\\w+-bound message \\w+ \\{\\s*(((.*?) ([a-z_]+)+,*)\\n*\\s*)+\\})");
+        Type NUMBER = Impl.of("[\\d\\.]+");
+        Type[] ALL = new Type[]{OBJECT, METHOD_REFERENCE, NUMBER};
 
         Pattern pattern();
 
-        record Impl<T>(String literalPattern) implements Type<T> {
+        record Impl<T>(String literalPattern) implements Type {
             public static <T> Impl<T> of(String literalPattern) {
                 return new Impl<>(literalPattern);
             }

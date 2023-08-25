@@ -2,7 +2,6 @@ package me.combimagnetron.lagoon.instance;
 
 import me.combimagnetron.lagoon.Comet;
 import me.combimagnetron.lagoon.communication.message.MessageChannel;
-import me.combimagnetron.lagoon.communication.message.impl.servicebound.ServiceBoundRequestInstanceBlueprintsMessage;
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.util.VersionCollection;
 
@@ -28,11 +27,11 @@ public class InstanceBlueprint implements Serializable {
 
     public static VersionCollection<InstanceBlueprint> request(Identifier identifier) {
         final MessageChannel channel = async(Comet.messageClient().channel(Identifier.of("service", "pilot")));
-        async(channel.send(new ServiceBoundRequestInstanceBlueprintsMessage(identifier)));
+        //async(channel.send(//new ServiceBoundRequestInstanceBlueprintsMessage(identifier)));
         AtomicReference<VersionCollection<InstanceBlueprint>> atomicReference = new AtomicReference<>();
-        channel.awaitMessage(ServiceBoundRequestInstanceBlueprintsMessage.Response.class, (message) -> {
-            atomicReference.set(((ServiceBoundRequestInstanceBlueprintsMessage.Response) message).versionCollection());
-        });
+        //channel.awaitMessage(//ServiceBoundRequestInstanceBlueprintsMessage.Response.class, (message) -> {
+            //atomicReference.set(((ServiceBoundRequestInstanceBlueprintsMessage.Response) message).versionCollection());
+        //});
         return atomicReference.get();
     }
 

@@ -24,7 +24,7 @@ public class RedisMessageChannel extends RedisPubSubAdapter<byte[], byte[]> impl
 
     @Override
     public void message(byte[] channel, byte[] message) {
-        Message received = MessageRegistry.read(channel, message);
+        Message received = null;//MessageRegistry.read(channel, message);
         this.history.add(received);
         lastMessage = received;
     }

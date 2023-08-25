@@ -11,3 +11,16 @@ service-bound message ChangeServiceState {
         ON, OFF, IDLE
     }
 }
+
+instance-bound message LoadWorld {
+    Position position,
+    World world
+
+    type Position(Int x, Int y, Int z) }
+
+    }
+
+    type World(Text file_name, Uuid uuid) {
+
+    }
+}
