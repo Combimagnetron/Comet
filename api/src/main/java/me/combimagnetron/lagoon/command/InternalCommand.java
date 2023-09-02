@@ -20,7 +20,7 @@ public interface InternalCommand {
 
     Collection<InternalSubCommand> subCommands();
 
-    Operation<Void> run(User<?> user, Object... objects);
+    void run(User<?> user, Object... objects);
 
     @Nullable Condition condition();
 
@@ -32,21 +32,19 @@ public interface InternalCommand {
         }
 
         @Override
-        public Operation<Void> run(User<?> user, Object... objects) {
-            return Operation.simple(() -> {
-                try {
-                    check();
-                    final StringBuilder builder = new StringBuilder();
-                    for (Class<?> parameterType : reflectionInfo.execute.getParameterTypes()) {
-                        builder.append(parameterType.getTypeName());
-                    }
-                    Bukkit.getLogger().info(builder.toString() + " " + reflectionInfo.execute.getParameterCount() + "\n" + Arrays.toString(objects));
-                    reflectionInfo.execute.invoke(reflectionInfo.clazz.getDeclaredConstructor().newInstance(), user, objects);
-                } catch (IllegalAccessException | InvocationTargetException | InstantiationException |
-                         NoSuchMethodException e) {
-                    throw new RuntimeException(e);
+        public void run(User<?> user, Object... objects) {
+            try {
+                check();
+                final StringBuilder builder = new StringBuilder();
+                for (Class<?> parameterType : reflectionInfo.execute.getParameterTypes()) {
+                    builder.append(parameterType.getTypeName());
                 }
-            });
+                Bukkit.getLogger().info(builder + " " + reflectionInfo.execute.getParameterCount() + "\n" + Arrays.toString(objects));
+                reflectionInfo.execute.invoke(reflectionInfo.clazz.getDeclaredConstructor().newInstance(), user, objects);
+            } catch (IllegalAccessException | InvocationTargetException | InstantiationException |
+                     NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
         }
         private void check() {
             if (reflectionInfo.execute.getParameterCount() > 1 && !subCommands().isEmpty()) {

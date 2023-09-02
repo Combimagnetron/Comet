@@ -26,7 +26,7 @@ public class InstanceBlueprint implements Serializable {
     }
 
     public static VersionCollection<InstanceBlueprint> request(Identifier identifier) {
-        final MessageChannel channel = async(Comet.messageClient().channel(Identifier.of("service", "pilot")));
+        final MessageChannel channel = Comet.messageClient().channel(Identifier.of("service", "pilot"));
         //async(channel.send(//new ServiceBoundRequestInstanceBlueprintsMessage(identifier)));
         AtomicReference<VersionCollection<InstanceBlueprint>> atomicReference = new AtomicReference<>();
         //channel.awaitMessage(//ServiceBoundRequestInstanceBlueprintsMessage.Response.class, (message) -> {

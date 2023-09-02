@@ -1,7 +1,6 @@
 package me.combimagnetron.lagoon;
 
 import me.combimagnetron.lagoon.communication.MessageClient;
-import me.combimagnetron.lagoon.communication.message.pulsar.PulsarMessageClient;
 import me.combimagnetron.lagoon.communication.message.redis.RedisMessageClient;
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.feature.Feature;
@@ -111,10 +110,6 @@ public class ServerImpl implements Server {
                     default -> {
                         RedisMessageClient client = MessageClient.redis(messageClientSettings.host(), messageClientSettings.port(), messageClientSettings.password());
                         summary.messageClientMap().put(MessageClient.Type.REDIS, client);
-                    }
-                    case PULSAR -> {
-                        PulsarMessageClient client = MessageClient.pulsar(messageClientSettings.uri());
-                        summary.messageClientMap().put(MessageClient.Type.PULSAR, client);
                     }
                     case NONE -> {
 

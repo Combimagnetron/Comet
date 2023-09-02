@@ -1,26 +1,23 @@
 package me.combimagnetron.lagoon.communication.message.redis;
 
-import me.combimagnetron.lagoon.communication.Message;
-import me.combimagnetron.lagoon.communication.MessageClient;
-import me.combimagnetron.lagoon.communication.ProtocolCallback;
-import me.combimagnetron.lagoon.communication.message.MessageChannel;
-import me.combimagnetron.lagoon.data.Identifier;
-import me.combimagnetron.lagoon.operation.Operation;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.codec.ByteArrayCodec;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
-import io.lettuce.core.pubsub.api.async.RedisPubSubAsyncCommands;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import io.netty.util.AsciiString;
-import io.netty.util.concurrent.DefaultThreadFactory;
+import me.combimagnetron.lagoon.communication.Message;
+import me.combimagnetron.lagoon.communication.MessageClient;
+import me.combimagnetron.lagoon.communication.ProtocolCallback;
+import me.combimagnetron.lagoon.communication.message.MessageChannel;
+import me.combimagnetron.lagoon.data.Identifier;
 
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.*;
-import java.util.logging.Logger;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class RedisMessageClient implements MessageClient {
     private final HashSet<MessageChannel> channels = new HashSet<>();
@@ -39,40 +36,36 @@ public class RedisMessageClient implements MessageClient {
     }
 
     @Override
-    public Operation<Set<MessageChannel>> channels() {
-        return Operation.executable(() -> channels);
+    public Set<MessageChannel> channels() {
+        return channels;
     }
 
     @Override
-    public Operation<Void> terminate() {
-        return Operation.simple(() -> {
-            pubSub.close();
-            redisClient.shutdown();
-            executor.shutdown();
-        });
+    public void terminate() {
+        pubSub.close();
+        redisClient.shutdown();
+        executor.shutdown();
     }
 
     @Override
-    public Operation<Void> send(Message packet, MessageChannel channel) {
-        return Operation.simple(() -> pubSub.sync().publish(channel.identifier().string().getBytes(), packet.buffer().bytes()));
+    public void post(Message packet, MessageChannel channel) {
+        pubSub.sync().publish(channel.identifier().string().getBytes(), packet.buffer().bytes());
     }
 
     @Override
-    public Operation<Void> send(Message packet, MessageChannel channel, ProtocolCallback callback) {
-        return Operation.simple(() -> {
-            executor.execute(() -> pubSub.sync().publish(channel.identifier().string().getBytes(), packet.buffer().bytes()));
-            callback.onSucces();
-        });
+    public void post(Message packet, MessageChannel channel, ProtocolCallback callback) {
+        executor.execute(() -> pubSub.sync().publish(channel.identifier().string().getBytes(), packet.buffer().bytes()));
+        callback.onSucces();
     }
 
     @Override
-    public Operation<Void> registerChannel(MessageChannel channel) {
-        return Operation.simple(() -> registerChannelInternal(channel));
+    public void registerChannel(MessageChannel channel) {
+        registerChannelInternal(channel);
     }
 
     @Override
-    public Operation<MessageChannel> channel(Identifier identifier) {
-        return Operation.executable(() -> channels.stream().filter(channel -> channel.identifier() == identifier).findFirst().orElse(createChannel(identifier)));
+    public MessageChannel channel(Identifier identifier) {
+        return channels.stream().filter(channel -> channel.identifier() == identifier).findFirst().orElse(createChannel(identifier));
     }
 
     private void registerChannelInternal(MessageChannel channel) {

@@ -27,7 +27,7 @@ public interface Sprite {
 
     char character();
 
-    static Builder builder() {
+    static Builder sprite() {
         return new Builder();
     }
 

@@ -14,7 +14,9 @@ public interface User<T extends Audience> {
 
      String name();
 
-     void message(Component component);
+     default void message(Component component) {
+          platformSpecificPlayer().sendMessage(component);
+     }
 
      Instance instance();
 

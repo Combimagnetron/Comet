@@ -1,13 +1,11 @@
 package me.combimagnetron.lagoon.communication.message.redis;
 
+import io.lettuce.core.pubsub.RedisPubSubAdapter;
 import me.combimagnetron.lagoon.communication.Message;
-import me.combimagnetron.lagoon.communication.MessageRegistry;
 import me.combimagnetron.lagoon.communication.message.MessageChannel;
 import me.combimagnetron.lagoon.communication.message.MessageRecipient;
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.operation.Operation;
-import io.lettuce.core.pubsub.RedisPubSubAdapter;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -40,17 +38,17 @@ public class RedisMessageChannel extends RedisPubSubAdapter<byte[], byte[]> impl
     }
 
     @Override
-    public Operation<Void> send(Message abstractCustomPacket) {
-        return client.send(abstractCustomPacket, this);
+    public void send(Message message) {
+        client.post(message, this);
     }
 
     @Override
-    public Operation<Collection<MessageRecipient>> recipients() {
-        return Operation.executable(() -> messageRecipientSet);
+    public Collection<MessageRecipient> recipients() {
+        return messageRecipientSet;
     }
 
     @Override
-    public Operation<Void> awaitMessage(Class<? extends Message> type, Consumer<Message> execute) {
+    public Operation<Void> await(Class<? extends Message> type, Consumer<Message> execute) {
         return Operation.await(() -> {
             execute.accept(lastMessage);
             return null;

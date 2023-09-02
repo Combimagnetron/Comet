@@ -12,10 +12,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
+import javax.inject.Inject;
 import java.util.*;
 
 public class PaperCommandHandler extends CommandHandler implements CommandExecutor, Listener {
     private final Collection<InternalCommand> commands;
+    @Inject
+    private CometBase<?> comet;
 
     public PaperCommandHandler() {
         commands = commands();
@@ -28,8 +31,8 @@ public class PaperCommandHandler extends CommandHandler implements CommandExecut
         if (!(sender instanceof Player player)) {
             return false;
         }
-        User<?> user = Comet.userByUniqueId(player.getUniqueId());
-        internalCommand.run(user).async();
+        User<?> user = comet.users().user(player.getUniqueId()).orElseThrow();
+        internalCommand.run(user);
         return true;
     }
 
@@ -42,6 +45,8 @@ public class PaperCommandHandler extends CommandHandler implements CommandExecut
 
     static class PaperCommand extends Command {
         private final InternalCommand command;
+        @Inject
+        private CometBase<?> comet;
 
         protected PaperCommand(@NotNull String name, InternalCommand command) {
             super(name);
@@ -55,9 +60,9 @@ public class PaperCommandHandler extends CommandHandler implements CommandExecut
             }
             Set<Object> objectSet = new LinkedHashSet<>();
             Arrays.stream(command.format().arguments()).forEach(argument -> {
-                objectSet.add(argument.)
+
             });
-            command.run(Comet.userByUniqueId(player.getUniqueId()), new StringArgument("frog.bbmodel")).async();
+            command.run(comet.users().user(player.getUniqueId()).orElseThrow(), Argument.STRING);
             return true;
         }
 

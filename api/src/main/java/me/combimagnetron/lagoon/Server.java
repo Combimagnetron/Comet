@@ -4,7 +4,6 @@ import me.combimagnetron.lagoon.communication.MessageClient;
 import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.feature.Feature;
 import me.combimagnetron.lagoon.instance.Instance;
-import me.combimagnetron.lagoon.operation.Operation;
 import me.combimagnetron.lagoon.user.User;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;

@@ -13,16 +13,15 @@ public interface MessageChannel {
 
     /**
      * Sends the given packet to the message.
-     * @param The packet to be sent.
-     * @return Simple operation which runs the sending process when called.
+     * @param message to be sent.
      */
-    Operation<Void> send(Message abstractCustomPacket);
+    void send(Message message);
 
     /**
      * @return All the message recipients currently listening to the channel.
      */
-    Operation<Collection<MessageRecipient>> recipients();
+    Collection<MessageRecipient> recipients();
 
-    Operation<Void> awaitMessage(Class<? extends Message> type, Consumer<Message> execute);
+    Operation<Void> await(Class<? extends Message> type, Consumer<Message> execute);
 
 }

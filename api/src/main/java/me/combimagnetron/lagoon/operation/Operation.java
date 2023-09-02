@@ -15,10 +15,6 @@ public interface Operation<V> {
 
     V complete();
 
-    void fail();
-
-    OperationState state();
-
     default Collection<Operation<?>> chained() {
         return Collections.unmodifiableSet(chained);
     }
@@ -47,7 +43,6 @@ public interface Operation<V> {
     final class SimpleOperation implements Operation<Void> {
         private final SimpleOperationConsumer simpleOperationConsumer;
         private Consumer<Void> consumer = unused -> {};
-        private OperationState state = OperationState.IDLE;
 
         public SimpleOperation(SimpleOperationConsumer consumer) {
             this.simpleOperationConsumer = consumer;
@@ -60,22 +55,11 @@ public interface Operation<V> {
 
         @Override
         public Void complete() {
-            this.state = OperationState.STARTING;
             simpleOperationConsumer.run();
             consumer.accept(null);
-            this.state = OperationState.FINISHED;
             return null;
         }
 
-        @Override
-        public void fail() {
-            this.state = OperationState.FAILED;
-        }
-
-        @Override
-        public OperationState state() {
-            return state;
-        }
     }
 
     @FunctionalInterface
@@ -94,7 +78,6 @@ public interface Operation<V> {
     class ExecutableOperation<T> implements Operation<T> {
         private final SimpleReturningConsumer<T> executableCode;
         private Consumer<T> consumer = t -> {};
-        private OperationState state = OperationState.IDLE;
 
         ExecutableOperation(SimpleReturningConsumer<T> executableCode) {
             this.executableCode = executableCode;
@@ -107,22 +90,11 @@ public interface Operation<V> {
 
         @Override
         public T complete() {
-            this.state = OperationState.RUNNING;
             T t = executableCode.run();
             consumer.accept(t);
-            this.state = OperationState.FINISHED;
             return t;
         }
 
-        @Override
-        public void fail() {
-            this.state = OperationState.FAILED;
-        }
-
-        @Override
-        public OperationState state() {
-            return state;
-        }
     }
 
     @FunctionalInterface
