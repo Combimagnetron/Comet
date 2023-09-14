@@ -1,25 +1,45 @@
 package me.combimagnetron.lagoon.config.annotation.processor;
 
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigObject;
+import com.typesafe.config.parser.ConfigDocumentFactory;
 import me.combimagnetron.lagoon.config.Config;
 import me.combimagnetron.lagoon.config.annotation.*;
+import me.combimagnetron.lagoon.config.annotation.Optional;
 import me.combimagnetron.lagoon.config.element.Node;
+import me.combimagnetron.lagoon.config.reader.Reader;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Processor {
 
-    public static <T> T load(Class<T> clazz) {
-        final Config config = transform(clazz);
+    public static <T> T load(Class<T> clazz, Path path) {
+        final Map<Class<?>, Object> arguments = new LinkedHashMap<>();
+        final Config template = transform(clazz);
         final Set<Class<?>> fields = Arrays.stream(clazz.getEnclosingConstructor().getParameterTypes()).collect(Collectors.toSet());
         final Set<Object> objects = new HashSet<>();
-        for (Node<?> node : config.nodes()) {
+        final com.typesafe.config.Config config = ConfigFactory.parseFile(path.toFile());
+        for (Node<?> node : template.nodes()) {
+            Object object = config.getAnyRef(node.name());
+            arguments.put(node.type(), object);
         }
-        return null;
+        try {
+            return clazz.getDeclaredConstructor(arguments.keySet().toArray(new Class[0])).newInstance(arguments.values().toArray());
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Config read(Path path) {
+        ConfigObject object = ConfigFactory.parseFile(path.toFile()).root();
+        Config config = Config.config();
+        object.unwrapped().forEach(((string, o) -> config.node(Node.required(string, o))));
+        return config;
     }
 
     @NotNull
@@ -51,11 +71,6 @@ public class Processor {
             return new ProcessedField<>(name, type);
         }
 
-
     }
-
-
-
-
 
 }

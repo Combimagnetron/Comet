@@ -8,9 +8,8 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.slf4j.Logger;
 
 import java.util.UUID;
-import java.util.stream.IntStream;
 
-@Plugin(id = "myfirstplugin", name = "My First Plugin")
+@Plugin(id = "comet", name = "Comet")
 public class LagoonProxyPlugin {
 
     private final ProxyServer server;

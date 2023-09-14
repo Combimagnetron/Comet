@@ -2,6 +2,8 @@ package me.combimagnetron.lagoon.communication;
 
 import me.combimagnetron.lagoon.communication.message.MessageChannel;
 import me.combimagnetron.lagoon.communication.message.redis.RedisMessageClient;
+import me.combimagnetron.lagoon.config.annotation.Config;
+import me.combimagnetron.lagoon.config.annotation.Optional;
 import me.combimagnetron.lagoon.data.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
@@ -30,14 +32,19 @@ public interface MessageClient {
         REDIS, PULSAR, NONE
     }
 
-    @ConfigSerializable
+    @Config
+    record Settings(@Optional String uri, @Optional String username, @Optional String host, @Optional Integer port, String password, Type type) {
+
+    }
+
+    @Config
     class MessageClientSettings {
-        @Nullable private String uri;
-        @Nullable private String username;
-        @Nullable private String host;
-        @Nullable private Integer port;
+        @Optional private String uri;
+        @Optional private String username;
+        @Optional private String host;
+        @Optional private Integer port;
+        @Optional private Type type;
         private String password;
-        private Type type;
 
         public String uri() {
             return uri;

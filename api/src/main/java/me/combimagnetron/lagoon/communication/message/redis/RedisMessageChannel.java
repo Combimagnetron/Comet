@@ -52,8 +52,6 @@ public class RedisMessageChannel extends RedisPubSubAdapter<byte[], byte[]> impl
         return Operation.await(() -> {
             execute.accept(lastMessage);
             return null;
-        }, () -> {
-            return this.lastMessage.getClass().getName().equals(type.getName());
-        });
+        }, () -> this.lastMessage.getClass().getName().equals(type.getName()));
     }
 }

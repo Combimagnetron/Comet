@@ -22,6 +22,7 @@ dependencies {
     implementation("org.jetbrains:annotations:24.0.0")
     implementation("org.apache.pulsar:pulsar-client:3.0.0")
     implementation("io.github.jglrxavpok.hephaistos:common:2.6.0")
+    implementation("com.typesafe:config:1.4.2")
     implementation("com.google.dagger:dagger:$daggerVersion")
     annotationProcessor("com.google.dagger:$daggerVersion")
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-reflect", version = kotlinVersion)
