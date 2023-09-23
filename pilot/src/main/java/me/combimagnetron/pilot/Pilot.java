@@ -28,6 +28,7 @@ public class Pilot implements Service<StringStringParameter> {
     private final MessageChannel channel;
     private final ApiClient k8sApiClient;
     private final CoreV1Api k8sApi;
+    private static Pilot pilot;
 
     static {
         try {
@@ -44,6 +45,7 @@ public class Pilot implements Service<StringStringParameter> {
         this.k8sApiClient = Config.defaultClient();
         this.k8sApi = new CoreV1Api(k8sApiClient);
         V1Deployment deployment = new V1Deployment();
+        pilot = this;
     }
 
     @Override
@@ -66,8 +68,16 @@ public class Pilot implements Service<StringStringParameter> {
         return new StringStringParameter();
     }
 
+    public MessageClient messageClient() {
+        return this.client;
+    }
+
     public static GitHub gitHub() {
         return GIT_HUB;
+    }
+
+    public static Pilot pilot() {
+        return pilot;
     }
 
 }
