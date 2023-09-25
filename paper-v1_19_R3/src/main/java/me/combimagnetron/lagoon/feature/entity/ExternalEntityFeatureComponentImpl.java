@@ -27,17 +27,13 @@ public class ExternalEntityFeatureComponentImpl extends ExternalEntityFeatureCom
     }
 
     @Override
-    public Operation<Void> restart() {
-        return null;
+    public void stop() {
+
     }
 
     @Override
-    public Set<Class<? extends Action<?, ?>>> actions() {
-        return null;
+    public void start() {
+
     }
 
-    @Override
-    public FeatureOutsourceReasonParameter config() {
-        return null;
-    }
 }

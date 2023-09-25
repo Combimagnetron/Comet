@@ -18,7 +18,7 @@ import java.util.Set;
 import static me.combimagnetron.lagoon.operation.Operations.async;
 
 @MessageHandler
-public abstract class RemoteFeature implements Feature, MessageListener<Message>, Serializable, Service<StringStringParameter> {
+public abstract class RemoteFeature implements Feature, MessageListener<Message>, Serializable, Service {
     private final MessageClient client = Comet.messageClient(MessageClient.Type.REDIS);
     private final MessageChannel channel = client.channel(Identifier.of("remote-feature", identifier().key().string()));
     private final Platform platform;

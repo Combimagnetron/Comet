@@ -4,6 +4,7 @@ import me.combimagnetron.lagoon.internal.entity.Entity;
 import me.combimagnetron.lagoon.internal.entity.metadata.Metadata;
 import me.combimagnetron.lagoon.internal.entity.metadata.type.Boolean;
 import me.combimagnetron.lagoon.internal.entity.metadata.type.Float;
+import me.combimagnetron.lagoon.internal.entity.metadata.type.Vector3;
 
 public class Interaction extends Entity.AbstractEntity {
     private float width;
@@ -11,7 +12,17 @@ public class Interaction extends Entity.AbstractEntity {
     private boolean responsive;
 
     @Override
+    public Vector3 position() {
+        return null;
+    }
+
+    @Override
     public Data data() {
+        return null;
+    }
+
+    @Override
+    public Type type() {
         return null;
     }
 

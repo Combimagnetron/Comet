@@ -14,13 +14,13 @@ public class ServiceLoader {
 
     }
 
-    private Service<?> load(Class<?> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    private Service load(Class<?> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         if (!clazz.isAssignableFrom(Service.class) && !clazz.isAnnotationPresent(AutoService.class)) {
             return null;
         }
         AutoService service = clazz.getAnnotation(AutoService.class);
         Object[] objects = TypeVariablePair.get(service.parameters());
-        Service<?> instance = (Service<?>) clazz.getDeclaredConstructor(service.parameters()).newInstance(objects);
+        Service instance = (Service) clazz.getDeclaredConstructor(service.parameters()).newInstance(objects);
         return instance;
     }
 

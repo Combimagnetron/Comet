@@ -23,7 +23,6 @@ public class Operations {
                 return t;
             }).get();
         } catch (InterruptedException | ExecutionException e) {
-            operation.fail();
             throw new RuntimeException(e);
         }
     }

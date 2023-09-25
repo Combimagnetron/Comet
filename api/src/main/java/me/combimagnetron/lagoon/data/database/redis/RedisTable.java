@@ -15,4 +15,9 @@ public class RedisTable implements Table {
     public Table insert(Row<?> row) {
         return this;
     }
+
+    @Override
+    public Table put(Object... objects) {
+        return null;
+    }
 }

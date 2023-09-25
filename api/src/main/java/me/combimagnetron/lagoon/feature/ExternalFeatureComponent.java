@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Set;
 
-public abstract class ExternalFeatureComponent implements Service<ExternalFeatureComponent.FeatureOutsourceReasonParameter> {
+public abstract class ExternalFeatureComponent implements Service {
     private final Feature feature;
     private final OutsourceReason outsourceReason;
 

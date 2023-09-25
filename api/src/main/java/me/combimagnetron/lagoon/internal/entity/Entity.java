@@ -1,11 +1,10 @@
 package me.combimagnetron.lagoon.internal.entity;
 
 import me.combimagnetron.lagoon.internal.entity.metadata.Metadata;
-import me.combimagnetron.lagoon.internal.entity.metadata.type.Byte;
-import me.combimagnetron.lagoon.internal.entity.metadata.type.OptChat;
-import me.combimagnetron.lagoon.internal.entity.metadata.type.Pose;
-import me.combimagnetron.lagoon.internal.entity.metadata.type.VarInt;
+import me.combimagnetron.lagoon.internal.entity.metadata.type.*;
 import me.combimagnetron.lagoon.data.Identifier;
+import me.combimagnetron.lagoon.internal.entity.metadata.type.Boolean;
+import me.combimagnetron.lagoon.internal.entity.metadata.type.Byte;
 import net.kyori.adventure.text.Component;
 
 import java.util.UUID;
@@ -14,7 +13,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings("unused")
 public interface Entity {
 
+    EntityId id();
+
+    UUID uuid();
+
+    Vector3 position();
+
     Data data();
+
+    Type type();
 
     interface Data {
 
@@ -49,56 +56,64 @@ public interface Entity {
             metadata = Metadata.merge(metadata, extend());
         }
 
-        public void setCrouching(boolean crouching) {
+        public void onFire(boolean onFire) {
+            this.onFire = onFire;
+        }
+
+        public void crouching(boolean crouching) {
             this.crouching = crouching;
         }
 
-        public void setSprinting(boolean sprinting) {
+        public void sprinting(boolean sprinting) {
             this.sprinting = sprinting;
         }
 
-        public void setSwimming(boolean swimming) {
+        public void swimming(boolean swimming) {
             this.swimming = swimming;
         }
 
-        public void setInvisible(boolean invisible) {
+        public void invisible(boolean invisible) {
             this.invisible = invisible;
         }
 
-        public void setGlowing(boolean glowing) {
+        public void glowing(boolean glowing) {
             this.glowing = glowing;
         }
 
-        public void setFlyingElytra(boolean flyingElytra) {
+        public void flyingElytra(boolean flyingElytra) {
             this.flyingElytra = flyingElytra;
         }
 
-        public void setName(Component name) {
+        public void name(Component name) {
             this.name = name;
         }
 
-        public void setAir(int air) {
+        public void air(int air) {
             this.air = air;
         }
 
-        public void setNameVisible(boolean nameVisible) {
+        public void nameVisible(boolean nameVisible) {
             this.nameVisible = nameVisible;
         }
 
-        public void setSilent(boolean silent) {
+        public void silent(boolean silent) {
             this.silent = silent;
         }
 
-        public void setNoGravity(boolean noGravity) {
+        public void noGravity(boolean noGravity) {
             this.noGravity = noGravity;
         }
 
-        public void setPose(Pose pose) {
+        public void pose(Pose pose) {
             this.pose = pose;
         }
 
-        public void setFrozenPowderedSnow(int frozenPowderedSnow) {
+        public void frozenPowderedSnow(int frozenPowderedSnow) {
             this.frozenPowderedSnow = frozenPowderedSnow;
+        }
+
+        public void metadata(Metadata metadata) {
+            this.metadata = metadata;
         }
 
         public EntityId id() {
@@ -172,9 +187,9 @@ public interface Entity {
                     Byte.of((byte)0),
                     VarInt.of(air),
                     OptChat.of(name),
-                    me.combimagnetron.lagoon.internal.entity.metadata.type.Boolean.of(nameVisible),
-                    me.combimagnetron.lagoon.internal.entity.metadata.type.Boolean.of(silent),
-                    me.combimagnetron.lagoon.internal.entity.metadata.type.Boolean.of(noGravity),
+                    Boolean.of(nameVisible),
+                    Boolean.of(silent),
+                    Boolean.of(noGravity),
                     pose,
                     VarInt.of(frozenPowderedSnow)
             );
@@ -189,6 +204,10 @@ public interface Entity {
             return new EntityId(INTEGER.getAndIncrement());
         }
 
+        public static EntityId of(int id) {
+            return new EntityId(id);
+        }
+
     }
 
     interface Type {
@@ -198,6 +217,10 @@ public interface Entity {
         Identifier identifier();
 
         Metadata metadata();
+
+        static Type find(int id) {
+            return null;
+        }
 
         record Impl(int id, Identifier identifier, Metadata metadata) {
 

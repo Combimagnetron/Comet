@@ -24,7 +24,11 @@ public interface MessageClient {
 
     MessageChannel channel(Identifier identifier);
 
-    static RedisMessageClient redis(String host, int port, String password) {
+    static MessageClient redis(Settings settings) {
+        return RedisMessageClient.of(settings.host(), settings.port(), settings.password());
+    }
+
+    static MessageClient redis(String host, int port, String password) {
         return RedisMessageClient.of(host, port, password);
     }
 

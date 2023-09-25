@@ -8,6 +8,9 @@ import me.combimagnetron.lagoon.service.ServiceHandler;
 import me.combimagnetron.lagoon.user.UserHandler;
 import net.kyori.adventure.audience.Audience;
 
+import javax.inject.Singleton;
+
+@Singleton
 public interface CometBase<T> {
 
     Network network();

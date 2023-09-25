@@ -19,7 +19,17 @@ public class Display extends Entity.AbstractEntity {
     private int glowOverride = -1;
 
     @Override
+    public Vector3 position() {
+        return null;
+    }
+
+    @Override
     public Data data() {
+        return null;
+    }
+
+    @Override
+    public Type type() {
         return null;
     }
 

@@ -6,18 +6,12 @@ import me.combimagnetron.lagoon.service.config.Parameter;
 
 import java.util.Set;
 
-public interface Service<P extends Parameter<?, ?>> {
+public interface Service {
 
     Identifier identifier();
 
-    Operation<Void> restart();
+    void stop();
 
-    Set<Class<? extends Action<?, ?>>> actions();
-
-    P config();
-
-    static <T extends Parameter<?, ?>> Service<T> deploy(Service<T> service) {
-        return null;
-    }
+    void start();
 
 }

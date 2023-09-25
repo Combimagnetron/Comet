@@ -5,8 +5,8 @@ plugins {
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
-private val kotlinVersion = "1.7.22"
-private val daggerVersion = "2.48"
+val kotlinVersion = "1.7.22"
+val daggerVersion = "2.48"
 
 dependencies {
     implementation("com.google.code.gson:gson:2.10")
@@ -23,8 +23,8 @@ dependencies {
     implementation("org.apache.pulsar:pulsar-client:3.0.0")
     implementation("io.github.jglrxavpok.hephaistos:common:2.6.0")
     implementation("com.typesafe:config:1.4.2")
-    implementation("com.google.dagger:dagger:$daggerVersion")
-    annotationProcessor("com.google.dagger:$daggerVersion")
+    implementation("io.avaje:avaje-inject:9.4")
+    annotationProcessor("io.avaje:avaje-inject-generator:9.4")
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-reflect", version = kotlinVersion)
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = kotlinVersion)
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")

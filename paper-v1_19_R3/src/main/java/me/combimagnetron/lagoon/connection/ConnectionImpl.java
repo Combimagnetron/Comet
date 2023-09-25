@@ -20,16 +20,23 @@ import me.combimagnetron.lagoon.internal.network.packet.client.ClientSetScreenSl
 import me.combimagnetron.lagoon.user.User;
 import me.combimagnetron.lagoon.util.Values;
 import net.kyori.adventure.key.Key;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.item.ItemStack;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R1.block.CraftBlock;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.Function;
@@ -83,7 +90,9 @@ public class ConnectionImpl implements me.combimagnetron.lagoon.internal.network
                 super.channelRead(ctx, message);
                 return;
             }
-            Packet packetContainer = (Packet) clazz.getDeclaredMethod("from", ByteBuffer.class).invoke(null, buffer);
+            Constructor<? extends Packet> constructor = clazz.getDeclaredConstructor(ByteBuffer.class);
+            constructor.setAccessible(true);
+            Packet packetContainer = constructor.newInstance(buffer);
             library.network().sniffer().call(packetContainer);
             super.channelRead(ctx, message);
         }

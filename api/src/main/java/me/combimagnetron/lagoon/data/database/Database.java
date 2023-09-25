@@ -26,8 +26,8 @@ public interface Database {
     default void test() {
         Database database = Database.redis(Credentials.redis(null, null, 0, null));
         Table table = database.table(Identifier.of("users"));
-        table.insert(Row.row("uuid", UUID.class)).insert(Row.row("name", String.class));
-
+        table.insert(Row.row("uuid", UUID.class)).insert(Row.row("name", String.class))
+                .put();
     }
 
     interface DataStorageArguments {
