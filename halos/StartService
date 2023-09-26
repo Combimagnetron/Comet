@@ -1,0 +1,3 @@
+service-bound message StartService {
+    Identifier identifier
+}

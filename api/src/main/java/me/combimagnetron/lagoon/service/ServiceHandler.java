@@ -6,6 +6,6 @@ public interface ServiceHandler {
 
     Service service(Identifier identifier);
 
-    Service deploy(ServiceBlueprint blueprint, Identifier identifier);
+    Service deploy(Deployment deployment, Identifier identifier);
 
 }

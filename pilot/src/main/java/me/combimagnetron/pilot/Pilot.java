@@ -1,36 +1,36 @@
 package me.combimagnetron.pilot;
 
-import io.kubernetes.client.openapi.ApiClient;
-import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.models.V1Deployment;
-import io.kubernetes.client.openapi.models.V1ObjectMeta;
-import io.kubernetes.client.util.Config;
-import jakarta.inject.Inject;
-import me.combimagnetron.lagoon.CometBase;
+import com.marcnuri.yakc.KubernetesClient;
+import com.marcnuri.yakc.api.NotFoundException;
+import com.marcnuri.yakc.api.WatchEvent;
+import com.marcnuri.yakc.api.core.v1.CoreV1Api;
+import com.marcnuri.yakc.model.io.k8s.api.core.v1.Container;
+import com.marcnuri.yakc.model.io.k8s.api.core.v1.Namespace;
+import com.marcnuri.yakc.model.io.k8s.api.core.v1.Pod;
+import com.marcnuri.yakc.model.io.k8s.api.core.v1.PodSpec;
+import com.marcnuri.yakc.model.io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta;
 import me.combimagnetron.lagoon.communication.MessageClient;
-import me.combimagnetron.lagoon.communication.MessageRegistry;
 import me.combimagnetron.lagoon.communication.message.MessageChannel;
 import me.combimagnetron.lagoon.data.Identifier;
-import me.combimagnetron.lagoon.operation.Operation;
-import me.combimagnetron.lagoon.operation.Operations;
-import me.combimagnetron.lagoon.service.Action;
 import me.combimagnetron.lagoon.service.AutoService;
+import me.combimagnetron.lagoon.service.Deployment;
 import me.combimagnetron.lagoon.service.Service;
-import me.combimagnetron.lagoon.service.config.StringStringParameter;
-import org.kohsuke.github.GHAsset;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 
 import java.io.IOException;
-import java.util.Set;
 
 @AutoService(name = "pilot", parameters = MessageClient.class)
 public class Pilot implements Service {
     private static final GitHub GIT_HUB;
     private final MessageChannel channel;
-    private final ApiClient k8sApiClient;
-    private final CoreV1Api k8sApi;
+    private final CoreV1Api api;
+
+    static Pilot instance;
+
+    public static Pilot pilot() {
+        return instance;
+    }
 
     static {
         try {
@@ -42,11 +42,36 @@ public class Pilot implements Service {
 
     public Pilot(MessageClient messageClient) throws IOException {
         this.channel = messageClient.channel(Identifier.of("service", "pilot"));
-        this.k8sApiClient = Config.defaultClient();
-        this.k8sApi = new CoreV1Api(k8sApiClient);
-        V1Deployment deployment = new V1Deployment();
-        deployment.metadata(new V1ObjectMeta());
-        GHAsset ghAsset = gitHub().getRepository("a").getLatestRelease().assets().stream().filter(asset -> asset.getName().equalsIgnoreCase("")).findAny().get();
+        try (KubernetesClient kc = new KubernetesClient()) {
+            this.api = kc.create(CoreV1Api.class);
+        }
+        try {
+            api.readNamespace("services").get();
+        } catch (NotFoundException ex) {
+            api.createNamespace(Namespace.builder()
+                    .metadata(ObjectMeta.builder().name("services").build())
+                    .build()
+            ).get();
+        }
+    }
+
+    public void deploy(Deployment deployment) {
+        try {
+            api.createNamespacedPod("services",
+                    Pod.builder()
+                            .spec(PodSpec.builder()
+                                    .addToContainers(Container.builder().image(deployment.image()).name(deployment.name()).build()).build()
+                            )
+                            .metadata(ObjectMeta.builder()
+                                    .name(deployment.name()).namespace("services").build())
+                            .build()).get();
+            api.listNamespacedPod("services").watch()
+                    .filter(watchEvent -> watchEvent.getObject().getMetadata().getName().equals(deployment.name()))
+                    .takeUntil(watchEvent -> watchEvent.getType() == WatchEvent.Type.ADDED)
+                    .subscribe();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

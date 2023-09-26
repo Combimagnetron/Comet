@@ -8,11 +8,18 @@ version = "unspecified"
 
 dependencies {
     implementation(project(mapOf("path" to ":api")))
-    implementation("io.kubernetes:client-java:15.0.1")
     implementation("org.kohsuke:github-api:1.315")
     implementation("io.avaje:avaje-inject:9.4")
+    implementation("com.marcnuri.yakc:kubernetes-api:0.0.28")
+    implementation("com.marcnuri.yakc:kubernetes-client:0.0.28")
     annotationProcessor("io.avaje:avaje-inject-generator:9.4")
 }
+
+val dockerUsername: String by project
+val dockerPassword: String by project
+val dockerEmail: String by project
+
+
 
 docker {
     javaApplication {
@@ -24,9 +31,9 @@ docker {
     }
     registryCredentials {
         url.set("https://index.docker.io/v1/")
-        username.set("")
-        password.set("")
-        email.set("")
+        username.set(dockerUsername)
+        password.set(dockerPassword)
+        email.set(dockerEmail)
     }
 }
 

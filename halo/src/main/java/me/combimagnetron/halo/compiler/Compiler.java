@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
+import java.util.stream.Stream;
 
 public class Compiler {
 
@@ -131,8 +132,9 @@ public class Compiler {
         }
 
         public JavaFile javaFile() {
-            TypeSpec.Builder builder = TypeSpec.recordBuilder(name + "Message").addSuperinterface(Message.class);
-            fields.stream().map(field -> ParameterSpec.builder(field.type, field.varName).build()).forEachOrdered(builder::addRecordComponent);
+            TypeSpec.Builder builder = TypeSpec.recordBuilder(name + "Message").addModifiers(Modifier.PUBLIC).addSuperinterface(Message.class);
+            Stream<ParameterSpec> specs = fields.stream().map(field -> ParameterSpec.builder(field.type, field.varName).build());
+            specs.forEachOrdered(builder::addRecordComponent);
             MethodSpec.Builder methodSpecBuilder = MethodSpec.methodBuilder("write")
                     .addModifiers(Modifier.PUBLIC)
                     .addCode("final $T buffer = buffer();", ByteBuffer.class)

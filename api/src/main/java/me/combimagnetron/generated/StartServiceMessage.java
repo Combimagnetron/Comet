@@ -1,15 +1,15 @@
 package me.combimagnetron.generated;
 
 import java.lang.Override;
-import java.util.UUID;
 import me.combimagnetron.lagoon.communication.Message;
+import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.internal.network.ByteBuffer;
 
-public record UserGetServerMessage(UUID user_id) implements Message {
+public record StartServiceMessage(Identifier identifier) implements Message {
     @Override
     public void write() {
         final ByteBuffer buffer = buffer();
-        buffer.write(ByteBuffer.Adapter.UUID, user_id);
+        buffer.write(ByteBuffer.Adapter.IDENTIFIER, identifier);
     }
 
     @Override
@@ -19,6 +19,6 @@ public record UserGetServerMessage(UUID user_id) implements Message {
 
     @Override
     public int id() {
-        return 0;
+        return 1;
     }
 }

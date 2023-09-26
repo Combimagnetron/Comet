@@ -1,7 +1,9 @@
 package me.combimagnetron.halo.transformer;
 
+import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.internal.entity.metadata.type.VarInt;
 import me.combimagnetron.lagoon.internal.network.ByteBuffer;
+import me.combimagnetron.lagoon.service.Deployment;
 import me.combimagnetron.lagoon.util.Values;
 
 import java.util.Objects;
@@ -12,7 +14,9 @@ public interface Transformer<T> {
     Transformer<String> STRING = of("String", String.class, ByteBuffer.Adapter.STRING);
     Transformer<Integer> INT = of("Int", Integer.class, ByteBuffer.Adapter.INT);
     Transformer<Double> DOUBLE = of("Double", Double.class, ByteBuffer.Adapter.DOUBLE);
-    Values<Transformer<?>> VALUES = Values.of(UUID, STRING, INT, DOUBLE);
+    Transformer<Identifier> IDENTIFIER = of("Identifier", Identifier.class, ByteBuffer.Adapter.IDENTIFIER);
+    Transformer<Deployment> DEPLOYMENT = of("Deployment", Deployment.class, ByteBuffer.Adapter.DEPLOYMENT);
+    Values<Transformer<?>> VALUES = Values.of(UUID, STRING, INT, DOUBLE, IDENTIFIER, DEPLOYMENT);
 
     String identifier();
 

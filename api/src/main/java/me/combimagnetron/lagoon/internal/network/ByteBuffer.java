@@ -3,7 +3,9 @@ package me.combimagnetron.lagoon.internal.network;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import me.combimagnetron.lagoon.data.Identifier;
 import me.combimagnetron.lagoon.internal.Item;
+import me.combimagnetron.lagoon.service.Deployment;
 import me.combimagnetron.lagoon.util.ProtocolUtil;
 import org.jglrxavpok.hephaistos.nbt.CompressedProcesser;
 import org.jglrxavpok.hephaistos.nbt.NBTException;
@@ -105,6 +107,14 @@ public class ByteBuffer {
         Adapter<Double> DOUBLE = Impl.of(ByteArrayDataInput::readDouble, ByteArrayDataOutput::writeDouble);
         Adapter<Float> FLOAT = Impl.of(ByteArrayDataInput::readFloat, ByteArrayDataOutput::writeFloat);
         Adapter<Integer> INT = Impl.of(ByteArrayDataInput::readInt, ByteArrayDataOutput::writeInt);
+        Adapter<Identifier> IDENTIFIER = Impl.of(input -> {
+            String[] parts = input.readUTF().split(":");
+            return Identifier.of(parts[0], parts[1]);
+        }, (output, identifier) -> output.writeUTF(identifier.string()));
+        Adapter<Deployment> DEPLOYMENT = Impl.of(input -> {
+            String[] parts = input.readUTF().split("%");
+            return Deployment.of(parts[0], parts[1]);
+        }, (output, deployment) -> output.writeUTF(deployment.name() + "%" + deployment.image()));
         Adapter<Integer> UNSIGNED_BYTE = Impl.of(ByteArrayDataInput::readUnsignedByte, ByteArrayDataOutput::writeInt);
         Adapter<Boolean> BOOLEAN = Impl.of(ByteArrayDataInput::readBoolean, ByteArrayDataOutput::writeBoolean);
         Adapter<Byte> BYTE = Impl.of(ByteArrayDataInput::readByte, (output, aByte) -> output.writeByte((int) aByte));

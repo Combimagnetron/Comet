@@ -6,7 +6,7 @@ import java.util.UUID;
 import me.combimagnetron.lagoon.communication.Message;
 import me.combimagnetron.lagoon.internal.network.ByteBuffer;
 
-record UserSwitchServerMessage(UUID user_id, Integer server_type) implements Message {
+public record UserSwitchServerMessage(UUID user_id, Integer server_type) implements Message {
     @Override
     public void write() {
         final ByteBuffer buffer = buffer();
