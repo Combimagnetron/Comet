@@ -12,6 +12,10 @@ public record LoadWorldMessage(String name) implements Message {
         buffer.write(ByteBuffer.Adapter.STRING, name);
     }
 
+    public static LoadWorldMessage of(String name) {
+        return new LoadWorldMessage(name);
+    }
+
     @Override
     public ByteBuffer buffer() {
         return ByteBuffer.empty();

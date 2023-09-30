@@ -12,6 +12,10 @@ public record StartServiceMessage(Identifier identifier) implements Message {
         buffer.write(ByteBuffer.Adapter.IDENTIFIER, identifier);
     }
 
+    public static StartServiceMessage of(Identifier identifier) {
+        return new StartServiceMessage(identifier);
+    }
+
     @Override
     public ByteBuffer buffer() {
         return ByteBuffer.empty();

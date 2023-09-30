@@ -12,6 +12,10 @@ public record UserGetServerMessage(UUID user_id) implements Message {
         buffer.write(ByteBuffer.Adapter.UUID, user_id);
     }
 
+    public static UserGetServerMessage of(UUID user_id) {
+        return new UserGetServerMessage(user_id);
+    }
+
     @Override
     public ByteBuffer buffer() {
         return ByteBuffer.empty();

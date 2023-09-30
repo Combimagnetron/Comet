@@ -28,7 +28,7 @@ public class RemoteServiceHandler implements ServiceHandler {
 
     @Override
     public Service deploy(Deployment deployment, Identifier identifier) {
-        messageChannel.send(new DeployServiceMessage(identifier, deployment));
+        messageChannel.send(DeployServiceMessage.of(identifier, deployment));
         return map.put(identifier, new DummyService(identifier, messageChannel));
     }
 
@@ -36,12 +36,12 @@ public class RemoteServiceHandler implements ServiceHandler {
 
         @Override
         public void stop() {
-            messageChannel.send(new StopServiceMessage(identifier));
+            messageChannel.send(StopServiceMessage.of(identifier));
         }
 
         @Override
         public void start() {
-            messageChannel.send(new StartServiceMessage(identifier));
+            messageChannel.send(StartServiceMessage.of(identifier));
         }
     }
 

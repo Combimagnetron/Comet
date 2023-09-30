@@ -14,6 +14,10 @@ public record UserSwitchServerMessage(UUID user_id, Integer server_type) impleme
         buffer.write(ByteBuffer.Adapter.INT, server_type);
     }
 
+    public static UserSwitchServerMessage of(UUID user_id, Integer server_type) {
+        return new UserSwitchServerMessage(user_id, server_type);
+    }
+
     @Override
     public ByteBuffer buffer() {
         return ByteBuffer.empty();

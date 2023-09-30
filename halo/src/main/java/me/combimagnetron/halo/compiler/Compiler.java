@@ -11,13 +11,16 @@ import org.jetbrains.annotations.Nullable;
 import javax.lang.model.element.Modifier;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Compiler {
@@ -133,8 +136,26 @@ public class Compiler {
 
         public JavaFile javaFile() {
             TypeSpec.Builder builder = TypeSpec.recordBuilder(name + "Message").addModifiers(Modifier.PUBLIC).addSuperinterface(Message.class);
-            Stream<ParameterSpec> specs = fields.stream().map(field -> ParameterSpec.builder(field.type, field.varName).build());
-            specs.forEachOrdered(builder::addRecordComponent);
+            List<ParameterSpec> specs = fields.stream().map(field -> ParameterSpec.builder(field.type, field.varName).build()).toList();
+            specs.stream().forEachOrdered(builder::addRecordComponent);
+            final StringBuilder builder1 = new StringBuilder();
+            Class<?>[] classes = fields.stream().map(field -> field.type).distinct().toArray(Class[]::new);
+            boolean first = true;
+            for (Field field : fields) {
+                if (first) {
+                    builder1.append(field.varName);
+                    first = false;
+                    continue;
+                }
+                builder1.append(", " + field.varName);
+            }
+            System.out.println(builder1);
+            ClassName className = ClassName.get("me.combimagnetron.generated", name + "Message");
+            MethodSpec.Builder statics = MethodSpec.methodBuilder("of")
+                    .addParameters(specs)
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                    .addCode("return new $T(" + builder1 + ");", className)
+                    .returns(className);
             MethodSpec.Builder methodSpecBuilder = MethodSpec.methodBuilder("write")
                     .addModifiers(Modifier.PUBLIC)
                     .addCode("final $T buffer = buffer();", ByteBuffer.class)
@@ -154,7 +175,7 @@ public class Compiler {
             methodSpecBuilder.addCode(codeBuilder.build());
             builder.addMethod(
                     methodSpecBuilder.build()
-            ).addMethod(buffer.build()).addMethod(id.build());
+            ).addMethod(statics.build()).addMethod(buffer.build()).addMethod(id.build());
             JavaFile javaFile = JavaFile.builder("me.combimagnetron.generated",
                     builder.build()
             ).indent("    ").build();

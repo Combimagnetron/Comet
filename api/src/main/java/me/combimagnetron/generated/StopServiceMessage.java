@@ -12,6 +12,10 @@ public record StopServiceMessage(Identifier identifier) implements Message {
         buffer.write(ByteBuffer.Adapter.IDENTIFIER, identifier);
     }
 
+    public static StopServiceMessage of(Identifier identifier) {
+        return new StopServiceMessage(identifier);
+    }
+
     @Override
     public ByteBuffer buffer() {
         return ByteBuffer.empty();
