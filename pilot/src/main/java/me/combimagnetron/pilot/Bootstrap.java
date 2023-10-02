@@ -1,7 +1,7 @@
 package me.combimagnetron.pilot;
 
-import me.combimagnetron.lagoon.communication.MessageClient;
-import me.combimagnetron.lagoon.config.Config;
+import me.combimagnetron.comet.communication.MessageClient;
+import me.combimagnetron.comet.config.Config;
 
 import java.io.IOException;
 import java.nio.file.Path;

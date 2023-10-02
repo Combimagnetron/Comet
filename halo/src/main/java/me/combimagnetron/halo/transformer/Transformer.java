@@ -1,10 +1,9 @@
 package me.combimagnetron.halo.transformer;
 
-import me.combimagnetron.lagoon.data.Identifier;
-import me.combimagnetron.lagoon.internal.entity.metadata.type.VarInt;
-import me.combimagnetron.lagoon.internal.network.ByteBuffer;
-import me.combimagnetron.lagoon.service.Deployment;
-import me.combimagnetron.lagoon.util.Values;
+import me.combimagnetron.comet.data.Identifier;
+import me.combimagnetron.comet.internal.network.ByteBuffer;
+import me.combimagnetron.comet.service.Deployment;
+import me.combimagnetron.comet.util.Values;
 
 import java.util.Objects;
 import java.util.UUID;

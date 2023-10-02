@@ -1,9 +1,9 @@
 package me.combimagnetron.pilot.loader;
 
-import me.combimagnetron.lagoon.Comet;
-import me.combimagnetron.lagoon.communication.MessageClient;
-import me.combimagnetron.lagoon.service.AutoService;
-import me.combimagnetron.lagoon.service.Service;
+import me.combimagnetron.comet.Comet;
+import me.combimagnetron.comet.communication.MessageClient;
+import me.combimagnetron.comet.service.AutoService;
+import me.combimagnetron.comet.service.Service;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 

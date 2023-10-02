@@ -1,9 +1,9 @@
 package me.combimagnetron.generated;
 
 import java.lang.Override;
-import me.combimagnetron.lagoon.communication.Message;
-import me.combimagnetron.lagoon.data.Identifier;
-import me.combimagnetron.lagoon.internal.network.ByteBuffer;
+import me.combimagnetron.comet.communication.Message;
+import me.combimagnetron.comet.data.Identifier;
+import me.combimagnetron.comet.internal.network.ByteBuffer;
 
 public record StartServiceMessage(Identifier identifier) implements Message {
     @Override

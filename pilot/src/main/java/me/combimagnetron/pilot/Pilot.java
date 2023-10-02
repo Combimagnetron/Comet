@@ -9,12 +9,12 @@ import com.marcnuri.yakc.model.io.k8s.api.core.v1.Namespace;
 import com.marcnuri.yakc.model.io.k8s.api.core.v1.Pod;
 import com.marcnuri.yakc.model.io.k8s.api.core.v1.PodSpec;
 import com.marcnuri.yakc.model.io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta;
-import me.combimagnetron.lagoon.communication.MessageClient;
-import me.combimagnetron.lagoon.communication.message.MessageChannel;
-import me.combimagnetron.lagoon.data.Identifier;
-import me.combimagnetron.lagoon.service.AutoService;
-import me.combimagnetron.lagoon.service.Deployment;
-import me.combimagnetron.lagoon.service.Service;
+import me.combimagnetron.comet.communication.MessageClient;
+import me.combimagnetron.comet.communication.message.MessageChannel;
+import me.combimagnetron.comet.data.Identifier;
+import me.combimagnetron.comet.service.AutoService;
+import me.combimagnetron.comet.service.Deployment;
+import me.combimagnetron.comet.service.Service;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 

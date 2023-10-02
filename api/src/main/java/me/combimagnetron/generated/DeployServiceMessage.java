@@ -1,12 +1,13 @@
 package me.combimagnetron.generated;
 
 import java.lang.Override;
-import me.combimagnetron.lagoon.communication.Message;
-import me.combimagnetron.lagoon.data.Identifier;
-import me.combimagnetron.lagoon.internal.network.ByteBuffer;
-import me.combimagnetron.lagoon.service.Deployment;
+import me.combimagnetron.comet.communication.Message;
+import me.combimagnetron.comet.data.Identifier;
+import me.combimagnetron.comet.internal.network.ByteBuffer;
+import me.combimagnetron.comet.service.Deployment;
 
-public record DeployServiceMessage(Identifier identifier, Deployment deployment) implements Message {
+public record DeployServiceMessage(Identifier identifier,
+        Deployment deployment) implements Message {
     @Override
     public void write() {
         final ByteBuffer buffer = buffer();

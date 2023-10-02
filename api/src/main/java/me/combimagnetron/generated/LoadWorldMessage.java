@@ -2,8 +2,8 @@ package me.combimagnetron.generated;
 
 import java.lang.Override;
 import java.lang.String;
-import me.combimagnetron.lagoon.communication.Message;
-import me.combimagnetron.lagoon.internal.network.ByteBuffer;
+import me.combimagnetron.comet.communication.Message;
+import me.combimagnetron.comet.internal.network.ByteBuffer;
 
 public record LoadWorldMessage(String name) implements Message {
     @Override

@@ -3,25 +3,21 @@ package me.combimagnetron.halo.compiler;
 import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.*;
 import me.combimagnetron.halo.transformer.Transformer;
-import me.combimagnetron.lagoon.communication.Message;
-import me.combimagnetron.lagoon.internal.network.ByteBuffer;
-import me.combimagnetron.lagoon.util.Values;
+import me.combimagnetron.comet.communication.Message;
+import me.combimagnetron.comet.internal.network.ByteBuffer;
+import me.combimagnetron.comet.util.Values;
 import org.jetbrains.annotations.Nullable;
 
 import javax.lang.model.element.Modifier;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Compiler {
 

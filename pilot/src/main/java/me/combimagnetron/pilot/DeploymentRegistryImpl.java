@@ -1,7 +1,7 @@
 package me.combimagnetron.pilot;
 
-import me.combimagnetron.lagoon.service.Deployment;
-import me.combimagnetron.lagoon.service.DeploymentRegistry;
+import me.combimagnetron.comet.service.Deployment;
+import me.combimagnetron.comet.service.DeploymentRegistry;
 
 import java.util.concurrent.ConcurrentHashMap;
 
