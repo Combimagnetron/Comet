@@ -5,15 +5,15 @@ import java.util.UUID;
 import me.combimagnetron.comet.communication.Message;
 import me.combimagnetron.comet.internal.network.ByteBuffer;
 
-public record UserGetServerMessage(UUID user_id) implements Message {
+public record UserGetServerMessage(UUID uuid) implements Message {
     @Override
     public void write() {
         final ByteBuffer buffer = buffer();
-        buffer.write(ByteBuffer.Adapter.UUID, user_id);
+        buffer.write(ByteBuffer.Adapter.UUID, uuid);
     }
 
-    public static UserGetServerMessage of(UUID user_id) {
-        return new UserGetServerMessage(user_id);
+    public static UserGetServerMessage of(UUID uuid) {
+        return new UserGetServerMessage(uuid);
     }
 
     @Override
