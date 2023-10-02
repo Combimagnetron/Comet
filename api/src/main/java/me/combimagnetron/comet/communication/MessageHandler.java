@@ -9,6 +9,6 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MessageHandler {
     @NotNull Class<? extends Message> filter() default Message.class;
 
-    @NotNull String channel() default "lagoon:generic";
+    @NotNull String channel() default "comet:generic";
 
 }

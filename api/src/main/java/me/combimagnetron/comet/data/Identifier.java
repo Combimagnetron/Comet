@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public record Identifier(Namespace namespace, Key key) {
-    private static final Namespace DEFAULT = Namespace.of("lagoon");
+    private static final Namespace DEFAULT = Namespace.of("comet");
 
     @Contract("_, _ -> new")
     public static @NotNull Identifier of(Namespace namespace, Key key) {

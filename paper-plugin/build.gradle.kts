@@ -19,7 +19,7 @@ dependencies {
 
 bukkit {
     name = "Lagoon"
-    main = "me.combimagnetron.lagoon.LagoonPlugin"
+    main = "me.combimagnetron.lagoon.CometPlugin"
     apiVersion = "1.19"
 }
 
