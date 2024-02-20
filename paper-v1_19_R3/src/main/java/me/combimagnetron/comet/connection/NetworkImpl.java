@@ -22,10 +22,10 @@ public class NetworkImpl implements Network {
 
         DefaultListener() {
             this.ticket = node.subscribe(Packet.Type.Server.CLICK_CONTAINER);
-            ticket.receive(packet -> {
-                final int id = packet.windowId();
+            ticket.receive(wrappedPacket -> {
+                final int id = wrappedPacket.packet().windowId();
                 ChestMenu menu = WindowIdProvider.get(id);
-                menu.click(packet);
+                menu.click(wrappedPacket.packet());
             });
         }
 

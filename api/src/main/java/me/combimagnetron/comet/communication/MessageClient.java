@@ -30,6 +30,10 @@ public interface MessageClient {
         return RedisMessageClient.of(host, port, password);
     }
 
+    static MessageClient redis(String uri) {
+        return RedisMessageClient.of(uri);
+    }
+
     enum Type {
         REDIS, PULSAR, NONE
     }

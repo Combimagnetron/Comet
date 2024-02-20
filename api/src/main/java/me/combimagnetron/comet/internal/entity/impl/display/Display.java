@@ -1,13 +1,12 @@
-package me.combimagnetron.comet.internal.entity.impl;
+package me.combimagnetron.comet.internal.entity.impl.display;
 
-import me.combimagnetron.comet.feature.menu.Pos2D;
-import me.combimagnetron.comet.internal.entity.metadata.Metadata;
-import me.combimagnetron.comet.internal.entity.metadata.type.Quaternion;
-import me.combimagnetron.comet.internal.entity.metadata.type.Vector3;
+import me.combimagnetron.comet.feature.menu.element.Position;
 import me.combimagnetron.comet.internal.entity.Entity;
+import me.combimagnetron.comet.internal.entity.metadata.type.Quaternion;
+import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
 
 @SuppressWarnings("unused")
-public class Display extends Entity.AbstractEntity {
+public abstract class Display extends Entity.AbstractEntity {
     private int interpolationDelay = 0;
     private int interpolationDuration = 0;
     private Transformation transformation = Transformation.transformation();
@@ -15,36 +14,24 @@ public class Display extends Entity.AbstractEntity {
     private int brightness = -1;
     private float viewRange = 1;
     private Shadow shadow = Shadow.shadow();
-    private Pos2D pos2D = Pos2D.of(0, 0);
     private int glowOverride = -1;
 
-    @Override
-    public Vector3 position() {
-        return null;
+    public Display(Vector3d position) {
+        super(position);
     }
 
     @Override
-    public Data data() {
+    public Entity.Data data() {
         return null;
     }
 
-    @Override
-    public Type type() {
-        return null;
-    }
-
-    @Override
-    public Metadata extend() {
-        return null;
-    }
-
-    public record Transformation(Vector3 translation, Vector3 scale, Quaternion rotationLeft, Quaternion rotationRight) {
+    public record Transformation(Vector3d translation, Vector3d scale, Quaternion rotationLeft, Quaternion rotationRight) {
 
         public static Transformation transformation() {
-            return of(Vector3.vec3(0, 0, 0), Vector3.vec3(1, 1, 1), Quaternion.of(0, 0, 0, 1), Quaternion.of(0, 0, 0, 1));
+            return of(Vector3d.vec3(0, 0, 0), Vector3d.vec3(1, 1, 1), Quaternion.of(0, 0, 0, 1), Quaternion.of(0, 0, 0, 1));
         }
 
-        public static Transformation of(Vector3 translation, Vector3 scale, Quaternion rotationLeft, Quaternion rotationRight) {
+        public static Transformation of(Vector3d translation, Vector3d scale, Quaternion rotationLeft, Quaternion rotationRight) {
             return new Transformation(translation, scale, rotationLeft, rotationRight);
         }
 
@@ -134,14 +121,6 @@ public class Display extends Entity.AbstractEntity {
 
     public void shadow(Shadow shadow) {
         this.shadow = shadow;
-    }
-
-    public Pos2D pos2D() {
-        return pos2D;
-    }
-
-    public void pos2D(Pos2D pos2D) {
-        this.pos2D = pos2D;
     }
 
     public int glowOverride() {

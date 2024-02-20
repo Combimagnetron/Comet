@@ -5,7 +5,6 @@ import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.feature.entity.model.ModelTemplate;
 import me.combimagnetron.comet.feature.entity.model.ModeledEntity;
 import me.combimagnetron.comet.operation.Operation;
-import me.combimagnetron.lagoon.service.Action;
 import me.combimagnetron.comet.user.User;
 import org.bukkit.entity.Entity;
 
@@ -15,8 +14,8 @@ public class ExternalEntityFeatureComponentImpl extends ExternalEntityFeatureCom
     }
 
     @Override
-    public Operation<ModeledEntity> spawnModel(User<?> player, ModelTemplate template, Entity baseEntity) {
-        return Operation.executable(() -> new ModeledEntityImpl(template, baseEntity));
+    public ModeledEntity spawnModel(User<?> player, ModelTemplate template, Entity baseEntity) {
+        return new ModeledEntityImpl(template, baseEntity);
     }
 
     @Override

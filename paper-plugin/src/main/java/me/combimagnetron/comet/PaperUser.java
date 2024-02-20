@@ -7,20 +7,21 @@ import me.combimagnetron.comet.instance.Instance;
 import me.combimagnetron.comet.user.User;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 
 public class PaperUser implements User<Player> {
     private final UserDataContainer userDataContainer = null;
-    private final CometPlugin plugin;
+    private final CometBase<?> plugin;
     private final Connection connection;
     private final Player player;
     private Instance instance;
 
-    public PaperUser(Player player, CometPlugin cometPlugin) {
+    public PaperUser(Player player, CometBase<?> cometPlugin) {
         this.player = player;
         this.plugin = cometPlugin;
-        this.connection = ConnectionImpl.of(this, plugin);
+        this.connection = ConnectionImpl.of(this, (CometBase<JavaPlugin>) plugin);
     }
 
     @Override

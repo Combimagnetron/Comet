@@ -1,13 +1,13 @@
 package me.combimagnetron.comet.command;
 
+import me.combimagnetron.comet.Comet;
 import me.combimagnetron.comet.command.annotations.Command;
 import me.combimagnetron.comet.command.annotations.Execute;
 import me.combimagnetron.comet.command.annotations.Requires;
 import me.combimagnetron.comet.command.annotations.SubCommand;
 import me.combimagnetron.comet.feature.entity.generator.EntityModelGenerator;
-import me.combimagnetron.comet.Comet;
-import me.combimagnetron.lagoon.command.annotations.*;
 import me.combimagnetron.comet.feature.entity.parser.blockbench.BlockBenchModel;
+import me.combimagnetron.comet.internal.network.packet.client.ClientSpawnEntity;
 import me.combimagnetron.comet.user.User;
 import net.kyori.adventure.text.Component;
 
@@ -16,7 +16,8 @@ public class AdminCommand {
 
     @Execute
     public void execute(User<?> user) {
-        user.message(Component.text("Wrong usage!"));
+        user.connection().send(ClientSpawnEntity.spawnEntity());
+        user.message(Component.text("Spawned!"));
     }
 
     @SubCommand(command = "model")

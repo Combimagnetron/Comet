@@ -17,8 +17,6 @@ import me.combimagnetron.comet.feature.entity.model.bone.HeadBone;
 import me.combimagnetron.comet.feature.entity.model.bone.MountBone;
 import me.combimagnetron.comet.operation.Operation;
 import me.combimagnetron.comet.operation.Operations;
-import me.combimagnetron.comet.shared.FakeEntityGroupImpl;
-import me.combimagnetron.comet.shared.FakeItemDisplayImpl;
 import me.combimagnetron.comet.user.User;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -56,7 +54,7 @@ public class ModeledEntityImpl implements ModeledEntity {
             observers.add(Comet.userByUniqueId(player.getUniqueId()));
         });
         constructBones();
-        this.group = FakeEntityGroupImpl.create(bones);
+        this.group = null;//FakeEntityGroupImpl.create(bones);
         Bukkit.getLogger().info("baa");
         timeline.animation(modelTemplate.animations().values().stream().findAny().orElseThrow());
         Operations.asyncRepeating(this.tick(), Duration.of(50L, TimeUnit.MILLISECONDS));
@@ -66,7 +64,7 @@ public class ModeledEntityImpl implements ModeledEntity {
         Bukkit.getLogger().info("bones: " + modelTemplate.bones().size());
         Collection<Bone> boneSet = modelTemplate.bones().values();
         boneSet.forEach(bone -> {
-            FakeEntity itemDisplay = new FakeItemDisplayImpl(position, bone.rotation(), world); //new FakeItemDisplayImpl(bone.rotation(), world);
+            FakeEntity itemDisplay = null;//new FakeItemDisplayImpl(position, bone.rotation(), world); //new FakeItemDisplayImpl(bone.rotation(), world);
             itemDisplay.show(observers).async();
             bones.put(bone, itemDisplay);
         });
@@ -144,9 +142,9 @@ public class ModeledEntityImpl implements ModeledEntity {
             bones.forEach((bone, fakeEntity) -> {
                 Point updated = animation.posAt(bone.name(), animation.currentTick());
                 EulerAngle rot = animation.rotationAt(bone.name(), animation.currentTick());
-                if (fakeEntity instanceof FakeItemDisplayImpl itemDisplay) {
-                    itemDisplay.moveNoUpdate(updated.sub(position.x(), position.y(), position.z()));
-                    itemDisplay.rotateNoUpdate(rot);
+                if (fakeEntity instanceof FakeItemDisplay itemDisplay) {
+                    //itemDisplay.moveNoUpdate(updated.sub(position.x(), position.y(), position.z()));
+                    //itemDisplay.rotateNoUpdate(rot);
                 }
             });
             observers.forEach(observer -> async(group.update(observer)));

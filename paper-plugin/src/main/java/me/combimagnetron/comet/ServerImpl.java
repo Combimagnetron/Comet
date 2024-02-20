@@ -28,15 +28,15 @@ public class ServerImpl implements Server {
     private final JavaPlugin plugin;
 
     ServerImpl(Path configurationPath, JavaPlugin plugin) throws SerializationException {
-        this.summary = ConfigLoader.read(configurationPath);
-        this.messageClientMap.putAll(summary.messageClientMap());
+        this.summary = null;//ConfigLoader.read(configurationPath);
+        //this.messageClientMap.putAll(summary.messageClientMap());
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(userManager, plugin);
     }
 
     @Override
     public User<?> playerByUniqueId(UUID uuid) {
-        return userManager.user(uuid);
+        return userManager.user(uuid).get();
     }
 
     @Override
@@ -108,7 +108,7 @@ public class ServerImpl implements Server {
                 MessageClient.MessageClientSettings messageClientSettings = messageClientSettingsNode.get(MessageClient.MessageClientSettings.class);
                 switch (messageClientSettings.type()) {
                     default -> {
-                        RedisMessageClient client = MessageClient.redis(messageClientSettings.host(), messageClientSettings.port(), messageClientSettings.password());
+                        RedisMessageClient client = (RedisMessageClient) MessageClient.redis(messageClientSettings.host(), messageClientSettings.port(), messageClientSettings.password());
                         summary.messageClientMap().put(MessageClient.Type.REDIS, client);
                     }
                     case NONE -> {

@@ -27,12 +27,22 @@ public class RedisMessageClient implements MessageClient {
 
     protected RedisMessageClient(String host, int port, String password) {
         this.executor = Executors.newSingleThreadExecutor();
-        this.redisClient = RedisClient.create(RedisURI.builder().withHost(host).withPort(port).withPassword(new AsciiString(password)).withDatabase(0).withTimeout(Duration.ofSeconds(30000)).build());
+        this.redisClient = RedisClient.create(RedisURI.builder().withHost(host).withAuthentication("", password).withDatabase(0).withTimeout(Duration.ofSeconds(30000)).build());
+        this.pubSub = redisClient.connectPubSub(new ByteArrayCodec());
+    }
+
+    protected RedisMessageClient(String uri) {
+        this.executor = Executors.newSingleThreadExecutor();
+        this.redisClient = RedisClient.create(uri);
         this.pubSub = redisClient.connectPubSub(new ByteArrayCodec());
     }
 
     public static RedisMessageClient of(String host, int port, String password) {
         return new RedisMessageClient(host, port, password);
+    }
+
+    public static RedisMessageClient of(String uri) {
+        return new RedisMessageClient(uri);
     }
 
     @Override

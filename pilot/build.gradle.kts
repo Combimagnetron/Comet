@@ -1,6 +1,7 @@
 plugins {
     id("java")
-    id("com.bmuschko.docker-java-application") version "9.3.3"
+    id("com.bmuschko.docker-remote-api") version "9.4.0"
+    id("com.bmuschko.docker-java-application") version "9.4.0"
 }
 
 group = "org.example"
@@ -28,6 +29,7 @@ docker {
         ports.set(listOf(6162, 6162))
         images.add("alecvdveen/cosmorise:pilot")
         jvmArgs.set(listOf("-Xms256m", "-Xmx256m"))
+        args.set(listOf("172.17.0.1", "6379"))
     }
     registryCredentials {
         url.set("https://index.docker.io/v1/")
@@ -35,6 +37,10 @@ docker {
         password.set(dockerPassword)
         email.set(dockerEmail)
     }
+}
+
+tasks.named<com.bmuschko.gradle.docker.tasks.image.Dockerfile>("dockerCreateDockerfile") {
+    instruction("ENV REDIS_HOST \"redis://host.docker.internal\"")
 }
 
 tasks.test {

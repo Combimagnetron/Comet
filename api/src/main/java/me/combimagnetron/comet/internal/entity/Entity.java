@@ -5,8 +5,13 @@ import me.combimagnetron.comet.internal.entity.metadata.Metadata;
 import me.combimagnetron.comet.internal.entity.metadata.type.Boolean;
 import me.combimagnetron.comet.internal.entity.metadata.type.Byte;
 import me.combimagnetron.comet.internal.entity.metadata.type.*;
+import me.combimagnetron.comet.internal.network.packet.client.ClientEntityMetadata;
+import me.combimagnetron.comet.internal.network.packet.client.ClientSpawnEntity;
 import net.kyori.adventure.text.Component;
 
+import javax.swing.text.View;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,20 +22,29 @@ public interface Entity {
 
     UUID uuid();
 
-    Vector3 position();
+    Vector3d position();
+
+    Vector3d rotation();
+
+    Vector3d velocity();
 
     Data data();
 
     Type type();
 
-    interface Data {
+    record Data(int i) {
+
+        public static Data of(int i) {
+            return new Data(i);
+        }
 
     }
 
-    abstract class AbstractEntity implements Entity {
+    abstract class AbstractEntity implements Entity, Viewable {
         private final Metadata.Template template = Metadata.BASE;
         private final EntityId id = EntityId.next();
         private final UUID uuid = UUID.randomUUID();
+        private final Collection<Viewer> viewers = new HashSet<>();
         private boolean onFire = false;
         private boolean crouching = false;
         private boolean sprinting = false;
@@ -45,13 +59,17 @@ public interface Entity {
         private boolean noGravity = false;
         private Pose pose = Pose.of(Pose.Value.STANDING);
         private int frozenPowderedSnow = 0;
+        private Vector3d position;
+        private Vector3d rotation = Vector3d.vec3(0, 0, 0);
+        private Vector3d velocity = Vector3d.vec3(0, 0, 0);
         private Metadata metadata;
 
         public void setOnFire(boolean onFire) {
             this.onFire = onFire;
         }
 
-        public AbstractEntity() {
+        public AbstractEntity(Vector3d position) {
+            this.position = position;
             prepare();
             metadata = Metadata.merge(metadata, extend());
         }
@@ -181,6 +199,44 @@ public interface Entity {
         }
 
         public abstract Metadata extend();
+
+        @Override
+        public Vector3d position() {
+            return position;
+        }
+
+        @Override
+        public Vector3d rotation() {
+            return rotation;
+        }
+
+        @Override
+        public Vector3d velocity() {
+            return velocity;
+        }
+
+        @Override
+        public Collection<Viewer> viewers() {
+            return viewers;
+        }
+
+        @Override
+        public void show() {
+            for (Viewer viewer : viewers) {
+                viewer.user().connection().send(ClientSpawnEntity.spawnEntity(this));
+                viewer.user().connection().send(ClientEntityMetadata.entityMetadata(this));
+            }
+        }
+
+        @Override
+        public void hide() {
+
+        }
+
+        @Override
+        public boolean visible() {
+            return false;
+        }
 
         void prepare() {
             this.metadata = template.apply(

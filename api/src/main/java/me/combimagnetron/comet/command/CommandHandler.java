@@ -35,7 +35,7 @@ public abstract class CommandHandler {
         Format format = Format.format(name, aliases, arguments.toArray(new Argument<?>[0]));
         Method execute = Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.isAnnotationPresent(Execute.class)).findFirst().orElseThrow();
         Optional<Condition> condition = requirement(clazz);
-        return InternalCommand.Impl.of(format, subCommands, InternalCommand.ReflectionInfo.of(execute, clazz), condition.get());
+        return InternalCommand.Impl.of(format, subCommands, InternalCommand.ReflectionInfo.of(execute, clazz), condition.orElse(null));
     }
 
     private Collection<InternalSubCommand> subCommands(Class<?> clazz) {

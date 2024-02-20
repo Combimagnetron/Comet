@@ -1,8 +1,8 @@
 package me.combimagnetron.pilot.listener;
 
-import me.combimagnetron.generated.DeployServiceMessage;
 import me.combimagnetron.comet.communication.MessageHandler;
 import me.combimagnetron.comet.communication.MessageListener;
+import me.combimagnetron.generated.DeployServiceMessage;
 import me.combimagnetron.pilot.Pilot;
 
 @MessageHandler(filter = DeployServiceMessage.class, channel = "service:handler")

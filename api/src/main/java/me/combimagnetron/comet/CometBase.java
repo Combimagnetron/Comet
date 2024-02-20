@@ -9,6 +9,7 @@ import me.combimagnetron.comet.user.UserHandler;
 import net.kyori.adventure.audience.Audience;
 
 import javax.inject.Singleton;
+import java.util.logging.Logger;
 
 @Singleton
 public interface CometBase<T> {
@@ -24,6 +25,8 @@ public interface CometBase<T> {
     ResourcePackManager resourcePacks();
 
     MessageClient messageClient();
+
+    Logger logger();
 
     T plugin();
 

@@ -4,6 +4,8 @@ import me.combimagnetron.comet.internal.network.packet.client.ClientOpenScreen;
 import me.combimagnetron.comet.internal.network.packet.client.ClientSetScreenContent;
 import me.combimagnetron.comet.internal.network.ByteBuffer;
 import me.combimagnetron.comet.internal.network.packet.server.ServerClickContainer;
+import me.combimagnetron.comet.internal.network.packet.server.ServerCloseContainer;
+import me.combimagnetron.comet.internal.network.packet.server.ServerSetPlayerRotation;
 
 public interface Packet {
 
@@ -49,6 +51,8 @@ public interface Packet {
 
         interface Server {
             Type<ServerClickContainer> CLICK_CONTAINER = Impl.of(ServerClickContainer.class);
+            Type<ServerCloseContainer> CLOSE_CONTAINER = Impl.of(ServerCloseContainer.class);
+            Type<ServerSetPlayerRotation> SET_PLAYER_ROTATION = Impl.of(ServerSetPlayerRotation.class);
         }
 
         record Impl<T extends Packet>(Class<T> clazz) implements Type<T> {

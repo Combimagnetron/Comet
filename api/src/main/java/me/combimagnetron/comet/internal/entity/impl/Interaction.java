@@ -1,18 +1,32 @@
 package me.combimagnetron.comet.internal.entity.impl;
 
+import me.combimagnetron.comet.internal.entity.Entity;
 import me.combimagnetron.comet.internal.entity.metadata.Metadata;
 import me.combimagnetron.comet.internal.entity.metadata.type.Boolean;
 import me.combimagnetron.comet.internal.entity.metadata.type.Float;
-import me.combimagnetron.comet.internal.entity.metadata.type.Vector3;
-import me.combimagnetron.comet.internal.entity.Entity;
+import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
 
 public class Interaction extends Entity.AbstractEntity {
     private float width;
     private float height;
     private boolean responsive;
 
+    public Interaction(Vector3d position) {
+        super(position);
+    }
+
     @Override
-    public Vector3 position() {
+    public Vector3d position() {
+        return null;
+    }
+
+    @Override
+    public Vector3d rotation() {
+        return null;
+    }
+
+    @Override
+    public Vector3d velocity() {
         return null;
     }
 

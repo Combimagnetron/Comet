@@ -1,7 +1,8 @@
 package me.combimagnetron.comet.internal.network.packet.client;
 
 import me.combimagnetron.comet.internal.entity.Entity;
-import me.combimagnetron.comet.internal.entity.metadata.type.Vector3;
+import me.combimagnetron.comet.internal.entity.metadata.Metadata;
+import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
 import me.combimagnetron.comet.internal.network.ByteBuffer;
 import me.combimagnetron.comet.internal.network.packet.ClientPacket;
 
@@ -12,8 +13,15 @@ public class ClientSpawnEntity implements ClientPacket {
     private final Entity.EntityId entityId;
     private final UUID uuid;
     private final Entity.Type type;
-    private final Vector3 position;
+    private final Vector3d position;
+    private final Vector3d rotation;
+    private final Vector3d velocity;
+    private final Entity.Data data;
 
+
+    public static ClientSpawnEntity spawnEntity(Entity entity) {
+        return new ClientSpawnEntity(entity);
+    }
 
     private ClientSpawnEntity(Entity entity) {
         this.byteBuffer = ByteBuffer.empty();
@@ -21,6 +29,9 @@ public class ClientSpawnEntity implements ClientPacket {
         this.uuid = entity.uuid();
         this.type = entity.type();
         this.position = entity.position();
+        this.rotation = entity.rotation();
+        this.velocity = entity.velocity();
+        this.data = entity.data();
     }
 
     private ClientSpawnEntity(ByteBuffer byteBuffer) {
@@ -28,7 +39,10 @@ public class ClientSpawnEntity implements ClientPacket {
         this.entityId = Entity.EntityId.of(read(ByteBuffer.Adapter.VAR_INT));
         this.uuid = read(ByteBuffer.Adapter.UUID);
         this.type = Entity.Type.find(read(ByteBuffer.Adapter.VAR_INT));
-        this.position = Vector3.vec3(read(ByteBuffer.Adapter.FLOAT), read(ByteBuffer.Adapter.FLOAT),  read(ByteBuffer.Adapter.FLOAT));
+        this.position = Vector3d.vec3(read(ByteBuffer.Adapter.DOUBLE), read(ByteBuffer.Adapter.DOUBLE),  read(ByteBuffer.Adapter.DOUBLE));
+        this.rotation = Vector3d.vec3(read(ByteBuffer.Adapter.DOUBLE), read(ByteBuffer.Adapter.DOUBLE),  read(ByteBuffer.Adapter.DOUBLE));
+        this.velocity = Vector3d.vec3(read(ByteBuffer.Adapter.SHORT), read(ByteBuffer.Adapter.SHORT),  read(ByteBuffer.Adapter.SHORT));
+        this.data = Entity.Data.of(read(ByteBuffer.Adapter.INT));
     }
 
     @Override
@@ -38,6 +52,41 @@ public class ClientSpawnEntity implements ClientPacket {
 
     @Override
     public byte[] write() {
+        write(ByteBuffer.Adapter.VAR_INT, entityId.intValue());
+        write(ByteBuffer.Adapter.UUID, uuid);
+        write(ByteBuffer.Adapter.VAR_INT, type.id());
+        write(ByteBuffer.Adapter.DOUBLE, position.x()).write(ByteBuffer.Adapter.DOUBLE, position.y()).write(ByteBuffer.Adapter.DOUBLE, position.z());
+        write(ByteBuffer.Adapter.DOUBLE, rotation.x()).write(ByteBuffer.Adapter.DOUBLE, rotation.y()).write(ByteBuffer.Adapter.DOUBLE, rotation.z());
+        write(ByteBuffer.Adapter.VAR_INT, data.i());
+        write(ByteBuffer.Adapter.SHORT,(short) velocity.x()).write(ByteBuffer.Adapter.SHORT,(short) velocity.y()).write(ByteBuffer.Adapter.SHORT,(short) velocity.z());
         return byteBuffer.bytes();
+    }
+
+    public Entity.EntityId entityId() {
+        return entityId;
+    }
+
+    public UUID uuid() {
+        return uuid;
+    }
+
+    public Entity.Type type() {
+        return type;
+    }
+
+    public Vector3d position() {
+        return position;
+    }
+
+    public Vector3d rotation() {
+        return rotation;
+    }
+
+    public Vector3d velocity() {
+        return velocity;
+    }
+
+    public Entity.Data data() {
+        return data;
     }
 }

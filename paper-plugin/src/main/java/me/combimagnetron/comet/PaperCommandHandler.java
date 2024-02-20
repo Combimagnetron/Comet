@@ -17,10 +17,11 @@ import java.util.*;
 
 public class PaperCommandHandler extends CommandHandler implements CommandExecutor, Listener {
     private final Collection<InternalCommand> commands;
-    @Inject
-    private CometBase<?> comet;
+    //@Inject
+    CometBase<?> comet;
 
-    public PaperCommandHandler() {
+    public PaperCommandHandler(CometBase<?> comet) {
+        this.comet = comet;
         commands = commands();
         convert();
     }
@@ -38,18 +39,19 @@ public class PaperCommandHandler extends CommandHandler implements CommandExecut
 
     void convert() {
         for (InternalCommand command : commands) {
-            PaperCommand paperCommand = new PaperCommand(command.format().string(), command);
+            PaperCommand paperCommand = new PaperCommand(comet, command.format().string(), command);
             Bukkit.getCommandMap().register(command.format().string(), paperCommand);
         }
     }
 
     static class PaperCommand extends Command {
         private final InternalCommand command;
-        @Inject
-        private CometBase<?> comet;
+        //@Inject
+        CometBase<?> comet;
 
-        protected PaperCommand(@NotNull String name, InternalCommand command) {
+        protected PaperCommand(CometBase<?> comet, @NotNull String name, InternalCommand command) {
             super(name);
+            this.comet = comet;
             this.command = command;
         }
 
@@ -62,7 +64,8 @@ public class PaperCommandHandler extends CommandHandler implements CommandExecut
             Arrays.stream(command.format().arguments()).forEach(argument -> {
 
             });
-            command.run(comet.users().user(player.getUniqueId()).orElseThrow(), Argument.STRING);
+            Bukkit.getLogger().info(comet.users().users().size() + "");
+            command.run(comet.users().user(player.getUniqueId()).orElseThrow()/*, args[0]*/);
             return true;
         }
 

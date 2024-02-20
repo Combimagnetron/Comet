@@ -12,6 +12,6 @@ public abstract class ExternalEntityFeatureComponent extends ExternalFeatureComp
         super(feature, OutsourceReason.VERSION_DEPENDENT_IMPLEMENTATION);
     }
 
-    public abstract Operation<ModeledEntity> spawnModel(User<?> user, ModelTemplate template, Entity baseEntity);
+    public abstract ModeledEntity spawnModel(User<?> user, ModelTemplate template, Entity baseEntity);
 
 }

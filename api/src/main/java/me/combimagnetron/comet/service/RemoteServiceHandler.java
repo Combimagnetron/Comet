@@ -1,11 +1,11 @@
 package me.combimagnetron.comet.service;
 
 import me.combimagnetron.comet.communication.message.MessageChannel;
+import me.combimagnetron.comet.CometBase;
+import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.generated.DeployServiceMessage;
 import me.combimagnetron.generated.StartServiceMessage;
 import me.combimagnetron.generated.StopServiceMessage;
-import me.combimagnetron.comet.CometBase;
-import me.combimagnetron.comet.data.Identifier;
 
 import javax.inject.Inject;
 import java.util.concurrent.ConcurrentHashMap;

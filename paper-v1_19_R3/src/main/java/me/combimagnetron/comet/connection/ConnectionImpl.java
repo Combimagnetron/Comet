@@ -10,10 +10,7 @@ import me.combimagnetron.comet.internal.network.ByteBuffer;
 import me.combimagnetron.comet.internal.network.VersionRegistry;
 import me.combimagnetron.comet.internal.network.packet.Packet;
 import me.combimagnetron.comet.internal.network.packet.ServerPacket;
-import me.combimagnetron.comet.internal.network.packet.client.ClientBundleDelimiter;
-import me.combimagnetron.comet.internal.network.packet.client.ClientOpenScreen;
-import me.combimagnetron.comet.internal.network.packet.client.ClientSetScreenContent;
-import me.combimagnetron.comet.internal.network.packet.client.ClientSetScreenSlot;
+import me.combimagnetron.comet.internal.network.packet.client.*;
 import me.combimagnetron.comet.CometBase;
 import me.combimagnetron.comet.user.User;
 import me.combimagnetron.comet.util.Values;
@@ -21,8 +18,10 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
+import net.minecraft.world.phys.Vec3;
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +33,7 @@ import java.util.function.Function;
 
 public class ConnectionImpl implements me.combimagnetron.comet.internal.network.Connection {
     private final Player player;
+    private final User<Player> user;
     private final CometBase<JavaPlugin> library;
     private ChannelPipeline channelPipeline;
 
@@ -44,20 +44,14 @@ public class ConnectionImpl implements me.combimagnetron.comet.internal.network.
     protected ConnectionImpl(User<Player> user, CometBase<JavaPlugin> library) {
         this.player = user.platformSpecificPlayer();
         this.library = library;
+        this.user = user;
         inject();
     }
 
     private void inject() {
         ServerGamePacketListenerImpl serverGamePacketListener = ((CraftPlayer) player).getHandle().connection;
-        Connection connection;
-        try {
-            Field field = serverGamePacketListener.getClass().getDeclaredField("h");
-            field.setAccessible(true);
-            connection = (Connection) field.get(serverGamePacketListener);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        this.channelPipeline = connection.channel.pipeline().addLast(new ChannelInjector(library));
+        Connection connection = serverGamePacketListener.connection;
+        this.channelPipeline = connection.channel.pipeline().addLast(new ChannelInjector(library, user));
     }
 
     @Override
@@ -67,9 +61,11 @@ public class ConnectionImpl implements me.combimagnetron.comet.internal.network.
 
     protected static class ChannelInjector extends ChannelDuplexHandler {
         private final CometBase<JavaPlugin> library;
+        private final User<Player> user;
 
-        protected ChannelInjector(CometBase<JavaPlugin> library) {
+        protected ChannelInjector(CometBase<JavaPlugin> library, User<Player> user) {
             this.library = library;
+            this.user = user;
         }
 
         @Override
@@ -84,8 +80,10 @@ public class ConnectionImpl implements me.combimagnetron.comet.internal.network.
             Constructor<? extends Packet> constructor = clazz.getDeclaredConstructor(ByteBuffer.class);
             constructor.setAccessible(true);
             Packet packetContainer = constructor.newInstance(buffer);
-            library.network().sniffer().call(packetContainer);
-            super.channelRead(ctx, message);
+            boolean cancel = library.network().sniffer().call(user, packetContainer);
+            if (!cancel) {
+                super.channelRead(ctx, message);
+            }
         }
 
     }
@@ -95,6 +93,7 @@ public class ConnectionImpl implements me.combimagnetron.comet.internal.network.
         Transformer<ClientSetScreenContent> CLIENT_SET_SCREEN_CONTENT = Transformer.of(ClientSetScreenContent.class, container -> new ClientboundContainerSetContentPacket(container.windowId(), container.stateId(), NonNullList.of(TypeTransformer.ITEM_ITEM_STACK.transform(Item.empty()), container.items().stream().map(TypeTransformer.ITEM_ITEM_STACK::transform).toList().toArray(new ItemStack[0])), TypeTransformer.ITEM_ITEM_STACK.transform(container.carried())));
         Transformer<ClientBundleDelimiter> CLIENT_BUNDLE_DELIMITER = Transformer.of(ClientBundleDelimiter.class, container -> new ClientboundBundlePacket(container.containers().stream().map(Transformer::findAndTransform).toList()));
         Transformer<ClientSetScreenSlot> CLIENT_SET_SCREEN_SLOT = Transformer.of(ClientSetScreenSlot.class, container -> new ClientboundContainerSetSlotPacket(container.windowId(), container.stateId(), container.slot(), TypeTransformer.ITEM_ITEM_STACK.transform(container.item())));
+        Transformer<ClientSpawnEntity> CLIENT_SPAWN_ENTITY = Transformer.of(ClientSpawnEntity.class, container -> new ClientboundAddEntityPacket(container.entityId().intValue(), container.uuid(), container.position().x(), container.position().y(), container.position().z(), (float) container.rotation().x(), (float) container.rotation().y(), EntityType.HUSK, container.data().i(), Vec3.ZERO, container.rotation().z()));
 
         Values<Transformer> VALUES = Values.of(CLIENT_OPEN_SCREEN, CLIENT_SET_SCREEN_CONTENT, CLIENT_BUNDLE_DELIMITER, CLIENT_SET_SCREEN_SLOT);
 

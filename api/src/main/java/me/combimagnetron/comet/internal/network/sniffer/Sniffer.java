@@ -1,17 +1,20 @@
 package me.combimagnetron.comet.internal.network.sniffer;
 
 import me.combimagnetron.comet.internal.network.packet.Packet;
+import me.combimagnetron.comet.user.User;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public interface Sniffer {
 
     <T extends Packet> Node<T> node(String name);
 
-    void call(Packet container);
+    boolean call(User<?> user, Packet container);
 
     class Impl implements Sniffer {
         private final Map<String, Node<Packet>> nodeMap = new TreeMap<>();
@@ -22,8 +25,8 @@ public interface Sniffer {
         }
 
         @Override
-        public void call(Packet container) {
-            nodeMap.forEach((string, node) -> node.post(container));
+        public boolean call(User<?> user, Packet container) {
+            return nodeMap.entrySet().stream().anyMatch((entry) -> entry.getValue().post(user, container));
         }
     }
 
@@ -41,25 +44,61 @@ public interface Sniffer {
             return ticket;
         }
 
-        public void post(T container) {
-            ticketMap.entrySet().stream()
+        public boolean post(User<?> user, T container) {
+            return ticketMap.entrySet().stream()
                     .filter(typeTicketEntry -> typeTicketEntry.getKey().clazz().equals(container.getClass()))
-                    .forEach(typeTicketEntry -> typeTicketEntry.getValue().receiveConsumer.accept(container));
+                    .anyMatch(typeTicketEntry -> {
+                        PacketEvent<T> packetEvent = new PacketEvent<>(user, container);
+                        typeTicketEntry.getValue().receiveConsumer.accept(packetEvent);
+                        return packetEvent.cancelled();
+                    });
+        }
+
+    }
+
+    final class PacketEvent<T extends Packet> {
+        private final User<?> user;
+        private final T packet;
+        private boolean cancelled = false;
+
+        public PacketEvent(User<?> user, T packet) {
+            this.user = user;
+            this.packet = packet;
+        }
+
+        public User<?> user() {
+            return user;
+        }
+
+        public T packet() {
+            return packet;
+        }
+
+        public void cancel() {
+            this.cancelled = !cancelled;
+        }
+
+        public void cancel(boolean bool) {
+            this.cancelled = bool;
+        }
+
+        public boolean cancelled() {
+            return cancelled;
         }
 
     }
 
     class Ticket<T extends Packet> {
-        private Consumer<T> sendConsumer = event -> {};
-        private Consumer<T> receiveConsumer = event -> {};
+        private BiConsumer<User<?>, T> sendConsumer = (user, event) -> {};
+        private Consumer<PacketEvent<T>> receiveConsumer = wrappedPacket -> {};
 
-        public Ticket<T> receive(Consumer<T> receiveConsumer) {
+        public Ticket<T> receive(Consumer<PacketEvent<T>> receiveConsumer) {
             this.receiveConsumer = receiveConsumer;
             return this;
         }
 
-        public Ticket<T> send(Consumer<T> sendConsumer) {
-            this.receiveConsumer = sendConsumer;
+        public Ticket<T> send(BiConsumer<User<?>, T> sendConsumer) {
+            this.sendConsumer = sendConsumer;
             return this;
         }
 

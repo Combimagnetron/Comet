@@ -29,6 +29,10 @@ public interface InternalCommand {
 
         @Override
         public void run(User<?> user, Object... objects) {
+            /*if (subCommands.stream().map(command -> command.format().string()).anyMatch(string -> string == objects[0])) {
+                subCommands.stream().filter(command -> command.format().string() == objects[0]).findAny().orElseThrow();
+            }*/
+
             try {
                 check();
                 final StringBuilder builder = new StringBuilder();
@@ -36,7 +40,13 @@ public interface InternalCommand {
                     builder.append(parameterType.getTypeName());
                 }
                 Bukkit.getLogger().info(builder + " " + reflectionInfo.execute.getParameterCount() + "\n" + Arrays.toString(objects));
-                reflectionInfo.execute.invoke(reflectionInfo.clazz.getDeclaredConstructor().newInstance(), user, objects);
+                if (objects.length > 0) {
+                    reflectionInfo.execute.invoke(reflectionInfo.clazz.getDeclaredConstructor().newInstance(), user, objects);
+                } else {
+                    reflectionInfo.execute.invoke(reflectionInfo.clazz.getDeclaredConstructor().newInstance(), user);
+                }
+
+
             } catch (IllegalAccessException | InvocationTargetException | InstantiationException |
                      NoSuchMethodException e) {
                 throw new RuntimeException(e);

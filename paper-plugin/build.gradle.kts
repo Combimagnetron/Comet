@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
+    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -18,9 +18,9 @@ dependencies {
 }
 
 bukkit {
-    name = "Lagoon"
-    main = "me.combimagnetron.lagoon.CometPlugin"
-    apiVersion = "1.19"
+    name = "Comet"
+    main = "me.combimagnetron.comet.CometPlugin"
+    apiVersion = "1.20"
 }
 
 tasks {
