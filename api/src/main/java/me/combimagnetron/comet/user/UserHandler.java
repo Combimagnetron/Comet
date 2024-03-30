@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public interface UserHandler<T extends Audience> {
 
+    User<T> user(T t);
+
     Optional<User<T>> user(UUID uuid);
 
     Optional<User<T>> user(String name);

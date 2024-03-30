@@ -17,7 +17,6 @@ public class ClientEntityMetadata implements ClientPacket {
     private ClientEntityMetadata(Entity entity) {
         this.byteBuffer = ByteBuffer.empty();
         this.metadata = entity.type().metadata();
-
     }
 
     @Override

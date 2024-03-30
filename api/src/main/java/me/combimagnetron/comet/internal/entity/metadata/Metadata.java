@@ -4,11 +4,12 @@ import com.google.common.collect.ConcurrentHashMultiset;
 import me.combimagnetron.comet.internal.entity.metadata.type.Boolean;
 import me.combimagnetron.comet.internal.entity.metadata.type.Byte;
 import me.combimagnetron.comet.internal.entity.metadata.type.*;
+import me.combimagnetron.comet.internal.entity.metadata.type.Float;
+import me.combimagnetron.comet.internal.entity.metadata.type.String;
+import me.combimagnetron.comet.internal.network.ByteBuffer;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface Metadata {
     Template BASE = Template.of(Byte.class, VarInt.class, OptChat.class, Boolean.class, Boolean.class, Boolean.class, Pose.class, VarInt.class);
@@ -17,8 +18,10 @@ public interface Metadata {
 
     Holder holder();
 
+    ByteBuffer bytes();
+
     static Metadata inheritAndMerge(Metadata metadata, MetadataType... types) {
-        return FACTORY.inheritAndMerge(metadata, types);
+        return FACTORY.inheritAndMerge(metadata, null/*types*/);
     }
 
     static Metadata merge(Metadata... metadata) {
@@ -26,7 +29,7 @@ public interface Metadata {
     }
 
     static Metadata of(MetadataType... types) {
-        return FACTORY.of(types);
+        return FACTORY.of(Arrays.stream(types).map(MetadataPair::metadataPair).toArray(MetadataPair[]::new));
     }
 
     interface Template {
@@ -56,20 +59,50 @@ public interface Metadata {
             @Override
             public Metadata apply(MetadataType... types) {
                 if (Arrays.stream(types).filter(type -> type.getClass() != classes.iterator().next()).count() > 0) {
-                    throw new IllegalArgumentException();
+                    //throw new IllegalArgumentException();
                 };
-                return FACTORY.of(types);
+                return FACTORY.of(Arrays.stream(types).map(type -> new MetadataPair(0, type)).toArray(MetadataPair[]::new));
             }
         }
 
     }
 
+    record MetadataPair(int index, MetadataType type) {
+        private static Map<Class<? extends MetadataType>, Integer> TYPE_MAP = new HashMap<>();
+
+        static {
+            TYPE_MAP.put(Byte.class, 0);
+            TYPE_MAP.put(VarInt.class, 1);
+            TYPE_MAP.put(VarLong.class, 2);
+            TYPE_MAP.put(Float.class, 3);
+            TYPE_MAP.put(String.class, 4);
+            TYPE_MAP.put(Chat.class, 5);
+            TYPE_MAP.put(OptChat.class, 6);
+            TYPE_MAP.put(Slot.class, 7);
+            TYPE_MAP.put(Boolean.class, 8);
+            TYPE_MAP.put(Rotation.class, 9);
+            TYPE_MAP.put(Position.class, 10);
+            TYPE_MAP.put(OptPosition.class, 11);
+            TYPE_MAP.put(Pose.class, 20);
+            TYPE_MAP.put(Vector3d.class, 26);
+            TYPE_MAP.put(Quaternion.class, 27);
+        }
+
+        public static MetadataPair metadataPair(int index, MetadataType type) {
+            return new MetadataPair(index, type);
+        }
+
+        public static MetadataPair metadataPair(MetadataType type) {
+            return new MetadataPair(TYPE_MAP.get(type.getClass()), type);
+        }
+    }
+
 
     final class Holder {
-        private final ConcurrentHashMultiset<MetadataType> metadataTypes = ConcurrentHashMultiset.create();
+        private final ConcurrentHashMap<Integer, MetadataType> metadataTypes = new ConcurrentHashMap<>();
 
-        public void put(MetadataType type) {
-            metadataTypes.add(type);
+        public void put(MetadataPair type) {
+            metadataTypes.put(type.index, type.type);
         }
 
     }
@@ -81,6 +114,16 @@ public interface Metadata {
         public Holder holder() {
             return holder;
         }
+
+        @Override
+        public ByteBuffer bytes() {
+            final ByteBuffer buffer = ByteBuffer.empty();
+            holder().metadataTypes.forEach((index, type) -> {
+                buffer.write(ByteBuffer.Adapter.VAR_INT, index);
+                buffer.write(type.bytes());
+            });
+            return buffer;
+        }
     }
 
     final class Factory {
@@ -89,19 +132,23 @@ public interface Metadata {
             final Impl impl = new Impl();
             Arrays.stream(metadata).forEachOrdered(m -> {
                 Impl impl1 = (Impl) m;
-                impl.holder().metadataTypes.addAll(impl1.holder().metadataTypes);
+                impl.holder().metadataTypes.putAll(impl1.holder().metadataTypes);
             });
             return impl;
         }
 
-        public Metadata inheritAndMerge(Metadata metadata, MetadataType... metadataTypes) {
-            metadata.holder().metadataTypes.addAll(List.of(metadataTypes));
+        public Metadata inheritAndMerge(Metadata metadata, MetadataPair... metadataTypes) {
+            for (MetadataPair metadataType : metadataTypes) {
+                metadata.holder().metadataTypes.put(metadataType.index, metadataType.type);
+            }
             return metadata;
         }
 
-        public Metadata of(MetadataType... types) {
+        public Metadata of(MetadataPair... types) {
             final Impl impl = new Impl();
-            impl.holder.metadataTypes.addAll(List.of(types));
+            for (MetadataPair metadataType : types) {
+                impl.holder().metadataTypes.put(metadataType.index, metadataType.type);
+            }
             return impl;
         }
 

@@ -6,7 +6,7 @@ import me.combimagnetron.comet.feature.menu.Pos2D;
 import java.awt.image.BufferedImage;
 import me.combimagnetron.comet.feature.menu.Canvas;
 
-public class SimpleBufferedElement implements Element {
+public abstract class SimpleBufferedElement implements Element {
     private final BufferedImage image;
     private final Pos2D size;
     private final Identifier identifier;
@@ -19,6 +19,8 @@ public class SimpleBufferedElement implements Element {
         this.position = position;
     }
 
+    protected abstract BufferedImage render(BufferedImage image);
+
     @Override
     public Identifier identifier() {
         return identifier;
@@ -26,7 +28,7 @@ public class SimpleBufferedElement implements Element {
 
     @Override
     public Canvas canvas() {
-        return Canvas.image(image);
+        return Canvas.image(render(image));
     }
 
     @Override

@@ -17,7 +17,7 @@ public interface Input<T> {
     }
 
     enum Type {
-        RIGHT_CLICK, LEFT_CLICK, KEY_PRESS, CURSOR_MOVE, SCROLL, SNEAK, JUMP
+        RIGHT_CLICK, LEFT_CLICK, KEY_PRESS, CURSOR_MOVE, SCROLL_UP, SCROLL_DOWN, SNEAK, JUMP
     }
 
 }

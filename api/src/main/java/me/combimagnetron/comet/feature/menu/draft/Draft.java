@@ -28,6 +28,10 @@ public interface Draft {
 
     }
 
+    enum EditType {
+        ADD, REPLACE, REMOVE, RENAME
+    }
+
     final class ElementSubSection implements SubSection<Element> {
         private final Element element;
         private final Draft draft;

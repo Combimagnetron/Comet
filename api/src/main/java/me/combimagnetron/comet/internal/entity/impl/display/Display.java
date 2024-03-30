@@ -2,19 +2,25 @@ package me.combimagnetron.comet.internal.entity.impl.display;
 
 import me.combimagnetron.comet.feature.menu.element.Position;
 import me.combimagnetron.comet.internal.entity.Entity;
+import me.combimagnetron.comet.internal.entity.metadata.Metadata;
+import me.combimagnetron.comet.internal.entity.metadata.type.Float;
+import me.combimagnetron.comet.internal.entity.metadata.type.MetadataType;
 import me.combimagnetron.comet.internal.entity.metadata.type.Quaternion;
+import me.combimagnetron.comet.internal.entity.metadata.type.VarInt;
 import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
 
 @SuppressWarnings("unused")
 public abstract class Display extends Entity.AbstractEntity {
     private int interpolationDelay = 0;
     private int interpolationDuration = 0;
-    private Transformation transformation = Transformation.transformation();
+    private final Transformation transformation = new Transformation(Vector3d.vec3(0, 0, 0), Vector3d.vec3(0, 0, 0), Quaternion.of(0, 0, 0, 1), Quaternion.of(0, 0, 0, 1));
     private Billboard billboard = Billboard.FIXED;
     private int brightness = -1;
     private float viewRange = 1;
     private Shadow shadow = Shadow.shadow();
     private int glowOverride = -1;
+    private float width = 0;
+    private float height = 0;
 
     public Display(Vector3d position) {
         super(position);
@@ -22,7 +28,7 @@ public abstract class Display extends Entity.AbstractEntity {
 
     @Override
     public Entity.Data data() {
-        return null;
+        return Data.of(0);
     }
 
     public record Transformation(Vector3d translation, Vector3d scale, Quaternion rotationLeft, Quaternion rotationRight) {
@@ -47,6 +53,26 @@ public abstract class Display extends Entity.AbstractEntity {
             return of(0, 1);
         }
 
+    }
+
+    public Metadata base() {
+        return Metadata.of(
+                VarInt.of(interpolationDelay()),
+                VarInt.of(0),
+                VarInt.of(0),
+                transformation.translation(),
+                transformation.scale(),
+                transformation.rotationLeft(),
+                transformation.rotationRight(),
+                me.combimagnetron.comet.internal.entity.metadata.type.Byte.of(billboard().constraint()),
+                VarInt.of(brightness()),
+                me.combimagnetron.comet.internal.entity.metadata.type.Float.of(viewRange()),
+                me.combimagnetron.comet.internal.entity.metadata.type.Float.of(shadow().radius()),
+                me.combimagnetron.comet.internal.entity.metadata.type.Float.of(shadow().strength()),
+                me.combimagnetron.comet.internal.entity.metadata.type.Float.of(width()),
+                Float.of(height()),
+                VarInt.of(glowOverride())
+        );
     }
 
     public interface Billboard {
@@ -88,7 +114,7 @@ public abstract class Display extends Entity.AbstractEntity {
     }
 
     public void transformation(Transformation transformation) {
-        this.transformation = transformation;
+        //this.transformation = transformation;
     }
 
     public Billboard billboard() {
@@ -123,11 +149,32 @@ public abstract class Display extends Entity.AbstractEntity {
         this.shadow = shadow;
     }
 
+    public float width() {
+        return width;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public float height() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
     public int glowOverride() {
         return glowOverride;
     }
 
     public void glowOverride(int glowOverride) {
         this.glowOverride = glowOverride;
+    }
+
+    @Override
+    public Metadata extend() {
+        return Metadata.of();
     }
 }

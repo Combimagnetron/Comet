@@ -9,6 +9,7 @@ import me.combimagnetron.comet.event.impl.menu.UserHoverElementEvent;
 import me.combimagnetron.comet.feature.menu.element.Position;
 import me.combimagnetron.comet.internal.entity.impl.display.Display;
 import me.combimagnetron.comet.internal.entity.impl.display.TextDisplay;
+import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
 import me.combimagnetron.comet.internal.network.packet.Packet;
 import me.combimagnetron.comet.internal.network.packet.client.ClientSpawnEntity;
 import me.combimagnetron.comet.internal.network.packet.server.ServerSetPlayerRotation;
@@ -36,12 +37,12 @@ public final class EntityMenu {
     private EntityMenu(Position position, User<?> user) {
         this.input = new Input(comet, user, (event) -> {});
         this.position = position;
-        this.cursor = TextDisplay.textDisplay();
+        this.cursor = TextDisplay.textDisplay(Vector3d.vec3(0, 0, 0));
         this.cursorPos = Position.pixel(0, 0);
     }
 
     public void element(Element element) {
-        final TextDisplay display = TextDisplay.textDisplay();
+        final TextDisplay display = TextDisplay.textDisplay(Vector3d.vec3(0, 0, 0));
         //display.text(element.render().renderAsync());
         display.options().defaultBackgroundColor(false);
         display.transformation(Display.Transformation.of(null, null, null, null));

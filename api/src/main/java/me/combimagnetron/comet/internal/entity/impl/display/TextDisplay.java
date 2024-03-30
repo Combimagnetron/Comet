@@ -1,8 +1,14 @@
 package me.combimagnetron.comet.internal.entity.impl.display;
 
+import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.internal.entity.metadata.Metadata;
+import me.combimagnetron.comet.internal.entity.metadata.type.*;
 import me.combimagnetron.comet.internal.entity.metadata.type.Boolean;
-import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
+import me.combimagnetron.comet.internal.entity.metadata.type.Byte;
+import me.combimagnetron.comet.internal.entity.metadata.type.Float;
+import me.combimagnetron.comet.internal.network.packet.client.ClientEntityMetadata;
+import me.combimagnetron.comet.internal.network.packet.client.ClientSpawnEntity;
+import me.combimagnetron.comet.user.User;
 import net.kyori.adventure.text.Component;
 
 @SuppressWarnings(value = "unused")
@@ -15,14 +21,21 @@ public class TextDisplay extends Display {
 
     public TextDisplay(Vector3d position) {
         super(position);
+        if (transformation() == null) {
+            transformation(Transformation.transformation()); // Replace Transformation with the actual class
+        }
     }
 
     public Component text() {
         return text;
     }
 
-    public static TextDisplay textDisplay() {
-        return new TextDisplay(Vector3d.vec3(0, 0, 0));
+    public static TextDisplay textDisplay(Vector3d position) {
+        return new TextDisplay(position);
+    }
+
+    public static TextDisplay nonTracked(Vector3d position, User<?> viewer) {
+        return new NonTracked(position, viewer);
     }
 
     public void text(Component text) {
@@ -62,23 +75,8 @@ public class TextDisplay extends Display {
     }
 
     @Override
-    public Vector3d position() {
-        return null;
-    }
-
-    @Override
-    public Vector3d rotation() {
-        return null;
-    }
-
-    @Override
-    public Vector3d velocity() {
-        return null;
-    }
-
-    @Override
     public Type type() {
-        return null;
+        return new Type.Impl(0, Identifier.of("minecraft", "text_display"), extend());
     }
 
     public static class Options {
@@ -140,6 +138,38 @@ public class TextDisplay extends Display {
 
     @Override
     public Metadata extend() {
-        return Metadata.of(Boolean.of(false));
+        return Metadata.inheritAndMerge(
+                base(),
+                Chat.of(text),
+                VarInt.of(lineWidth),
+                VarInt.of(backgroundColor),
+                Byte.of(textOpacity),
+                Byte.of(options().complete())
+        );
     }
+
+    public static class NonTracked extends TextDisplay {
+        private final User<?> viewer;
+
+        protected NonTracked(Vector3d position, User<?> viewer) {
+            super(position);
+            this.viewer = viewer;
+            viewer.connection().send(ClientSpawnEntity.spawnEntity(this));
+            viewer.connection().send(ClientEntityMetadata.entityMetadata(this));
+        }
+
+        @Override
+        public void text(Component text) {
+            super.text(text);
+            update();
+        }
+
+        private void update() {
+            viewer.connection().send(ClientEntityMetadata.entityMetadata(this));
+        }
+
+
+
+    }
+
 }

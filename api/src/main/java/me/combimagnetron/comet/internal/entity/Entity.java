@@ -8,6 +8,7 @@ import me.combimagnetron.comet.internal.entity.metadata.type.*;
 import me.combimagnetron.comet.internal.network.packet.client.ClientEntityMetadata;
 import me.combimagnetron.comet.internal.network.packet.client.ClientSpawnEntity;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.text.View;
 import java.util.Collection;
@@ -278,7 +279,7 @@ public interface Entity {
             return null;
         }
 
-        record Impl(int id, Identifier identifier, Metadata metadata) {
+        record Impl(int id, Identifier identifier, Metadata metadata) implements Type {
 
         }
 

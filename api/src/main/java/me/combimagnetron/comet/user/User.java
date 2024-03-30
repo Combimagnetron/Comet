@@ -1,6 +1,7 @@
 package me.combimagnetron.comet.user;
 
 import me.combimagnetron.comet.instance.Instance;
+import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
 import me.combimagnetron.comet.internal.network.Connection;
 import me.combimagnetron.comet.data.impl.UserDataContainer;
 import net.kyori.adventure.audience.Audience;
@@ -25,5 +26,7 @@ public interface User<T extends Audience> {
      UUID uniqueIdentifier();
 
      Connection connection();
+
+     Vector3d position();
 
 }

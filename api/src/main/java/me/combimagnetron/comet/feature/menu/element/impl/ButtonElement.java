@@ -9,15 +9,21 @@ import me.combimagnetron.comet.feature.menu.element.Position;
 import me.combimagnetron.comet.feature.menu.element.SimpleBufferedElement;
 import me.combimagnetron.comet.user.User;
 
+import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
 
 public class ButtonElement extends SimpleBufferedElement implements Interactable {
+    private BufferedImage icon;
 
     private Consumer<UserHoverElementEvent> hoverElementEventConsumer = (x) -> {};
     private Consumer<UserClickElementEvent> clickElementEventConsumer = (x) -> {};
 
-    public ButtonElement(Pos2D size, Position position, Identifier identifier) {
-        super(size, identifier, position);
+    public ButtonElement(int width, Position position, Identifier identifier) {
+        super(Pos2D.of(width, 10), identifier, position);
+    }
+
+    public void icon(BufferedImage icon) {
+        this.icon = icon;
     }
 
     public void click(User<?> user) {
@@ -36,5 +42,14 @@ public class ButtonElement extends SimpleBufferedElement implements Interactable
     @Override
     public void click(Consumer<UserClickElementEvent> consumer) {
         this.clickElementEventConsumer = consumer;
+    }
+
+    @Override
+    protected BufferedImage render(BufferedImage image) {
+        if (icon != null) {
+            image.getGraphics().drawImage(icon, 0, 0, null);
+        }
+
+        return null;
     }
 }

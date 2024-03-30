@@ -38,12 +38,13 @@ public class UserManager implements Listener, UserHandler<Player> {
         USER_MAP.remove(player.getUniqueId());
     }
 
+    @Override
     public User<Player> user(Player player) {
         return USER_MAP.get(player.getUniqueId());
     }
 
     public Optional<User<Player>> user(UUID player) {
-        return Optional.ofNullable(USER_MAP.get(player));
+        return Optional.of(USER_MAP.get(player));
     }
 
     @Override

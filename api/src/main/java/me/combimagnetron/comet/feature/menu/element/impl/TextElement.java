@@ -7,6 +7,7 @@ import me.combimagnetron.comet.feature.menu.element.SimpleBufferedElement;
 import me.combimagnetron.comet.feature.menu.style.Text;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class TextElement extends SimpleBufferedElement {
     private final Text text;
@@ -28,4 +29,8 @@ public class TextElement extends SimpleBufferedElement {
         return text;
     }
 
+    @Override
+    protected BufferedImage render(BufferedImage image) {
+        return null;
+    }
 }

@@ -4,6 +4,7 @@ import me.combimagnetron.comet.command.CommandHandler;
 import me.combimagnetron.comet.command.InternalCommand;
 import me.combimagnetron.comet.command.argument.Argument;
 import me.combimagnetron.comet.user.User;
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,7 +33,7 @@ public class PaperCommandHandler extends CommandHandler implements CommandExecut
         if (!(sender instanceof Player player)) {
             return false;
         }
-        User<?> user = comet.users().user(player.getUniqueId()).orElseThrow();
+        User<?> user = comet.users().user(player.getUniqueId()).get();
         internalCommand.run(user);
         return true;
     }
@@ -65,7 +66,11 @@ public class PaperCommandHandler extends CommandHandler implements CommandExecut
 
             });
             Bukkit.getLogger().info(comet.users().users().size() + "");
-            command.run(comet.users().user(player.getUniqueId()).orElseThrow()/*, args[0]*/);
+            for (User<? extends Audience> user : comet.users().users()) {
+                Bukkit.getLogger().info(user.name());
+            }
+            Bukkit.getLogger().info(command.reflectionInfo().execute().getName());
+            command.run(comet.users().user(player.getUniqueId()).get()/*, args[0]*/);
             return true;
         }
 

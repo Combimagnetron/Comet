@@ -1,11 +1,13 @@
 package me.combimagnetron.comet;
 
+import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
 import me.combimagnetron.comet.internal.network.Connection;
 import me.combimagnetron.comet.connection.ConnectionImpl;
 import me.combimagnetron.comet.data.impl.UserDataContainer;
 import me.combimagnetron.comet.instance.Instance;
 import me.combimagnetron.comet.user.User;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -57,5 +59,11 @@ public class PaperUser implements User<Player> {
     @Override
     public Connection connection() {
         return connection;
+    }
+
+    @Override
+    public Vector3d position() {
+        final Location location = player.getLocation();
+        return Vector3d.vec3(location.x(), location.y(), location.z());
     }
 }

@@ -41,6 +41,12 @@ public class ByteBuffer {
         type.write(byteArrayDataOutput, object);
         return this;
     }
+
+    public ByteBuffer write(byte[] bytes) {
+        byteArrayDataOutput.write(bytes);
+        return this;
+    }
+
     public <T> T read(Adapter<T> type) {
         return type.read(byteArrayDataInput);
     }

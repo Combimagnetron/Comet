@@ -6,6 +6,8 @@ import me.combimagnetron.comet.feature.menu.input.Input;
 import me.combimagnetron.comet.user.User;
 
 public class Base implements Menu {
+
+
     @Override
     public void apply(Draft draft) {
 
@@ -20,7 +22,7 @@ public class Base implements Menu {
 
         @Logic
         private void logic(Input<?> input) {
-            if (input.type() == Input.Type.SCROLL) {
+            if (input.type() == Input.Type.CURSOR_MOVE) {
 
             }
 
