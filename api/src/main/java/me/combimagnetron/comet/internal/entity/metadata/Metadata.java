@@ -21,7 +21,7 @@ public interface Metadata {
     ByteBuffer bytes();
 
     static Metadata inheritAndMerge(Metadata metadata, MetadataType... types) {
-        return FACTORY.inheritAndMerge(metadata, null/*types*/);
+        return FACTORY.inheritAndMerge(metadata, Arrays.stream(types).map(MetadataPair::metadataPair).toArray(MetadataPair[]::new));
     }
 
     static Metadata merge(Metadata... metadata) {
@@ -99,10 +99,11 @@ public interface Metadata {
 
 
     final class Holder {
-        private final ConcurrentHashMap<Integer, MetadataType> metadataTypes = new ConcurrentHashMap<>();
+        private final ConcurrentHashMap<Integer, MetadataPair> metadataTypes = new ConcurrentHashMap<>();
+        private int i = 0;
 
         public void put(MetadataPair type) {
-            metadataTypes.put(type.index, type.type);
+            metadataTypes.put(i++, type);
         }
 
     }
@@ -119,8 +120,10 @@ public interface Metadata {
         public ByteBuffer bytes() {
             final ByteBuffer buffer = ByteBuffer.empty();
             holder().metadataTypes.forEach((index, type) -> {
-                buffer.write(ByteBuffer.Adapter.VAR_INT, index);
-                buffer.write(type.bytes());
+                System.out.println(index + " " + type.index + " " + type.type.bytes().length);
+                buffer.write(ByteBuffer.Adapter.UNSIGNED_BYTE, index);
+                buffer.write(ByteBuffer.Adapter.VAR_INT, type.index);
+                buffer.write(type.type.bytes());
             });
             return buffer;
         }
@@ -139,7 +142,7 @@ public interface Metadata {
 
         public Metadata inheritAndMerge(Metadata metadata, MetadataPair... metadataTypes) {
             for (MetadataPair metadataType : metadataTypes) {
-                metadata.holder().metadataTypes.put(metadataType.index, metadataType.type);
+                metadata.holder().put(metadataType);
             }
             return metadata;
         }
@@ -147,7 +150,7 @@ public interface Metadata {
         public Metadata of(MetadataPair... types) {
             final Impl impl = new Impl();
             for (MetadataPair metadataType : types) {
-                impl.holder().metadataTypes.put(metadataType.index, metadataType.type);
+                impl.holder().put(metadataType);
             }
             return impl;
         }

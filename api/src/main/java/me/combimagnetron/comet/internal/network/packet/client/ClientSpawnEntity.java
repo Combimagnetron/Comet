@@ -40,7 +40,7 @@ public class ClientSpawnEntity implements ClientPacket {
         this.uuid = read(ByteBuffer.Adapter.UUID);
         this.type = Entity.Type.find(read(ByteBuffer.Adapter.VAR_INT));
         this.position = Vector3d.vec3(read(ByteBuffer.Adapter.DOUBLE), read(ByteBuffer.Adapter.DOUBLE),  read(ByteBuffer.Adapter.DOUBLE));
-        this.rotation = Vector3d.vec3(read(ByteBuffer.Adapter.DOUBLE), read(ByteBuffer.Adapter.DOUBLE),  read(ByteBuffer.Adapter.DOUBLE));
+        this.rotation = Vector3d.vec3(read(ByteBuffer.Adapter.BYTE) * 360f / 256f, read(ByteBuffer.Adapter.BYTE) * 360f / 256f,  read(ByteBuffer.Adapter.BYTE) * 360f / 256f);
         this.velocity = Vector3d.vec3(read(ByteBuffer.Adapter.SHORT), read(ByteBuffer.Adapter.SHORT),  read(ByteBuffer.Adapter.SHORT));
         this.data = Entity.Data.of(read(ByteBuffer.Adapter.INT));
     }
@@ -55,10 +55,20 @@ public class ClientSpawnEntity implements ClientPacket {
         write(ByteBuffer.Adapter.VAR_INT, entityId.intValue());
         write(ByteBuffer.Adapter.UUID, uuid);
         write(ByteBuffer.Adapter.VAR_INT, type.id());
-        write(ByteBuffer.Adapter.DOUBLE, position.x()).write(ByteBuffer.Adapter.DOUBLE, position.y()).write(ByteBuffer.Adapter.DOUBLE, position.z());
-        write(ByteBuffer.Adapter.DOUBLE, rotation.x()).write(ByteBuffer.Adapter.DOUBLE, rotation.y()).write(ByteBuffer.Adapter.DOUBLE, rotation.z());
+
+        write(ByteBuffer.Adapter.DOUBLE, position.x())
+                .write(ByteBuffer.Adapter.DOUBLE, position.y())
+                .write(ByteBuffer.Adapter.DOUBLE, position.z());
+
+        write(ByteBuffer.Adapter.BYTE, (byte) (rotation.x() * 256 / 360))
+                .write(ByteBuffer.Adapter.BYTE, (byte) (rotation.y() * 256 / 360))
+                .write(ByteBuffer.Adapter.BYTE, (byte) (rotation.z() * 256 / 360));
+
         write(ByteBuffer.Adapter.VAR_INT, data.i());
-        write(ByteBuffer.Adapter.SHORT,(short) velocity.x()).write(ByteBuffer.Adapter.SHORT,(short) velocity.y()).write(ByteBuffer.Adapter.SHORT,(short) velocity.z());
+
+        write(ByteBuffer.Adapter.SHORT,(short) velocity.x())
+                .write(ByteBuffer.Adapter.SHORT,(short) velocity.y())
+                .write(ByteBuffer.Adapter.SHORT,(short) velocity.z());
         return byteBuffer.bytes();
     }
 

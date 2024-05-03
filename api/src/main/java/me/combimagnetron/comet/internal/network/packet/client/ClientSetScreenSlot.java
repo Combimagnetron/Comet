@@ -63,6 +63,6 @@ public class ClientSetScreenSlot implements ClientPacket {
         write(ByteBuffer.Adapter.VAR_INT, stateId);
         write(ByteBuffer.Adapter.SHORT, slot);
         write(ByteBuffer.Adapter.ITEM, item);
-        return new byte[0];
+        return byteBuffer().bytes();
     }
 }

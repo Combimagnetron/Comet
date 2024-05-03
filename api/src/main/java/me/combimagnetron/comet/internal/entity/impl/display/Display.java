@@ -13,11 +13,11 @@ import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
 public abstract class Display extends Entity.AbstractEntity {
     private int interpolationDelay = 0;
     private int interpolationDuration = 0;
-    private final Transformation transformation = new Transformation(Vector3d.vec3(0, 0, 0), Vector3d.vec3(0, 0, 0), Quaternion.of(0, 0, 0, 1), Quaternion.of(0, 0, 0, 1));
-    private Billboard billboard = Billboard.FIXED;
+    private static Transformation transformation = new Transformation(Vector3d.vec3(0, 0, 0), Vector3d.vec3(0, 0, 0), Quaternion.of(0, 0, 0, 1), Quaternion.of(0, 0, 0, 1));;
+    private static Billboard billboard = Billboard.FIXED;
     private int brightness = -1;
     private float viewRange = 1;
-    private Shadow shadow = Shadow.shadow();
+    private static Shadow shadow = Shadow.shadow();
     private int glowOverride = -1;
     private float width = 0;
     private float height = 0;
@@ -60,10 +60,10 @@ public abstract class Display extends Entity.AbstractEntity {
                 VarInt.of(interpolationDelay()),
                 VarInt.of(0),
                 VarInt.of(0),
-                transformation.translation(),
-                transformation.scale(),
-                transformation.rotationLeft(),
-                transformation.rotationRight(),
+                this.transformation.translation(),
+                this.transformation.scale(),
+                this.transformation.rotationLeft(),
+                this.transformation.rotationRight(),
                 me.combimagnetron.comet.internal.entity.metadata.type.Byte.of(billboard().constraint()),
                 VarInt.of(brightness()),
                 me.combimagnetron.comet.internal.entity.metadata.type.Float.of(viewRange()),

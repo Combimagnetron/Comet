@@ -13,8 +13,17 @@ dependencies {
     implementation(project(":api"))
     implementation(project(":paper-v1_19_R3", configuration = "reobf"))
     implementation(project(mapOf("path" to ":paper-v1_19_R3")))
+    compileOnly("net.kyori:adventure-api:4.16.0")
+    compileOnly("net.kyori:adventure-text-serializer-gson:4.16.0")
+    compileOnly("com.github.luben:zstd-jni:1.5.2-5")
     //implementation(project(mapOf("path" to ":paper-v1_19_R3")))
-    compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.5-R0.1-SNAPSHOT") {
+        exclude("net.kyori")
+    }
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 bukkit {

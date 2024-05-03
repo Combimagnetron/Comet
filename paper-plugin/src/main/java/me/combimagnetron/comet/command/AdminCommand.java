@@ -7,11 +7,14 @@ import me.combimagnetron.comet.command.annotations.Requires;
 import me.combimagnetron.comet.command.annotations.SubCommand;
 import me.combimagnetron.comet.feature.entity.generator.EntityModelGenerator;
 import me.combimagnetron.comet.feature.entity.parser.blockbench.BlockBenchModel;
+import me.combimagnetron.comet.feature.menu.Menu;
 import me.combimagnetron.comet.internal.entity.impl.display.Display;
 import me.combimagnetron.comet.internal.entity.impl.display.TextDisplay;
 import me.combimagnetron.comet.internal.entity.impl.hostile.Husk;
 import me.combimagnetron.comet.internal.entity.metadata.type.Quaternion;
 import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
+import me.combimagnetron.comet.internal.menu.ChestMenu;
+import me.combimagnetron.comet.internal.network.packet.client.ClientOpenScreen;
 import me.combimagnetron.comet.internal.network.packet.client.ClientSpawnEntity;
 import me.combimagnetron.comet.user.User;
 import net.kyori.adventure.text.Component;
@@ -21,8 +24,8 @@ public class AdminCommand {
 
     @Execute
     public void execute(User<?> user) {
-        final TextDisplay textDisplay = TextDisplay.nonTracked(user.position(), user);
-        textDisplay.text(Component.text("Hello!"));
+        //final TextDisplay textDisplay = TextDisplay.nonTracked(user.position(), user);
+        /*textDisplay.text(Component.text("Hello!"));
         textDisplay.transformation(
                 Display.Transformation.of(
                         Vector3d.vec3(0, 0, 0),
@@ -30,7 +33,8 @@ public class AdminCommand {
                         Quaternion.of(0, 0, 0, 0),
                         Quaternion.of(0, 0, 0, 0)
                 )
-        );
+        );*/
+        ChestMenu chestMenu = new ChestMenu.Impl(user);
         user.message(Component.text("Spawned!"));
     }
 

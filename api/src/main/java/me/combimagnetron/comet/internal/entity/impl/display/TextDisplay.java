@@ -17,13 +17,10 @@ public class TextDisplay extends Display {
     private int lineWidth = Integer.MAX_VALUE;
     private int backgroundColor = 0x40000000;
     private byte textOpacity = -1;
-    private Options options = Options.options();
+    private static Options options = Options.options();
 
     public TextDisplay(Vector3d position) {
         super(position);
-        if (transformation() == null) {
-            transformation(Transformation.transformation()); // Replace Transformation with the actual class
-        }
     }
 
     public Component text() {
@@ -76,7 +73,7 @@ public class TextDisplay extends Display {
 
     @Override
     public Type type() {
-        return new Type.Impl(0, Identifier.of("minecraft", "text_display"), extend());
+        return new Type.Impl(100, Identifier.of("minecraft", "text_display"), extend());
     }
 
     public static class Options {
@@ -144,7 +141,7 @@ public class TextDisplay extends Display {
                 VarInt.of(lineWidth),
                 VarInt.of(backgroundColor),
                 Byte.of(textOpacity),
-                Byte.of(options().complete())
+                Byte.of((byte) 0)
         );
     }
 

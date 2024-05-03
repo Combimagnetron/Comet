@@ -4,19 +4,30 @@ import me.combimagnetron.comet.internal.entity.Entity;
 import me.combimagnetron.comet.internal.entity.metadata.Metadata;
 import me.combimagnetron.comet.internal.network.ByteBuffer;
 import me.combimagnetron.comet.internal.network.packet.ClientPacket;
-import me.combimagnetron.comet.internal.network.packet.Packet;
 
 public class ClientEntityMetadata implements ClientPacket {
     private final ByteBuffer byteBuffer;
+    private final Entity.EntityId entityId;
     private final Metadata metadata;
 
     public static ClientEntityMetadata entityMetadata(Entity entity) {
         return new ClientEntityMetadata(entity);
     }
 
+    public static ClientEntityMetadata from(ByteBuffer byteBuffer) {
+        return new ClientEntityMetadata(byteBuffer);
+    }
+
     private ClientEntityMetadata(Entity entity) {
         this.byteBuffer = ByteBuffer.empty();
+        this.entityId = entity.id();
         this.metadata = entity.type().metadata();
+    }
+
+    private ClientEntityMetadata(ByteBuffer byteBuffer) {
+        this.byteBuffer = byteBuffer;
+        this.entityId = Entity.EntityId.of(read(ByteBuffer.Adapter.VAR_INT));
+        this.metadata = Metadata.FACTORY.of();
     }
 
     @Override
@@ -24,9 +35,19 @@ public class ClientEntityMetadata implements ClientPacket {
         return byteBuffer;
     }
 
+    public Entity.EntityId entityId() {
+        return entityId;
+    }
+
+    public Metadata metadata() {
+        return metadata;
+    }
+
     @Override
     public byte[] write() {
-        return new byte[0];
+        write(ByteBuffer.Adapter.VAR_INT, entityId.intValue());
+        byteBuffer.write(metadata.bytes().bytes());
+        return byteBuffer.bytes();
     }
 
 }

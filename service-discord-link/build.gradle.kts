@@ -17,6 +17,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+}
+
 docker {
     javaApplication {
         baseImage.set("azul/zulu-openjdk:20-jre")

@@ -1,13 +1,16 @@
 package me.combimagnetron.comet.connection;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.compression.ZlibEncoder;
 import me.combimagnetron.comet.internal.Item;
 import me.combimagnetron.comet.internal.network.ByteBuffer;
 import me.combimagnetron.comet.internal.network.VersionRegistry;
+import me.combimagnetron.comet.internal.network.packet.ClientPacket;
 import me.combimagnetron.comet.internal.network.packet.Packet;
 import me.combimagnetron.comet.internal.network.packet.ServerPacket;
 import me.combimagnetron.comet.internal.network.packet.client.*;
@@ -15,19 +18,27 @@ import me.combimagnetron.comet.CometBase;
 import me.combimagnetron.comet.user.User;
 import me.combimagnetron.comet.util.Values;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Function;
 
@@ -56,7 +67,15 @@ public class ConnectionImpl implements me.combimagnetron.comet.internal.network.
 
     @Override
     public void send(Packet packetContainer) {
-        channelPipeline.write(Transformer.findAndTransform(packetContainer));
+        //net.minecraft.network.protocol.Packet<?> packet = Transformer.findAndTransform(packetContainer);
+        //if (packet == null) return;
+        //channelPipeline.write(packet);
+        ByteBuffer buffer = ByteBuffer.empty();
+        Bukkit.getLogger().info(" before " + packetContainer.getClass().getName());
+        buffer.write(ByteBuffer.Adapter.VAR_INT, VersionRegistry.client((Class<? extends ClientPacket>) packetContainer.getClass()));
+        buffer.write(packetContainer.write());
+        channelPipeline.write(Unpooled.wrappedBuffer(buffer.bytes()));
+        //channelPipeline.channel().alloc().buffer().writeBytes(buffer.bytes());
     }
 
     protected static class ChannelInjector extends ChannelDuplexHandler {
@@ -91,11 +110,30 @@ public class ConnectionImpl implements me.combimagnetron.comet.internal.network.
     private interface Transformer<T extends Packet> {
         Transformer<ClientOpenScreen> CLIENT_OPEN_SCREEN = Transformer.of(ClientOpenScreen.class, container -> new ClientboundOpenScreenPacket(container.windowId(), TypeTransformer.INTEGER_MENU_TYPE.transform(container.windowType()), TypeTransformer.COMPONENT_COMPONENT.transform(container.title())));
         Transformer<ClientSetScreenContent> CLIENT_SET_SCREEN_CONTENT = Transformer.of(ClientSetScreenContent.class, container -> new ClientboundContainerSetContentPacket(container.windowId(), container.stateId(), NonNullList.of(TypeTransformer.ITEM_ITEM_STACK.transform(Item.empty()), container.items().stream().map(TypeTransformer.ITEM_ITEM_STACK::transform).toList().toArray(new ItemStack[0])), TypeTransformer.ITEM_ITEM_STACK.transform(container.carried())));
-        Transformer<ClientBundleDelimiter> CLIENT_BUNDLE_DELIMITER = Transformer.of(ClientBundleDelimiter.class, container -> new ClientboundBundlePacket(container.containers().stream().map(Transformer::findAndTransform).toList()));
+        //Transformer<ClientBundleDelimiter> CLIENT_BUNDLE_DELIMITER = Transformer.of(ClientBundleDelimiter.class, container -> new ClientboundBundlePacket(container.containers().stream().map(Transformer::findAndTransform).toList()));
         Transformer<ClientSetScreenSlot> CLIENT_SET_SCREEN_SLOT = Transformer.of(ClientSetScreenSlot.class, container -> new ClientboundContainerSetSlotPacket(container.windowId(), container.stateId(), container.slot(), TypeTransformer.ITEM_ITEM_STACK.transform(container.item())));
         Transformer<ClientSpawnEntity> CLIENT_SPAWN_ENTITY = Transformer.of(ClientSpawnEntity.class, container -> new ClientboundAddEntityPacket(container.entityId().intValue(), container.uuid(), container.position().x(), container.position().y(), container.position().z(), (float) container.rotation().x(), (float) container.rotation().y(), EntityType.byString(container.type().identifier().key().string()).orElseThrow(), container.data().i(), Vec3.ZERO, container.rotation().z()));
+        Transformer<ClientEntityMetadata> CLIENT_ENTITY_METADATA = Transformer.of(ClientEntityMetadata.class, container -> {
+            try {
+                Method method = ClientboundSetEntityDataPacket.class.getDeclaredMethod("unpack", RegistryFriendlyByteBuf.class);
+                method.setAccessible(true);
+            List<SynchedEntityData.DataValue<?>> list = (List<SynchedEntityData.DataValue<?>>) method.invoke(null, new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(container.metadata().bytes().bytes()), RegistryAccess.EMPTY));
+                if (list == null) {
+                    System.out.println(" aaaa ");
+                    return null;
+                }
+                return new ClientboundSetEntityDataPacket(container.entityId().intValue(), list);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                System.out.println(" aaaa " + (container.metadata().bytes().bytes() == null));
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
-        Values<Transformer> VALUES = Values.of(CLIENT_OPEN_SCREEN, CLIENT_SET_SCREEN_CONTENT, CLIENT_BUNDLE_DELIMITER, CLIENT_SET_SCREEN_SLOT, CLIENT_SPAWN_ENTITY);
+        Values<Transformer> VALUES = Values.of(CLIENT_OPEN_SCREEN, CLIENT_SET_SCREEN_CONTENT /*,CLIENT_BUNDLE_DELIMITER*/, CLIENT_SET_SCREEN_SLOT, CLIENT_SPAWN_ENTITY, CLIENT_ENTITY_METADATA);
 
         Function<T, net.minecraft.network.protocol.Packet<ClientGamePacketListener>> transformer();
 

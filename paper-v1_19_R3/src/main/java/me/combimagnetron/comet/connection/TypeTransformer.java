@@ -3,19 +3,21 @@ package me.combimagnetron.comet.connection;
 import me.combimagnetron.comet.internal.Item;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_20_R3.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.util.CraftMagicNumbers;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public interface TypeTransformer<T, V> {
-    TypeTransformer<Component, net.minecraft.network.chat.Component> COMPONENT_COMPONENT = TypeTransformer.of(component -> net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.gson().serialize(component)));
+    TypeTransformer<Component, net.minecraft.network.chat.Component> COMPONENT_COMPONENT = TypeTransformer.of(component -> net.minecraft.network.chat.Component.Serializer.fromJson(GsonComponentSerializer.gson().serialize(component), HolderLookup.Provider.create(Stream.of())));
     TypeTransformer<Integer, MenuType<?>> INTEGER_MENU_TYPE = TypeTransformer.of(integer -> BuiltInRegistries.MENU.get(ResourceLocation.of(Mapping.MENU_TYPE.convert(integer), ':')));
     TypeTransformer<Item<?>, ItemStack> ITEM_ITEM_STACK = TypeTransformer.of(item -> {
         Material material = null;

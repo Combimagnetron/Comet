@@ -9,12 +9,11 @@ val kotlinVersion = "1.7.22"
 val daggerVersion = "2.48"
 
 dependencies {
-    implementation("com.google.code.gson:gson:2.10")
-    implementation("org.jetbrains:annotations:23.0.0")
+    compileOnly("com.google.code.gson:gson:2.10")
     implementation("com.google.guava:guava:31.1-jre")
-    implementation("net.kyori:adventure-api:4.11.0")
-    implementation("net.kyori:adventure-text-serializer-gson:4.11.0")
-    implementation("com.github.luben:zstd-jni:1.5.2-5")
+    compileOnly("net.kyori:adventure-api:4.16.0")
+    compileOnly("net.kyori:adventure-text-serializer-gson:4.16.0")
+    compileOnly("com.github.luben:zstd-jni:1.5.2-5")
     implementation("io.lettuce:lettuce-core:6.2.2.RELEASE")
     implementation("org.reflections:reflections:0.10.2")
     implementation("org.spongepowered:configurate-hocon:4.0.0")
@@ -27,5 +26,11 @@ dependencies {
     annotationProcessor("io.avaje:avaje-inject-generator:9.4")
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-reflect", version = kotlinVersion)
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = kotlinVersion)
-    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.5-R0.1-SNAPSHOT") {
+        exclude("net.kyori")
+    }
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }

@@ -20,7 +20,9 @@ val dockerUsername: String by project
 val dockerPassword: String by project
 val dockerEmail: String by project
 
-
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+}
 
 docker {
     javaApplication {
