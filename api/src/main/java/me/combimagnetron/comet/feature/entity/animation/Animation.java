@@ -8,11 +8,6 @@ import me.combimagnetron.comet.feature.entity.animation.keyframe.*;
 import me.combimagnetron.comet.feature.entity.math.Point;
 import me.combimagnetron.comet.feature.entity.model.ModelTemplate;
 import me.combimagnetron.comet.feature.entity.model.Timeline;
-import me.combimagnetron.comet.feature.entity.model.bone.Bone;
-import me.combimagnetron.comet.operation.Operation;
-import org.bukkit.Bukkit;
-import org.bukkit.util.EulerAngle;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.*;
@@ -20,7 +15,7 @@ import java.util.stream.Collectors;
 
 public final class Animation implements Timeline.LifeCycle {
     private final TreeMap<UUID, List<Map.Entry<Long, Point>>> positions = new TreeMap<>();
-    private final TreeMap<UUID, List<Map.Entry<Long, EulerAngle>>> rotations = new TreeMap<>();
+    private final TreeMap<UUID, List<Map.Entry<Long, Object>>> rotations = new TreeMap<>();
     private final TreeMap<UUID, List<Map.Entry<Long, Point>>> scales = new TreeMap<>();
     private final TreeMap<Long, List<Effect>> effects = new TreeMap<>();
     private final UUID uuid;
@@ -52,7 +47,6 @@ public final class Animation implements Timeline.LifeCycle {
         this.loopDelay = loopDelay;
         this.animators = animators;
         Set<Animator> animatorSet = Arrays.stream(animators()).collect(Collectors.toCollection(LinkedHashSet::new));
-        Bukkit.getLogger().info(animatorSet.size() + " animators");
         for (Animator animator : animatorSet) {
             KeyFrame[] frames = animator.keyFrames();
             Set<KeyFrame> frameSet = Arrays.stream(frames).collect(Collectors.toCollection(LinkedHashSet::new));
@@ -81,7 +75,7 @@ public final class Animation implements Timeline.LifeCycle {
         }
     }
 
-    public static Animation fromJson(JsonElement jsonElement, TreeMap<UUID, Bone> bones) {
+    public static Animation fromJson(JsonElement jsonElement, TreeMap<UUID, ?> bones) {
         JsonObject innerObject = jsonElement.getAsJsonObject();
         UUID animationUuid = UUID.fromString(innerObject.get("uuid").getAsString());
         String name = innerObject.get("name").getAsString();
@@ -100,7 +94,6 @@ public final class Animation implements Timeline.LifeCycle {
             animators.add(animator);
         });
         Animator[] children = animators.toArray(new Animator[0]);
-        Bukkit.getLogger().info(children.length + " animators2 size");
         return new Animation(animationUuid, name, mode, override, length, snapping, selected, animTimeUpdate, blendWeight, startDelay, loopDelay, children);
     }
 
@@ -152,69 +145,42 @@ public final class Animation implements Timeline.LifeCycle {
         return animators;
     }
 
-    public Operation<Void> tick() {
-        return Operation.simple(() -> {
-            if (this.stop) return;
-            tick++;
-            if (tick > length) tick = 0;
-        });
+    public void tick() {
+        if (this.stop) return;
+        tick++;
+        if (tick > length) tick = 0;
     }
 
     @Override
-    public Operation<Void> stop() {
-        return Operation.simple(() -> {
-            this.tick = 0;
-            this.stop = false;
-        });
+    public void stop() {
+        this.tick = 0;
+        this.stop = false;
     }
 
     @Override
-    public Operation<Void> pause() {
-        return Operation.simple(() -> this.stop = true);
+    public void pause() {
+        this.stop = true;
     }
 
     @Override
-    public @NotNull Operation<Void> resume() {
-        return Operation.simple(() -> this.stop = false);
+    public void resume() {
+        this.stop = false;
     }
 
     public long currentTick() {
         return tick;
     }
 
-    public Map<Bone, Point> currentPoints(ModelTemplate modelTemplate) {
-        final LinkedHashMap<Bone, Point> points = new LinkedHashMap<>();
-        modelTemplate.bones().forEach((string, bone) -> {
-            Optional<Map.Entry<Long, Point>> point = this.positions.get(bone.uuid()).stream().filter(entry -> entry.getKey() == tick).findFirst();
-            if (point.isEmpty()) return;
-            points.put(bone, point.get().getValue());
-        });
+    public Map<?, Point> currentPoints(ModelTemplate modelTemplate) {
+        final LinkedHashMap<?, Point> points = new LinkedHashMap<>();
         return points;
     }
 
-    public Map<Bone, EulerAngle> currentRotations(ModelTemplate modelTemplate) {
-        final LinkedHashMap<Bone, EulerAngle> rotations = new LinkedHashMap<>();
-        modelTemplate.bones().forEach((string, bone) -> {
-            Optional<Map.Entry<Long, EulerAngle>> rotation = this.rotations.get(bone.uuid()).stream().filter(entry -> entry.getKey() == tick).findFirst();
-            if (rotation.isEmpty()) return;
-            rotations.put(bone, rotation.get().getValue());
-        });
-        return rotations;
-    }
 
     @UnknownNullability
     public Point posAt(String bone, long time) {
         for (Map.Entry<Long, Point> entry : positions.get(UUID.fromString(bone))) {
             long result = positions.get(UUID.fromString(bone)).stream().mapMultiToLong((entry1, consumer) -> consumer.accept(entry1.getKey())).boxed().min(Comparator.comparingLong(l -> l - time)).orElse(0L);
-            if (entry.getKey() == result) return entry.getValue();
-        }
-        return null;
-    }
-
-    @UnknownNullability
-    public EulerAngle rotationAt(String bone, long time) {
-        for (Map.Entry<Long, EulerAngle> entry : rotations.get(UUID.fromString(bone))) {
-            long result = rotations.get(UUID.fromString(bone)).stream().mapMultiToLong((entry1, consumer) -> consumer.accept(entry1.getKey())).boxed().min(Comparator.comparingLong(l -> l - time)).orElse(0L);
             if (entry.getKey() == result) return entry.getValue();
         }
         return null;
@@ -233,7 +199,7 @@ public final class Animation implements Timeline.LifeCycle {
         return effects.get(time);
     }
 
-    public TreeMap<UUID, List<Map.Entry<Long, EulerAngle>>> rotations() {
+    public TreeMap<UUID, List<Map.Entry<Long, Object>>> rotations() {
         return rotations;
     }
 
@@ -243,21 +209,21 @@ public final class Animation implements Timeline.LifeCycle {
 
     public record Animator(UUID boneIdentifier, String name, String type, KeyFrame[] keyFrames) {
 
-        public static KeyFrame[] keyFrames(JsonElement jsonElement, TreeMap<UUID, Bone> bones, UUID boneId) {
+        public static KeyFrame[] keyFrames(JsonElement jsonElement, TreeMap<UUID, ?> bones, UUID boneId) {
             JsonArray array = jsonElement.getAsJsonArray();
             Set<KeyFrame> frames = new LinkedHashSet<>();
             array.forEach(element -> {
                 JsonObject innerObject = element.getAsJsonObject();
-                Bone bone = bones.get(boneId);
+                var bone = bones.get(boneId);
                 String interpolation = innerObject.get("interpolation").getAsString();
                 JsonArray dataPoints = innerObject.getAsJsonArray("data_points");
                 double x = dataPoints.get(0).getAsJsonObject().get("x").getAsDouble();
                 double y = dataPoints.get(0).getAsJsonObject().get("y").getAsDouble();
                 double z = dataPoints.get(0).getAsJsonObject().get("z").getAsDouble();
                 KeyFrame keyFrame = switch (innerObject.get("channel").getAsString()) {
-                    default -> new PositionKeyFrame(interpolation, Point.of(x, y, z), bone);
-                    case "rotation" -> new RotationKeyFrame(interpolation, Point.of(x, y, z), bone);
-                    case "scale" -> new ScaleKeyFrame(interpolation, Point.of(x, y, z), bone);
+                    default -> new PositionKeyFrame(interpolation, Point.of(x, y, z), null);
+                    case "rotation" -> new RotationKeyFrame(interpolation, Point.of(x, y, z), null);
+                    case "scale" -> new ScaleKeyFrame(interpolation, Point.of(x, y, z), null);
                     case "particle" -> new ParticleKeyFrame(interpolation, innerObject.get("data_points").getAsJsonArray().get(0).getAsString());
                     case "sound" -> new SoundKeyFrame(interpolation, innerObject.get("data_points").getAsJsonArray().get(0).getAsString());
                     case "timeline" -> new ScriptKeyFrame(interpolation, innerObject.get("data_points").getAsJsonArray().get(0).getAsString());
@@ -267,7 +233,7 @@ public final class Animation implements Timeline.LifeCycle {
             return frames.toArray(KeyFrame[]::new);
         }
 
-        public static Animator fromJson(String uuid, JsonElement jsonElement, TreeMap<UUID, Bone> bones) {
+        public static Animator fromJson(String uuid, JsonElement jsonElement, TreeMap<UUID, ?> bones) {
             JsonObject innerObject = jsonElement.getAsJsonObject();
             UUID animatorUuid = UUID.fromString(uuid);
             String name = innerObject.get("name").getAsString();

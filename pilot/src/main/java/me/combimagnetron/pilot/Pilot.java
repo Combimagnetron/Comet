@@ -9,6 +9,7 @@ import com.marcnuri.yakc.model.io.k8s.api.core.v1.Namespace;
 import com.marcnuri.yakc.model.io.k8s.api.core.v1.Pod;
 import com.marcnuri.yakc.model.io.k8s.api.core.v1.PodSpec;
 import com.marcnuri.yakc.model.io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta;
+import me.combimagnetron.comet.CometBase;
 import me.combimagnetron.comet.communication.MessageClient;
 import me.combimagnetron.comet.communication.message.MessageChannel;
 import me.combimagnetron.comet.data.Identifier;
@@ -41,7 +42,7 @@ public class Pilot implements Service {
     }
 
     public Pilot(MessageClient messageClient) throws IOException {
-        this.channel = messageClient.channel(Identifier.of("service", "pilot"));
+        this.channel = CometBase.comet().channels().serviceChannel();
         try (KubernetesClient kc = new KubernetesClient()) {
             this.api = kc.create(CoreV1Api.class);
         }
@@ -86,6 +87,11 @@ public class Pilot implements Service {
 
     @Override
     public void start() {
+
+    }
+
+    @Override
+    public void tick() {
 
     }
 

@@ -1,5 +1,6 @@
 package me.combimagnetron.halo.transformer;
 
+import me.combimagnetron.comet.data.DataObject;
 import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.internal.network.ByteBuffer;
 import me.combimagnetron.comet.service.Deployment;
@@ -15,7 +16,8 @@ public interface Transformer<T> {
     Transformer<Double> DOUBLE = of("Double", Double.class, ByteBuffer.Adapter.DOUBLE);
     Transformer<Identifier> IDENTIFIER = of("Identifier", Identifier.class, ByteBuffer.Adapter.IDENTIFIER);
     Transformer<Deployment> DEPLOYMENT = of("Deployment", Deployment.class, ByteBuffer.Adapter.DEPLOYMENT);
-    Values<Transformer<?>> VALUES = Values.of(UUID, STRING, INT, DOUBLE, IDENTIFIER, DEPLOYMENT);
+    Transformer<DataObject> DATA_OBJECT = of("DataObject", DataObject.class, ByteBuffer.Adapter.DATA_OBJECT);
+    Values<Transformer<?>> VALUES = Values.of(UUID, STRING, INT, DOUBLE, IDENTIFIER, DEPLOYMENT, DATA_OBJECT);
 
     String identifier();
 

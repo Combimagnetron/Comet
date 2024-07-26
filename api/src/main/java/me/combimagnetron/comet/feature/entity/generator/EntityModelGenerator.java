@@ -6,7 +6,6 @@ import me.combimagnetron.comet.feature.entity.parser.blockbench.BlockBenchModel;
 import me.combimagnetron.comet.feature.entity.parser.blockbench.BlockBenchTexture;
 import me.combimagnetron.comet.file.Folder;
 import me.combimagnetron.comet.resourcepack.ResourcePackFeature;
-import org.bukkit.Bukkit;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -33,7 +32,6 @@ public class EntityModelGenerator implements ResourcePackFeature<EntityModelGene
             String path = "comet:entity/" + model.name();
             textureStringMap.put(Integer.valueOf(texture.id()), path);
             File file = ASSETS_FOLDER.resolve("textures/entity/" + model.name() + ".png").toFile();
-            Bukkit.getLogger().info(texture.source());
             try {
                 BufferedImage image = ImageIO.read(new ByteArrayInputStream(Base64.getDecoder().decode(texture.source().split(",")[1])));
                 ImageIO.write(image, "png", file);
@@ -49,13 +47,11 @@ public class EntityModelGenerator implements ResourcePackFeature<EntityModelGene
             File file = ASSETS_FOLDER.resolve("models/engine/" + model.name()).toFile();
             file.mkdirs();
             File writerFile = new File(file.getPath() + "/" + element.name() + ".json");
-            Bukkit.getLogger().info("daaa");
             try(FileWriter writer = new FileWriter(writerFile)) {
                 writer.write(text);
             } catch (IOException exception) {
                 throw new RuntimeException(exception);
             }
-            Bukkit.getLogger().info("baaa");
         }
 
 

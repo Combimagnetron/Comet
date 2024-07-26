@@ -1,6 +1,6 @@
 package me.combimagnetron.comet.command.argument;
 
-import me.combimagnetron.comet.Comet;
+import me.combimagnetron.comet.CometBase;
 import me.combimagnetron.comet.user.User;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 public interface Argument<T> {
     Argument<Integer> INTEGER = of(Integer::parseInt);
-    Argument<User<?>> USER = of(string -> Comet.onlineUsers().stream().filter(user -> Objects.equals(user.name(), string)).findAny().get());
+    Argument<User<?>> USER = of(string -> CometBase.comet().users().users().stream().filter(user -> Objects.equals(user.name(), string)).findAny().get());
     Argument<Double> DOUBLE = of(Double::parseDouble);
     Argument<String> STRING = of(string -> string);
 

@@ -1,0 +1,20 @@
+service {
+    identifier = "service:punishment"
+    version = "1.0.0"
+}
+
+deployment {
+    min-instance-count = 1
+    max-instance-count = 6
+    player-instance-threshold = 100
+    image = "self"
+}
+
+component {
+    monitor {
+        type = [StartServiceMessage, StopServiceMessage]
+    }
+    intercept {
+        type = [UserJoinNetworkMessage, UserSwitchServerMessage, UserPunishmentUpdateMessage, UserChatMessage]
+    }
+}

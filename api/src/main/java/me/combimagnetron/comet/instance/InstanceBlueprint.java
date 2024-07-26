@@ -1,6 +1,6 @@
 package me.combimagnetron.comet.instance;
 
-import me.combimagnetron.comet.Comet;
+import me.combimagnetron.comet.CometBase;
 import me.combimagnetron.comet.communication.message.MessageChannel;
 import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.util.VersionCollection;
@@ -24,7 +24,7 @@ public class InstanceBlueprint implements Serializable {
     }
 
     public static VersionCollection<InstanceBlueprint> request(Identifier identifier) {
-        final MessageChannel channel = Comet.messageClient().channel(Identifier.of("service", "pilot"));
+        final MessageChannel channel = CometBase.comet().channels().client().channel(Identifier.of("service", "pilot"));
         //async(channel.send(//new ServiceBoundRequestInstanceBlueprintsMessage(identifier)));
         AtomicReference<VersionCollection<InstanceBlueprint>> atomicReference = new AtomicReference<>();
         //channel.awaitMessage(//ServiceBoundRequestInstanceBlueprintsMessage.Response.class, (message) -> {

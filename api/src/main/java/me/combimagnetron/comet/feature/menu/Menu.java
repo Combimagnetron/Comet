@@ -7,7 +7,6 @@ import me.combimagnetron.comet.internal.network.packet.server.ServerSetPlayerRot
 import me.combimagnetron.comet.internal.network.sniffer.Sniffer;
 import me.combimagnetron.comet.user.User;
 
-import javax.inject.Inject;
 
 public interface Menu {
 
@@ -16,9 +15,7 @@ public interface Menu {
     void open(User<?> user);
 
     final class Impl implements Menu {
-        @Inject
-        CometBase<?> cometBase;
-        private final Sniffer.Node<ServerSetPlayerRotation> snifferNode = cometBase.network().sniffer().node("a");
+        private final Sniffer.Node<ServerSetPlayerRotation> snifferNode = CometBase.comet().network().sniffer().node("a");
 
         private Impl() {
 

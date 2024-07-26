@@ -1,10 +1,8 @@
 package me.combimagnetron.comet.event;
 
-import me.combimagnetron.comet.event.impl.spigot.SpigotEvent;
-
 import java.util.function.Consumer;
 
-sealed public interface EventSubscription<V extends Event> permits EventSubscription.Impl, EventSubscription.FilteredImpl, EventSubscription.SpigotImpl {
+sealed public interface EventSubscription<V extends Event> permits EventSubscription.Impl, EventSubscription.FilteredImpl {
 
     Consumer<? super V> handler();
 
@@ -81,29 +79,4 @@ sealed public interface EventSubscription<V extends Event> permits EventSubscrip
         }
     }
 
-    final class SpigotImpl implements EventSubscription<SpigotEvent> {
-
-        public SpigotImpl(Class<? extends org.bukkit.event.Event> clazz, Consumer<org.bukkit.event.Event> consumer) {
-        }
-
-        @Override
-        public Consumer<? super SpigotEvent> handler() {
-            return null;
-        }
-
-        @Override
-        public Class<SpigotEvent> getEventClass() {
-            return null;
-        }
-
-        @Override
-        public void close() {
-
-        }
-
-        @Override
-        public boolean active() {
-            return false;
-        }
-    }
 }

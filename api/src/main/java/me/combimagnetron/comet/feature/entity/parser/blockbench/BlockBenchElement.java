@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 import me.combimagnetron.comet.feature.entity.generator.Cube;
 import me.combimagnetron.comet.feature.entity.generator.Face;
 import me.combimagnetron.comet.feature.entity.generator.Rotation;
-import org.bukkit.util.EulerAngle;
 
 import java.util.*;
 
@@ -19,10 +18,7 @@ public record BlockBenchElement(@SerializedName("name") String name, @Serialized
         if (rotation == null) {
             rotation = new double[]{0.0, 0.0, 0.0};
         }
-        return new Cube(from, to, new Rotation(new EulerAngle(
-                        -Math.toRadians(rotation[0]),
-                        -Math.toRadians(rotation[1]),
-                        Math.toRadians(rotation[2]))
+        return new Cube(from, to, new Rotation(null
                 , origin), faces(resolution));
     }
 

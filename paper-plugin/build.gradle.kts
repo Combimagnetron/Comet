@@ -17,7 +17,7 @@ dependencies {
     compileOnly("net.kyori:adventure-text-serializer-gson:4.16.0")
     compileOnly("com.github.luben:zstd-jni:1.5.2-5")
     //implementation(project(mapOf("path" to ":paper-v1_19_R3")))
-    compileOnly("io.papermc.paper:paper-api:1.20.5-R0.1-SNAPSHOT") {
+    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT") {
         exclude("net.kyori")
     }
 }

@@ -3,19 +3,17 @@ package me.combimagnetron.comet.feature.tempworld.level;
 import me.combimagnetron.comet.data.DataObject;
 import me.combimagnetron.comet.data.DataRegistry;
 import me.combimagnetron.comet.data.Identifier;
-import me.combimagnetron.comet.operation.Operation;
-
 import java.util.LinkedHashMap;
 
 public interface GameLevelData {
 
     DataRegistry dataRegistry = new GameLevelDataRegistry();
 
-    default Operation<DataObject<?,?>> addData(Identifier identifier, DataObject<?,?> dataObject) {
+    default DataObject<?> addData(Identifier identifier, DataObject<?> dataObject) {
         return dataRegistry.add(identifier, dataObject);
     };
 
-    default Operation<DataObject<?,?>> getData(Identifier identifier) {
+    default DataObject<?> getData(Identifier identifier) {
         return dataRegistry.get(identifier);
     }
 
@@ -24,16 +22,16 @@ public interface GameLevelData {
     }
 
     class GameLevelDataRegistry implements DataRegistry {
-        private final LinkedHashMap<Identifier, DataObject<?,?>> storage = new LinkedHashMap<>();
+        private final LinkedHashMap<Identifier, DataObject<?>> storage = new LinkedHashMap<>();
 
         @Override
-        public Operation<DataObject<?,?>> add(Identifier identifier, DataObject<?,?> object) {
-            return Operation.executable(() -> storage.put(identifier, object));
+        public DataObject<?> add(Identifier identifier, DataObject<?> object) {
+            return storage.put(identifier, object);
         }
 
         @Override
-        public Operation<DataObject<?,?>> get(Identifier identifier) {
-            return Operation.executable(() -> storage.get(identifier));
+        public DataObject<?> get(Identifier identifier) {
+            return storage.get(identifier);
         }
     }
 

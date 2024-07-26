@@ -1,0 +1,7 @@
+service-bound message UserSwitchServerInstance {
+    Uuid uuid,
+    Deployment deployment,
+    String service,
+    Uuid oldInstance,
+    Uuid newInstance
+}

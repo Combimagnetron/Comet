@@ -13,17 +13,12 @@ public class CometPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Arrays.stream(MessageClient.Type.values()).toList().forEach(value -> Comet.messageClient(value).terminate());
+
     }
 
     @Override
     public void onEnable() {
         this.cometBase = new CometBaseImpl(this);
-        try {
-            Comet.server(new ServerImpl(Path.of(getDataFolder().getPath(), "config.hocon"), this));
-        } catch (SerializationException e) {
-            throw new RuntimeException(e);
-        }
         PaperCommandHandler commandHandler = new PaperCommandHandler(cometBase);
     }
 

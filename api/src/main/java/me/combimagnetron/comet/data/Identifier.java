@@ -16,6 +16,11 @@ public record Identifier(Namespace namespace, Key key) {
         return new Identifier(new Namespace(namespace), new Key(key));
     }
 
+    public static @NotNull Identifier split(String string) {
+        String[] split = string.split(":");
+        return new Identifier(Namespace.of(split[0]), Key.of(split[1]));
+    }
+
     @Contract("_ -> new")
     public static @NotNull Identifier of(String key) {
         return new Identifier(DEFAULT, new Key(key));

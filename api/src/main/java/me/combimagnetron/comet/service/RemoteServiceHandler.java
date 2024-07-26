@@ -7,7 +7,6 @@ import me.combimagnetron.generated.DeployServiceMessage;
 import me.combimagnetron.generated.StartServiceMessage;
 import me.combimagnetron.generated.StopServiceMessage;
 
-import javax.inject.Inject;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RemoteServiceHandler implements ServiceHandler {
@@ -15,10 +14,9 @@ public class RemoteServiceHandler implements ServiceHandler {
     private final CometBase<?> base;
     private final MessageChannel messageChannel;
 
-    @Inject
     public RemoteServiceHandler(CometBase<?> base) {
         this.base = base;
-        this.messageChannel = base.messageClient().channel(Identifier.of("service", "handler"));
+        this.messageChannel = CometBase.comet().channels().client().channel(Identifier.of("service", "handler"));
     }
 
     @Override
@@ -42,6 +40,11 @@ public class RemoteServiceHandler implements ServiceHandler {
         @Override
         public void start() {
             messageChannel.send(StartServiceMessage.of(identifier));
+        }
+
+        @Override
+        public void tick() {
+
         }
     }
 

@@ -1,14 +1,14 @@
 package me.combimagnetron.comet.data;
 
-import me.combimagnetron.comet.operation.Operation;
+import me.combimagnetron.comet.internal.network.ByteBuffer;
 
 public interface DataContainer {
 
-    <T> Operation<DataObject<T, ?>> request(Identifier identifier);
+    <V> DataObject<V> request(Identifier identifier);
 
-    <T> Operation<DataObject<T, ?>> add(Identifier identifier, DataObject<T, ?> object);
+    <V> DataObject<V> add(Identifier identifier, DataObject<V> object);
 
-    Operation<Integer> size();
+    int size();
 
 
 

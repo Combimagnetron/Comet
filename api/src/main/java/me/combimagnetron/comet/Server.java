@@ -5,7 +5,6 @@ import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.feature.Feature;
 import me.combimagnetron.comet.instance.Instance;
 import me.combimagnetron.comet.user.User;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -34,6 +33,5 @@ public interface Server {
 
     Instance instance(UUID uuid);
 
-    JavaPlugin javaPlugin();
 
 }

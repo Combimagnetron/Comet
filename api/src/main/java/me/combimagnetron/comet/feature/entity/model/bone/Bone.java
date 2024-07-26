@@ -8,9 +8,6 @@ import me.combimagnetron.comet.feature.entity.JsonUtil;
 import me.combimagnetron.comet.feature.entity.math.Point;
 import me.combimagnetron.comet.feature.entity.model.Cube;
 import me.combimagnetron.comet.operation.Operation;
-import org.bukkit.Bukkit;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.EulerAngle;
 
 import java.util.*;
 
@@ -18,13 +15,13 @@ public class Bone {
     private final String name;
     private final UUID uuid;
     private final Point origin;
-    private final EulerAngle rotation;
+    private final Object rotation;
     private final boolean mirrorUV;
     private final boolean visibility;
     private final Cube[] cubeArray;
     private FakeEntity fakeEntity;
 
-    public Bone(String name, UUID uuid, Point origin, EulerAngle rotation, boolean mirrorUV, boolean visibility, Cube[] cubeArray) {
+    public Bone(String name, UUID uuid, Point origin, Object rotation, boolean mirrorUV, boolean visibility, Cube[] cubeArray) {
         this.name = name;
         this.uuid = uuid;
         this.origin = origin;
@@ -35,28 +32,24 @@ public class Bone {
     }
 
     public static Bone fromJson(JsonElement jsonElement, TreeMap<UUID, Cube> cubes) {
-        Bukkit.getLogger().info("1");
         JsonObject innerObject = jsonElement.getAsJsonObject();
         int[] rotation = new int[]{0, 0, 0};
         if (innerObject.has("rotation")) {
             rotation = JsonUtil.readIntArray(innerObject, "rotation", 3);
         }
         Set<UUID> uuids = new HashSet<>();
-        Bukkit.getLogger().info("2");
         for (JsonElement element : innerObject.getAsJsonArray("children")) {
             if (!element.isJsonPrimitive()) {
                 return Bone.fromJson(element, cubes);
             }
             uuids.add(UUID.fromString(element.getAsJsonPrimitive().getAsString()));
         }
-        Bukkit.getLogger().info("3");
         Cube[] children = Arrays.stream(cubes.values().toArray(new Cube[0])).filter(cube -> uuids.contains(cube.uuid())).toList().toArray(Cube[]::new);
-        Bukkit.getLogger().info("4");
         return new Bone(
                 innerObject.get("name").getAsString(),
                 UUID.fromString(innerObject.get("uuid").getAsString()),
                 Point.of(JsonUtil.readIntArray(innerObject, "origin", 3)),
-                new EulerAngle(rotation[0], rotation[1], rotation[2]),
+                null,
                 innerObject.get("export").getAsBoolean(),
                 innerObject.get("mirror_uv").getAsBoolean(),
                 children
@@ -69,17 +62,7 @@ public class Bone {
         return fakeEntity.show(players);
     }
 
-    public Operation<Void> headItem(ItemStack stack) {
-        return fakeEntity.headItem(stack);
-    }
 
-    public Operation<Void> teleport(Point point) {
-        return fakeEntity.teleport(point);
-    }
-
-    public Operation<Void> rotateHead(EulerAngle eulerAngle) {
-        return fakeEntity.rotateHead(eulerAngle);
-    }
 
     public String name() {
         return name;
@@ -91,10 +74,6 @@ public class Bone {
 
     public Point origin() {
         return origin;
-    }
-
-    public EulerAngle rotation() {
-        return rotation;
     }
 
     public boolean mirrorUV() {

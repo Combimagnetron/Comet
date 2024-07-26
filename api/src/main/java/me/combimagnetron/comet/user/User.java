@@ -1,5 +1,6 @@
 package me.combimagnetron.comet.user;
 
+import me.combimagnetron.comet.communication.message.user.UserMessageChannel;
 import me.combimagnetron.comet.instance.Instance;
 import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
 import me.combimagnetron.comet.internal.network.Connection;
@@ -18,6 +19,8 @@ public interface User<T extends Audience> {
      default void message(Component component) {
           platformSpecificPlayer().sendMessage(component);
      }
+
+     UserMessageChannel messageChannel();
 
      Instance instance();
 

@@ -2,7 +2,6 @@ package me.combimagnetron.comet.command;
 
 import me.combimagnetron.comet.condition.Condition;
 import me.combimagnetron.comet.user.User;
-import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
@@ -39,7 +38,6 @@ public interface InternalCommand {
                 for (Class<?> parameterType : reflectionInfo.execute.getParameterTypes()) {
                     builder.append(parameterType.getTypeName());
                 }
-                Bukkit.getLogger().info(builder + " " + reflectionInfo.execute.getParameterCount() + "\n" + Arrays.toString(objects));
                 if (objects.length > 0) {
                     reflectionInfo.execute.invoke(reflectionInfo.clazz.getDeclaredConstructor().newInstance(), user, objects);
                 } else {

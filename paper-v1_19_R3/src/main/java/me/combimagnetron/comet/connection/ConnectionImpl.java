@@ -6,7 +6,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.handler.codec.compression.ZlibEncoder;
+import me.combimagnetron.comet.CometBase;
 import me.combimagnetron.comet.internal.Item;
 import me.combimagnetron.comet.internal.network.ByteBuffer;
 import me.combimagnetron.comet.internal.network.VersionRegistry;
@@ -14,18 +14,15 @@ import me.combimagnetron.comet.internal.network.packet.ClientPacket;
 import me.combimagnetron.comet.internal.network.packet.Packet;
 import me.combimagnetron.comet.internal.network.packet.ServerPacket;
 import me.combimagnetron.comet.internal.network.packet.client.*;
-import me.combimagnetron.comet.CometBase;
 import me.combimagnetron.comet.user.User;
 import me.combimagnetron.comet.util.Values;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -36,13 +33,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Function;
 
 public class ConnectionImpl implements me.combimagnetron.comet.internal.network.Connection {
+    //private final static VersionRegistry REGISTRY = new VersionRegistryImpl();
     private final Player player;
     private final User<Player> user;
     private final CometBase<JavaPlugin> library;
@@ -67,15 +64,15 @@ public class ConnectionImpl implements me.combimagnetron.comet.internal.network.
 
     @Override
     public void send(Packet packetContainer) {
-        //net.minecraft.network.protocol.Packet<?> packet = Transformer.findAndTransform(packetContainer);
-        //if (packet == null) return;
-        //channelPipeline.write(packet);
+        if (packetContainer == null) return;
+        if (!(packetContainer instanceof ClientPacket clientPacket)) {
+            return;
+        }
         ByteBuffer buffer = ByteBuffer.empty();
         Bukkit.getLogger().info(" before " + packetContainer.getClass().getName());
-        buffer.write(ByteBuffer.Adapter.VAR_INT, VersionRegistry.client((Class<? extends ClientPacket>) packetContainer.getClass()));
+        buffer.write(ByteBuffer.Adapter.VAR_INT, VersionRegistry.client(clientPacket.getClass()));
         buffer.write(packetContainer.write());
         channelPipeline.write(Unpooled.wrappedBuffer(buffer.bytes()));
-        //channelPipeline.channel().alloc().buffer().writeBytes(buffer.bytes());
     }
 
     protected static class ChannelInjector extends ChannelDuplexHandler {

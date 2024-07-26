@@ -1,7 +1,6 @@
 package me.combimagnetron.comet.operation;
 
 import me.combimagnetron.comet.feature.entity.Duration;
-import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -31,10 +30,6 @@ public class Operations {
     public static <T> T sync(Operation<T> operation) {
         if (operation == null) return null;
         AtomicReference<T> t = new AtomicReference<>();
-        Bukkit.getScheduler().runTask(Bukkit.getPluginManager().getPlugin(PLUGIN_NAME), () -> {
-            t.set(operation.complete());
-            //operation.chained().forEach(Operations::sync);
-        });
         return t.get();
     }
 

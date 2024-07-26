@@ -1,12 +1,10 @@
 package me.combimagnetron.comet.feature.entity.model;
 
-import me.combimagnetron.comet.feature.entity.animation.Animation;
-import me.combimagnetron.comet.feature.entity.model.bone.Bone;
 import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.feature.entity.math.Point;
+import me.combimagnetron.comet.internal.entity.Entity;
+import me.combimagnetron.comet.internal.entity.metadata.type.Rotation;
 import me.combimagnetron.comet.operation.Operation;
-import org.bukkit.entity.Entity;
-import org.bukkit.util.EulerAngle;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -17,28 +15,20 @@ public interface ModeledEntity {
 
     Timeline timeline();
 
-    Collection<Bone> bones();
-
-    Bone bone(String name);
-
-    Animation fallback();
-
     ModelTemplate template();
 
-    Operation<Void> teleport(Point point);
+    void teleport(Point point);
 
-    Operation<Void> rotate(String name, EulerAngle angle);
+    void rotate(String name, Rotation angle);
 
-    @Nullable
-    Operation<Void> mountEntity(Entity entity);
+    void mountEntity(Entity entity);
 
-    @Nullable
-    Operation<Void> dismountEntity(Entity entity);
+    void dismountEntity(Entity entity);
 
-    Operation<Void> headRotation(EulerAngle angle);
+    void headRotation(Rotation angle);
 
-    Operation<Point> position();
+    void position();
 
-    Operation<Boolean> tick();
+    void tick();
 
 }

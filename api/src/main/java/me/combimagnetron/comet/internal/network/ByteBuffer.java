@@ -3,10 +3,16 @@ package me.combimagnetron.comet.internal.network;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import me.combimagnetron.comet.communication.Message;
+import me.combimagnetron.comet.data.DataObject;
 import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.internal.Item;
 import me.combimagnetron.comet.service.Deployment;
+import me.combimagnetron.comet.service.ServiceFile;
+import me.combimagnetron.comet.service.broker.BrokerAgreement;
 import me.combimagnetron.comet.util.ProtocolUtil;
+import me.combimagnetron.comet.util.Values;
+import me.combimagnetron.comet.util.Version;
 import org.jglrxavpok.hephaistos.nbt.CompressedProcesser;
 import org.jglrxavpok.hephaistos.nbt.NBTException;
 import org.jglrxavpok.hephaistos.nbt.NBTReader;
@@ -119,12 +125,46 @@ public class ByteBuffer {
         }, (output, identifier) -> output.writeUTF(identifier.string()));
         Adapter<Deployment> DEPLOYMENT = Impl.of(input -> {
             String[] parts = input.readUTF().split("%");
-            return Deployment.of(parts[0], parts[1]);
-        }, (output, deployment) -> output.writeUTF(deployment.name() + "%" + deployment.image()));
+            return Deployment.of(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4]));
+        }, (output, deployment) -> output.writeUTF(deployment.name() + "%" + deployment.image() + "%" + deployment.minReplicas() + "%" + deployment.maxReplicas() + "%" + deployment.playerInstanceThreshold()));
+        Adapter<Version> VERSION = Impl.of(input -> {
+            String[] parts = input.readUTF().split("\\.");
+            return Version.major(Integer.parseInt(parts[0])).minor(Integer.parseInt(parts[1])).patch(parts[2]);
+        }, (output, version) -> output.writeUTF(version.version()));
         Adapter<Integer> UNSIGNED_BYTE = Impl.of(ByteArrayDataInput::readUnsignedByte, ByteArrayDataOutput::writeInt);
+        Adapter<BrokerAgreement> BROKER_AGREEMENT = Impl.of(input -> {
+            BrokerAgreement agreement = BrokerAgreement.brokerAgreement();
+            int interceptSize = input.readInt();
+            for (int i = 0; i < interceptSize; i++) {
+                agreement.intercept(new BrokerAgreement.MessageReference.InterceptMessageReference<>(ServiceFile.find(input.readUTF())));
+            }
+            int monitorSize = input.readInt();
+            for (int i = 0; i < monitorSize; i++) {
+                agreement.monitor(new BrokerAgreement.MessageReference.MonitorMessageReference<>(ServiceFile.find(input.readUTF())));
+            }
+            return agreement;
+        }, (output, agreement) -> {
+            output.writeInt(agreement.interceptSize());
+            for (BrokerAgreement.MessageReference.InterceptMessageReference<? extends Message> intercept : agreement.interceptMessages()) {
+                output.writeUTF(intercept.message().getName());
+            }
+            output.writeInt(agreement.monitorSize());
+            for (BrokerAgreement.MessageReference.MonitorMessageReference<? extends Message> monitor : agreement.monitorMessages()) {
+                output.writeUTF(monitor.message().getName());
+            }
+        });
         Adapter<Boolean> BOOLEAN = Impl.of(ByteArrayDataInput::readBoolean, ByteArrayDataOutput::writeBoolean);
         Adapter<Byte> BYTE = Impl.of(ByteArrayDataInput::readByte, (output, aByte) -> output.writeByte((int) aByte));
         Adapter<Short> SHORT = Impl.of(ByteArrayDataInput::readShort, (output, aShort) -> output.writeShort((int) aShort));
+        Adapter<DataObject<?>> DATA_OBJECT = Impl.of(input -> {
+            String identifier = input.readUTF();
+            Adapter<?> adapter = Adapter.VALUES.values().stream().filter(a -> a.getClass().getTypeParameters()[0].getBounds()[0].getTypeName().equals(identifier)).findAny().orElseThrow();
+            return new DataObject<>(adapter, adapter.read(input));
+        }, (output, dataObject) -> {
+            output.writeUTF(dataObject.type().getClass().getTypeParameters()[0].getBounds()[0].getTypeName());
+            Adapter<Object> adapter = (Adapter<Object>)dataObject.type();
+            adapter.write(output, dataObject.value());
+        });
         Adapter<UUID> UUID = Impl.of(input -> new UUID(input.readLong(), input.readLong()), (output, uuid) -> {
             output.writeLong(uuid.getMostSignificantBits());
             output.writeLong(uuid.getLeastSignificantBits());
@@ -179,6 +219,7 @@ public class ByteBuffer {
         }));
         Adapter<Integer> VAR_INT = Impl.of(ProtocolUtil::readVarInt, ProtocolUtil::writeVarInt);
         Adapter<Long> VAR_LONG = Impl.of(ProtocolUtil::readVarLong, ProtocolUtil::writeVarLong);
+        Values<Adapter<?>> VALUES = Values.of(STRING, LONG, DOUBLE, FLOAT, INT, IDENTIFIER, DEPLOYMENT, UNSIGNED_BYTE, BOOLEAN, BYTE, SHORT, DATA_OBJECT, UUID, NBT, ITEM, VAR_INT, VAR_LONG);
         T read(ByteArrayDataInput byteArrayDataInput);
         void write(ByteArrayDataOutput output, T object);
         final class Impl<V> implements Adapter<V> {

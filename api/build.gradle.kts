@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "org.example"
@@ -26,9 +27,6 @@ dependencies {
     annotationProcessor("io.avaje:avaje-inject-generator:9.4")
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-reflect", version = kotlinVersion)
     implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = kotlinVersion)
-    compileOnly("io.papermc.paper:paper-api:1.20.5-R0.1-SNAPSHOT") {
-        exclude("net.kyori")
-    }
 }
 
 java {

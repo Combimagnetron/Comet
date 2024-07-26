@@ -1,37 +1,20 @@
 package me.combimagnetron.comet.feature.entity.generator;
 
-import org.bukkit.util.EulerAngle;
-
 import java.util.Objects;
 
 public final class Rotation {
-    private final float angle;
-    private final String axis;
+    private final float angle = 6f;
+    private final String axis = null;
     private final double[] origin;
 
     public Rotation(float angle, String axis, double[] origin) {
-        this.angle = angle;
-        this.axis = axis;
         this.origin = origin;
     }
 
-    public Rotation(EulerAngle angle, double[] origin) {
+    public Rotation(Object angle, double[] origin) {
         float iAngle;
         String iAxis;
         this.origin = new double[3];
-        double x = Math.abs(angle.getX());
-        double y = Math.abs(angle.getY());
-        double z = Math.abs(angle.getZ());
-        if (x >= y && x >= z) {
-            this.axis = "x";
-            this.angle = angle(angle.getX());
-        } else if (y >= z) {
-            this.axis = "y";
-            this.angle = angle(angle.getY());
-        } else {
-            this.axis = "z";
-            this.angle = angle(angle.getZ());
-        }
         this.origin[0] = origin[0] / 2.5 + 8;
         this.origin[1] = origin[1] / 2.5;
         this.origin[2] = origin[2] / 2.5 + 8;

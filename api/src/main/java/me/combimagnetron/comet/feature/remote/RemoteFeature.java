@@ -1,5 +1,6 @@
 package me.combimagnetron.comet.feature.remote;
 
+import me.combimagnetron.comet.CometBase;
 import me.combimagnetron.comet.communication.Message;
 import me.combimagnetron.comet.communication.MessageClient;
 import me.combimagnetron.comet.communication.MessageHandler;
@@ -8,7 +9,6 @@ import me.combimagnetron.comet.communication.message.MessageChannel;
 import me.combimagnetron.comet.feature.Feature;
 import me.combimagnetron.comet.instance.Platform;
 import me.combimagnetron.comet.service.Service;
-import me.combimagnetron.comet.Comet;
 import me.combimagnetron.comet.data.Identifier;
 
 import java.io.Serializable;
@@ -16,7 +16,7 @@ import java.util.Set;
 
 @MessageHandler
 public abstract class RemoteFeature implements Feature, MessageListener<Message>, Serializable, Service {
-    private final MessageClient client = Comet.messageClient(MessageClient.Type.REDIS);
+    private final MessageClient client = CometBase.comet().channels().client();
     private final MessageChannel channel = client.channel(Identifier.of("remote-feature", identifier().key().string()));
     private final Platform platform;
     private final Set<? extends Message> messagesInUse;

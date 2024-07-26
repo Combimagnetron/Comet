@@ -1,11 +1,8 @@
 package me.combimagnetron.comet.internal.menu;
 
-import me.combimagnetron.comet.Comet;
 import me.combimagnetron.comet.CometBase;
 import me.combimagnetron.comet.feature.menu.element.Element;
 import me.combimagnetron.comet.feature.menu.element.Interactable;
-import me.combimagnetron.comet.event.impl.menu.UserClickElementEvent;
-import me.combimagnetron.comet.event.impl.menu.UserHoverElementEvent;
 import me.combimagnetron.comet.feature.menu.element.Position;
 import me.combimagnetron.comet.internal.entity.impl.display.Display;
 import me.combimagnetron.comet.internal.entity.impl.display.TextDisplay;
@@ -16,7 +13,6 @@ import me.combimagnetron.comet.internal.network.packet.server.ServerSetPlayerRot
 import me.combimagnetron.comet.internal.network.sniffer.Sniffer;
 import me.combimagnetron.comet.user.User;
 
-import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,8 +20,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 public final class EntityMenu {
-    @Inject
-    CometBase<?> comet;
     private final MenuId menuId = MenuId.menuId();
     private final Map<RelativePosition, Display> displays = new LinkedHashMap<>();
     private final Map<Display, Interactable> interactables = new LinkedHashMap<>();
@@ -35,7 +29,7 @@ public final class EntityMenu {
     private final Position position;
 
     private EntityMenu(Position position, User<?> user) {
-        this.input = new Input(comet, user, (event) -> {});
+        this.input = new Input(CometBase.comet(), user, (event) -> {});
         this.position = position;
         this.cursor = TextDisplay.textDisplay(Vector3d.vec3(0, 0, 0));
         this.cursorPos = Position.pixel(0, 0);

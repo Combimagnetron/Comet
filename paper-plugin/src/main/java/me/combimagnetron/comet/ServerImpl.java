@@ -79,10 +79,6 @@ public class ServerImpl implements Server {
         return null;
     }
 
-    @Override
-    public JavaPlugin javaPlugin() {
-        return plugin;
-    }
 
     void registerMessageClient(MessageClient.Type type, MessageClient client) {
         messageClientMap.put(type, client);

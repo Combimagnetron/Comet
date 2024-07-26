@@ -1,7 +1,9 @@
 package me.combimagnetron.comet;
 
+import me.combimagnetron.comet.communication.Channels;
 import me.combimagnetron.comet.communication.MessageClient;
 import me.combimagnetron.comet.config.annotation.Config;
+import me.combimagnetron.comet.connection.NetworkImpl;
 import me.combimagnetron.comet.event.EventBus;
 import me.combimagnetron.comet.internal.network.Network;
 import me.combimagnetron.comet.resourcepack.ResourcePackManager;
@@ -17,6 +19,7 @@ import java.util.logging.Logger;
 @Singleton
 public class CometBaseImpl implements CometBase<JavaPlugin> {
     private final UserManager userManager = new UserManager();
+    private final Network network = new NetworkImpl();
     private final CometPlugin cometPlugin;
 
     public CometBaseImpl(CometPlugin cometPlugin) {
@@ -26,7 +29,7 @@ public class CometBaseImpl implements CometBase<JavaPlugin> {
 
     @Override
     public Network network() {
-        return null;
+        return network;
     }
 
     @Override
@@ -50,8 +53,8 @@ public class CometBaseImpl implements CometBase<JavaPlugin> {
     }
 
     @Override
-    public MessageClient messageClient() {
-        return null;
+    public Channels channels() {
+        return new Channels(null, null, null);
     }
 
     @Override

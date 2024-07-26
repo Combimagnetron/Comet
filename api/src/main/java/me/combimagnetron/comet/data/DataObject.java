@@ -1,22 +1,12 @@
 package me.combimagnetron.comet.data;
 
 import me.combimagnetron.comet.data.type.DataType;
+import me.combimagnetron.comet.internal.network.ByteBuffer;
 
-public class DataObject<T, V> {
-    private final V value;
-    private final DataType<T> type;
+public record DataObject<V>(ByteBuffer.Adapter<?> type, V value) {
 
-    public DataObject(DataType<T> type, V value) {
-        this.value = value;
-        this.type = type;
-    }
-
-    public DataType<T> type() {
-        return type;
-    }
-
-    public V value() {
-        return value;
+    public static <V> DataObject<V> of(ByteBuffer.Adapter<?> type, V value) {
+        return new DataObject<>(type, value);
     }
 
 }

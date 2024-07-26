@@ -10,4 +10,6 @@ public interface Service {
 
     void start();
 
+    void tick();
+
 }

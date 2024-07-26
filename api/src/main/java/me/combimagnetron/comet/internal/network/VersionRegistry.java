@@ -5,14 +5,14 @@ import com.google.common.collect.HashBiMap;
 import me.combimagnetron.comet.internal.network.packet.ClientPacket;
 import me.combimagnetron.comet.internal.network.packet.Packet;
 import me.combimagnetron.comet.internal.network.packet.ServerPacket;
-import org.bukkit.Bukkit;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class VersionRegistry {
-    private static final BiMap<Integer, Class<? extends ClientPacket>> CLIENT = HashBiMap.create();
-    private static final BiMap<Integer, Class<? extends ServerPacket>> SERVER = HashBiMap.create();
+    private static final Map<Integer, Class<? extends ClientPacket>> CLIENT = new HashMap<>();
+    private static final Map<Integer, Class<? extends ServerPacket>> SERVER = new HashMap<>();
 
     public static Class<? extends ClientPacket> client(int id) {
         return CLIENT.get(id);
@@ -23,16 +23,11 @@ public abstract class VersionRegistry {
     }
 
     public static int client(Class<? extends ClientPacket> clazz) {
-        Bukkit.getLogger().info(clazz.getName());
-        for (Class<? extends ClientPacket> value : CLIENT.values()) {
-            Bukkit.getLogger().info(value.getName() + " " + clazz.getName());
-        }
-        Bukkit.getLogger().info(CLIENT.entrySet().size() + " a");
-        return CLIENT.entrySet().stream().filter(entry -> entry.getValue().getName().equals(clazz.getName())).findFirst().map(HashMap.Entry::getKey).orElse(0x01);
+        return CLIENT.entrySet().stream().filter(entry -> entry.getValue().getName().equals(clazz.getName())).findFirst().map(HashMap.Entry::getKey).orElse(0x33);
     }
 
     public static int server(Class<? extends ServerPacket> clazz) {
-        return SERVER.inverse().get(clazz);
+        return 0;
     }
 
     public static Class<? extends Packet> packet(int id, Entry.Type type) {

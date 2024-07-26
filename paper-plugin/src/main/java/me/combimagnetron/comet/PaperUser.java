@@ -1,5 +1,7 @@
 package me.combimagnetron.comet;
 
+import me.combimagnetron.comet.communication.message.user.UserMessageChannel;
+import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
 import me.combimagnetron.comet.internal.network.Connection;
 import me.combimagnetron.comet.connection.ConnectionImpl;
@@ -17,12 +19,14 @@ public class PaperUser implements User<Player> {
     private final UserDataContainer userDataContainer = null;
     private final CometBase<?> plugin;
     private final Connection connection;
+    private final UserMessageChannel userMessageChannel;
     private final Player player;
     private Instance instance;
 
     public PaperUser(Player player, CometBase<?> cometPlugin) {
         this.player = player;
         this.plugin = cometPlugin;
+        this.userMessageChannel = UserMessageChannel.redis(Identifier.of("player", player.getUniqueId().toString()), this);
         this.connection = ConnectionImpl.of(this, (CometBase<JavaPlugin>) plugin);
     }
 
@@ -39,6 +43,11 @@ public class PaperUser implements User<Player> {
     @Override
     public void message(Component component) {
         player.sendMessage(component);
+    }
+
+    @Override
+    public UserMessageChannel messageChannel() {
+        return null;
     }
 
     @Override

@@ -1,14 +1,12 @@
 package me.combimagnetron.pilot.loader;
 
-import me.combimagnetron.comet.Comet;
-import me.combimagnetron.comet.communication.MessageClient;
 import me.combimagnetron.comet.service.AutoService;
 import me.combimagnetron.comet.service.Service;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class ServiceLoader {
-    private static final Collection<TypeVariablePair> TYPE_VARIABLE_PAIRS = List.of(TypeVariablePair.pair(MessageClient.class, Comet.messageClient()));
+    //private static final Collection<TypeVariablePair> TYPE_VARIABLE_PAIRS = List.of(TypeVariablePair.pair(MessageClient.class, CometBas.messageClient()));
 
     public ServiceLoader() {
 
@@ -32,7 +30,7 @@ public class ServiceLoader {
         public static Object[] get(Class<?>[] classes) {
             Collection<Object> objects = new HashSet<>();
             Arrays.stream(classes).forEach(clazz -> {
-                objects.add(TYPE_VARIABLE_PAIRS.stream().filter(pair -> pair.type().equals(clazz)).findFirst().orElseGet(null).variable());
+                //objects.add(TYPE_VARIABLE_PAIRS.stream().filter(pair -> pair.type().equals(clazz)).findFirst().orElseGet(null).variable());
             });
             return objects.toArray();
         }

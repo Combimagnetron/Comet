@@ -11,10 +11,6 @@ public interface EventBus {
         return Operation.executable(() -> new EventSubscription.Impl<>(clazz, consumer));
     }*/
 
-    static <T extends org.bukkit.event.Event> EventSubscription.SpigotImpl subscribe(Class<T> clazz, Consumer<T> consumer) {
-        return new EventSubscription.SpigotImpl(clazz, (Consumer<org.bukkit.event.Event>) consumer);
-    }
-
     static <T extends Event> EventSubscription<T> subscribe(Class<T> clazz, EventFilter<T, ?> filter, Consumer<? super T> consumer) {
         return new EventSubscription.FilteredImpl<>(clazz, filter, consumer);
     }

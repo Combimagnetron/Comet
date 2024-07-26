@@ -4,12 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.combimagnetron.comet.feature.entity.JsonUtil;
 import me.combimagnetron.comet.feature.entity.math.Point;
-import org.bukkit.util.EulerAngle;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.UUID;
 
-public record Cube(String name, UUID uuid, Point from, Point to, EulerAngle rotation, boolean boxUV, boolean locked, Point origin, Face faces) {
+public record Cube(String name, UUID uuid, Point from, Point to, Object rotation, boolean boxUV, boolean locked, Point origin, Face faces) {
 
     @UnknownNullability
     public static Cube fromJson(JsonElement jsonElement) {
@@ -28,7 +27,7 @@ public record Cube(String name, UUID uuid, Point from, Point to, EulerAngle rota
                 uuid,
                 Point.of(JsonUtil.readIntArray(innerObject, "from", 3)),
                 Point.of(JsonUtil.readIntArray(innerObject, "to", 3)),
-                new EulerAngle(rotation[0], rotation[1], rotation[2]),
+                null,
                 innerObject.get("box_uv").getAsBoolean(),
                 innerObject.get("locked").getAsBoolean(),
                 Point.of(JsonUtil.readIntArray(innerObject, "origin", 3)),
