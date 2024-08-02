@@ -1,14 +1,10 @@
 package me.combimagnetron.comet;
 
 import org.gradle.api.Action;
-import org.gradle.api.Project;
 import org.gradle.api.Plugin;
-import org.gradle.api.provider.Property;
-import org.gradle.api.provider.ListProperty;
-import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.tasks.Nested;
+import org.gradle.api.Project;
+import me.combimagnetron.comet.CopyFileTask;
 
-import javax.inject.Inject;
 import java.util.List;
 
 public class CometPlugin implements Plugin<Project> {
@@ -16,9 +12,15 @@ public class CometPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         CometExtension cometExtension = project.getExtensions().create("comet", CometExtension.class);
+        project.getTasks().register("copyFileToSubprojects", CopyFileTask.class, task -> {
+            task.setGroup("comet");
+            task.setDescription("Copies a specified file to all subprojects");
+        });
         project.afterEvaluate((action) -> {
-            System.out.println(cometExtension.getService().getIdentifier());
-            ConfigWriter.of(cometExtension, project);
+            if (project.getName().contains("service") || project.getName().contains("pilot")) {
+                ConfigWriter.of(cometExtension, project);
+            }
+            project.getTasksByName("build", false).forEach(task -> task.dependsOn("copyFileToSubprojects"));
         });
     }
 
@@ -54,8 +56,8 @@ public class CometPlugin implements Plugin<Project> {
     }
 
     public static class ServiceExtension {
-        private String identifier;
-        private String version;
+        private String identifier = "comet:" + CometPlugin.class.getPackage().getName();
+        private String version = "undefined";
 
         public String getIdentifier() {
             return identifier;
@@ -76,10 +78,10 @@ public class CometPlugin implements Plugin<Project> {
     }
 
     public static class DeploymentExtension {
-        private int minInstanceCount;
-        private int maxInstanceCount;
-        private int playerInstanceThreshold;
-        private String image;
+        private int minInstanceCount = 1;
+        private int maxInstanceCount = 2;
+        private int playerInstanceThreshold = -1;
+        private String image = "self";
 
         public int getMinInstanceCount() {
             return minInstanceCount;
@@ -139,7 +141,7 @@ public class CometPlugin implements Plugin<Project> {
     }
 
     public static class MonitorExtension {
-        private List<String> type;
+        private List<String> type = List.of();
 
         public List<String> getType() {
             return type;
@@ -152,7 +154,7 @@ public class CometPlugin implements Plugin<Project> {
     }
 
     public static class InterceptExtension {
-        private List<String> type;
+        private List<String> type = List.of();
 
         public List<String> getType() {
             return type;

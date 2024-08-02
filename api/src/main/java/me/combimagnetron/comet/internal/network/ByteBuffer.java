@@ -115,6 +115,19 @@ public class ByteBuffer {
 
     public interface Adapter<T> {
         Adapter<String> STRING = Impl.of(ByteArrayDataInput::readUTF, ByteArrayDataOutput::writeUTF);
+        Adapter<Byte[]> BYTE_ARRAY = Impl.of(input -> {
+            int length = input.readInt();
+            Byte[] bytes = new Byte[length];
+            for (int i = 0; i < length; i++) {
+                bytes[i] = input.readByte();
+            }
+            return bytes;
+        }, (output, bytes) -> {
+            output.writeInt(bytes.length);
+            for (Byte aByte : bytes) {
+                output.writeByte(aByte);
+            }
+        });
         Adapter<Long> LONG = Impl.of(ByteArrayDataInput::readLong, ByteArrayDataOutput::writeLong);
         Adapter<Double> DOUBLE = Impl.of(ByteArrayDataInput::readDouble, ByteArrayDataOutput::writeDouble);
         Adapter<Float> FLOAT = Impl.of(ByteArrayDataInput::readFloat, ByteArrayDataOutput::writeFloat);

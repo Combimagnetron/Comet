@@ -19,6 +19,7 @@ public class CometPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         this.cometBase = new CometBaseImpl(this);
+        CometBase.Holder.INSTANCE = cometBase;
         PaperCommandHandler commandHandler = new PaperCommandHandler(cometBase);
     }
 

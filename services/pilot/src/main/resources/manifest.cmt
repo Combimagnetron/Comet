@@ -1,0 +1,18 @@
+component {
+    intercept=[
+        "*"
+    ]
+    monitor=[
+        "*"
+    ]
+}
+deployment {
+    image=self
+    max-instance-count=2
+    min-instance-count=1
+    player-instance-threshold=-1
+}
+service {
+    identifier="service:pilot"
+    version="1.0.0"
+}

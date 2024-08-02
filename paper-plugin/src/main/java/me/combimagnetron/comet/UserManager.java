@@ -19,12 +19,6 @@ public class UserManager implements Listener, UserHandler<Player> {
     @Inject
     CometBase<JavaPlugin> cometBase;
     private final HashMap<UUID, User<Player>> USER_MAP = new HashMap<>();
-    private final EventSubscription<?> joinSubscription = EventBus.subscribe(PlayerJoinEvent.class, (event) -> {
-        Player player = event.getPlayer();
-        User<Player> playerUser = new PaperUser(player, cometBase);
-        USER_MAP.put(player.getUniqueId(), playerUser);
-    });
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();

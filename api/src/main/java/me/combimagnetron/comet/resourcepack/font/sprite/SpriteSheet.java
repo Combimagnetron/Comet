@@ -1,6 +1,6 @@
 package me.combimagnetron.comet.resourcepack.font.sprite;
 
-import me.combimagnetron.comet.feature.menu.Pos2D;
+import me.combimagnetron.comet.game.menu.Pos2D;
 import me.combimagnetron.comet.image.PixelRaster;
 import me.combimagnetron.comet.data.Identifier;
 

@@ -16,6 +16,9 @@
 
 gradle.properties
 
+*/src/main/resources/logback.xml
+services/*/src/main/resources/logback.xml
+
 # AWS User-specific
 .idea/**/aws.xml
 

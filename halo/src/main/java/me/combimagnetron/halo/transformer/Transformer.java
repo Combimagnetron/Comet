@@ -10,30 +10,33 @@ import java.util.Objects;
 import java.util.UUID;
 
 public interface Transformer<T> {
-    Transformer<UUID> UUID = of("Uuid", java.util.UUID.class, ByteBuffer.Adapter.UUID);
-    Transformer<String> STRING = of("String", String.class, ByteBuffer.Adapter.STRING);
-    Transformer<Integer> INT = of("Int", Integer.class, ByteBuffer.Adapter.INT);
-    Transformer<Double> DOUBLE = of("Double", Double.class, ByteBuffer.Adapter.DOUBLE);
-    Transformer<Identifier> IDENTIFIER = of("Identifier", Identifier.class, ByteBuffer.Adapter.IDENTIFIER);
-    Transformer<Deployment> DEPLOYMENT = of("Deployment", Deployment.class, ByteBuffer.Adapter.DEPLOYMENT);
-    Transformer<DataObject> DATA_OBJECT = of("DataObject", DataObject.class, ByteBuffer.Adapter.DATA_OBJECT);
-    Values<Transformer<?>> VALUES = Values.of(UUID, STRING, INT, DOUBLE, IDENTIFIER, DEPLOYMENT, DATA_OBJECT);
+    Transformer<UUID> UUID = of("Uuid", "UUID", java.util.UUID.class, ByteBuffer.Adapter.UUID);
+    Transformer<String> STRING = of("String", "STRING", String.class, ByteBuffer.Adapter.STRING);
+    Transformer<Integer> INT = of("Int", "INT", Integer.class, ByteBuffer.Adapter.INT);
+    Transformer<Double> DOUBLE = of("Double", "DOUBLE", Double.class, ByteBuffer.Adapter.DOUBLE);
+    Transformer<Identifier> IDENTIFIER = of("Identifier", "IDENTIFIER", Identifier.class, ByteBuffer.Adapter.IDENTIFIER);
+    Transformer<Deployment> DEPLOYMENT = of("Deployment", "DEPLOYMENT", Deployment.class, ByteBuffer.Adapter.DEPLOYMENT);
+    Transformer<DataObject> DATA_OBJECT = of("DataObject", "DATA_OBJECT", DataObject.class, ByteBuffer.Adapter.DATA_OBJECT);
+    Transformer<Byte[]> BYTE_ARRAY = of("Bytes", "BYTE_ARRAY", Byte[].class, ByteBuffer.Adapter.BYTE_ARRAY);
+    Values<Transformer<?>> VALUES = Values.of(UUID, STRING, INT, DOUBLE, IDENTIFIER, DEPLOYMENT, DATA_OBJECT, BYTE_ARRAY);
 
     String identifier();
+
+    String adapterName();
 
     Class<T> clazz();
 
     ByteBuffer.Adapter<?> adapter();
 
-    static <T> Transformer<T> of(String identifier, Class<T> clazz, ByteBuffer.Adapter<?> adapter) {
-        return new Entry<>(identifier, clazz, adapter);
+    static <T> Transformer<T> of(String identifier, String adapterName, Class<T> clazz, ByteBuffer.Adapter<?> adapter) {
+        return new Entry<>(identifier, adapterName, clazz, adapter);
     }
 
     static <T> Transformer<T> find(String string) {
         return (Transformer<T>) VALUES.values().stream().filter(transformer -> Objects.equals(transformer.identifier(), string)).findAny().orElseThrow();
     }
 
-    record Entry<T>(String identifier, Class<T> clazz, ByteBuffer.Adapter<?> adapter) implements Transformer<T> {
+    record Entry<T>(String identifier, String adapterName, Class<T> clazz, ByteBuffer.Adapter<?> adapter) implements Transformer<T> {
 
     }
 

@@ -10,7 +10,7 @@ public record Token(Type type, String captured) {
         Type START = Impl.of("([a-z]\\w+-bound message \\w+ \\{)");
         Type TYPE_ENUM = Impl.of("type \\w* {\\n\\s+(([A-Z]+)+,*\\s*)+}");
         Type TYPE_CLASS = Impl.of("type \\w*\\(((.*?) ([a-z]+)+,*)*\\) {\\n+\\s+}");
-        Type CLASS = Impl.of("([a-z]\\w+-bound message \\w+ \\{\\s*(((.*?) ([a-z_]+)+,*)\\n*\\s*)+\\})");
+        Type CLASS = Impl.of("([a-z]\\w+-bound message \\w+ \\{\\s*(((.*?) ([a-zA-Z_]+)+,*)\\n*\\s*)+\\})");
         Type NUMBER = Impl.of("[\\d\\.]+");
         Type[] ALL = new Type[]{OBJECT, METHOD_REFERENCE, NUMBER};
 

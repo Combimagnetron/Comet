@@ -1,7 +1,6 @@
 package me.combimagnetron.comet;
 
 import me.combimagnetron.comet.communication.Channels;
-import me.combimagnetron.comet.communication.MessageClient;
 import me.combimagnetron.comet.config.annotation.Config;
 import me.combimagnetron.comet.connection.NetworkImpl;
 import me.combimagnetron.comet.event.EventBus;
@@ -12,9 +11,10 @@ import me.combimagnetron.comet.user.UserHandler;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.Logger;
 
 import javax.inject.Singleton;
-import java.util.logging.Logger;
+import java.nio.file.Path;
 
 @Singleton
 public class CometBaseImpl implements CometBase<JavaPlugin> {
@@ -58,8 +58,8 @@ public class CometBaseImpl implements CometBase<JavaPlugin> {
     }
 
     @Override
-    public Logger logger() {
-        return Bukkit.getLogger();
+    public Path dataFolder() {
+        return plugin().getDataPath();
     }
 
     @Override

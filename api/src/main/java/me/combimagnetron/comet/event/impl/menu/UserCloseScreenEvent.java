@@ -2,9 +2,8 @@ package me.combimagnetron.comet.event.impl.menu;
 
 import me.combimagnetron.comet.event.Cancellable;
 import me.combimagnetron.comet.event.Event;
-import me.combimagnetron.comet.feature.menu.Menu;
+import me.combimagnetron.comet.game.menu.Menu;
 import me.combimagnetron.comet.user.User;
-import me.combimagnetron.comet.util.Scheduler;
 
 public final class UserCloseScreenEvent implements MenuEvent, Cancellable {
     private final User<?> user;

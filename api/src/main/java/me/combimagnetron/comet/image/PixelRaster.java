@@ -1,6 +1,6 @@
 package me.combimagnetron.comet.image;
 
-import me.combimagnetron.comet.feature.menu.Pos2D;
+import me.combimagnetron.comet.game.menu.Pos2D;
 import me.combimagnetron.comet.operation.Operation;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;

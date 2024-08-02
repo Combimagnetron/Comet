@@ -1,6 +1,6 @@
 package me.combimagnetron.comet.operation;
 
-import me.combimagnetron.comet.feature.entity.Duration;
+import me.combimagnetron.comet.util.Duration;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 

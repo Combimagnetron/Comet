@@ -1,6 +1,6 @@
 package me.combimagnetron.comet;
 
-import me.combimagnetron.comet.feature.Feature;
+import me.combimagnetron.comet.game.Feature;
 import me.combimagnetron.comet.communication.MessageClient;
 import me.combimagnetron.comet.communication.message.redis.RedisMessageClient;
 import me.combimagnetron.comet.data.Identifier;

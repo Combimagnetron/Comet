@@ -3,5 +3,5 @@ service-bound message UserSwitchServerInstance {
     Deployment deployment,
     String service,
     Uuid oldInstance,
-    Uuid newInstance
+    Uuid currentInstance
 }

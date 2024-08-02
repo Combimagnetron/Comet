@@ -5,8 +5,8 @@ import me.combimagnetron.comet.command.annotations.Command;
 import me.combimagnetron.comet.command.annotations.Execute;
 import me.combimagnetron.comet.command.annotations.Requires;
 import me.combimagnetron.comet.command.annotations.SubCommand;
-import me.combimagnetron.comet.feature.entity.generator.EntityModelGenerator;
-import me.combimagnetron.comet.feature.entity.parser.blockbench.BlockBenchModel;
+import me.combimagnetron.comet.game.entity.generator.EntityModelGenerator;
+import me.combimagnetron.comet.game.entity.parser.blockbench.BlockBenchModel;
 import me.combimagnetron.comet.internal.entity.impl.display.Display;
 import me.combimagnetron.comet.internal.entity.impl.display.TextDisplay;
 import me.combimagnetron.comet.internal.entity.metadata.type.Quaternion;
@@ -19,7 +19,8 @@ public class AdminCommand {
 
     @Execute
     public void execute(User<?> user) {
-        final TextDisplay textDisplay = TextDisplay.nonTracked(user.position(), user);
+        CometBase.comet().logger().info(user.name() + " executed Admin command");
+        /*final TextDisplay textDisplay = TextDisplay.nonTracked(user.position(), user);
         textDisplay.text(Component.text("Hello!"));
         textDisplay.transformation(
                 Display.Transformation.of(
@@ -31,6 +32,7 @@ public class AdminCommand {
         );
         //ChestMenu chestMenu = new ChestMenu.Impl(user);
         user.message(Component.text("Spawned!"));
+        */
     }
 
     @SubCommand(command = "model")

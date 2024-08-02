@@ -1,10 +1,8 @@
 package me.combimagnetron.comet.internal.entity.impl.display;
 
-import me.combimagnetron.comet.feature.menu.element.Position;
 import me.combimagnetron.comet.internal.entity.Entity;
 import me.combimagnetron.comet.internal.entity.metadata.Metadata;
 import me.combimagnetron.comet.internal.entity.metadata.type.Float;
-import me.combimagnetron.comet.internal.entity.metadata.type.MetadataType;
 import me.combimagnetron.comet.internal.entity.metadata.type.Quaternion;
 import me.combimagnetron.comet.internal.entity.metadata.type.VarInt;
 import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;

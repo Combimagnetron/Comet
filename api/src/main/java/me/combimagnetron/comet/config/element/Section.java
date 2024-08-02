@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -16,7 +17,7 @@ public interface Section extends ConfigElement {
 
     <T extends ConfigElement> @Nullable T next(@NotNull Class<T> clazz);
 
-    Collection<? super ConfigElement> elements();
+    Collection<ConfigElement> elements();
 
     String name();
 
@@ -25,7 +26,7 @@ public interface Section extends ConfigElement {
     }
 
     final class RequiredSection implements Section {
-        private final Map<String, Object> elements = new ConcurrentHashMap();
+        private final Map<String, ConfigElement> elements = new LinkedHashMap<>();
         private final String name;
 
         private RequiredSection(String name) {
@@ -34,7 +35,7 @@ public interface Section extends ConfigElement {
 
         @Override
         public <T> @NotNull Section node(Node<T> node) {
-            elements.put(node.name(), node.value());
+            elements.put(node.name(), node);
             return this;
         }
 
@@ -49,8 +50,8 @@ public interface Section extends ConfigElement {
         }
 
         @Override
-        public Collection<? super ConfigElement> elements() {
-            return elements.values().stream().collect(Collectors.toUnmodifiableSet());
+        public Collection<ConfigElement> elements() {
+            return elements.values();
         }
 
         @Override

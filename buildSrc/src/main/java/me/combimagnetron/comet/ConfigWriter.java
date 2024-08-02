@@ -8,10 +8,7 @@ import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 
 public class ConfigWriter {
     private final CometPlugin.CometExtension cometExtension;
@@ -46,9 +43,10 @@ public class ConfigWriter {
                         .node(Node.required("image", cometExtension.getDeployment().getImage()))
         ).section(
                 Section.required("component")
-                        .node(Node.required("monitor", cometExtension.getComponent().getMonitor()))
-                        .node(Node.required("intercept", cometExtension.getComponent().getIntercept()))
-        ).save(resourcesDir.toPath().resolve(Path.of("manifest.cmt")));
+                        .node(Node.required("monitor", cometExtension.getComponent().getMonitor().getType()))
+                        .node(Node.required("intercept", cometExtension.getComponent().getIntercept().getType()))
+        );
+        config.save(resourcesDir.toPath().resolve(Path.of("manifest.cmt")));
     }
 
 

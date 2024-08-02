@@ -2,7 +2,7 @@ package me.combimagnetron.comet;
 
 import me.combimagnetron.comet.communication.MessageClient;
 import me.combimagnetron.comet.data.Identifier;
-import me.combimagnetron.comet.feature.Feature;
+import me.combimagnetron.comet.game.Feature;
 import me.combimagnetron.comet.instance.Instance;
 import me.combimagnetron.comet.user.User;
 import org.jetbrains.annotations.Nullable;

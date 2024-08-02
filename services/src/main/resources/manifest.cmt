@@ -1,0 +1,14 @@
+component {
+    intercept=[]
+    monitor=[]
+}
+deployment {
+    image=self
+    max-instance-count=2
+    min-instance-count=1
+    player-instance-threshold=-1
+}
+service {
+    identifier="comet:me.combimagnetron.comet"
+    version=undefined
+}

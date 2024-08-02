@@ -1,6 +1,6 @@
 package me.combimagnetron.comet.internal.menu;
 
-import me.combimagnetron.comet.feature.menu.Pos2D;
+import me.combimagnetron.comet.game.menu.Pos2D;
 import me.combimagnetron.comet.internal.network.Connection;
 import me.combimagnetron.comet.internal.network.packet.client.ClientBundleDelimiter;
 import me.combimagnetron.comet.internal.network.packet.client.ClientOpenScreen;

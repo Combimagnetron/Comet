@@ -1,18 +1,20 @@
 package me.combimagnetron.comet.config;
 
 import com.typesafe.config.*;
+import com.typesafe.config.parser.ConfigDocument;
+import com.typesafe.config.parser.ConfigDocumentFactory;
 import me.combimagnetron.comet.communication.MessageClient;
 import me.combimagnetron.comet.config.annotation.processor.Processor;
+import me.combimagnetron.comet.config.element.ConfigElement;
 import me.combimagnetron.comet.config.element.Node;
 import me.combimagnetron.comet.config.element.Section;
 import me.combimagnetron.comet.config.reader.Reader;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 public sealed interface Config permits Config.Impl {
 
@@ -45,8 +47,8 @@ public sealed interface Config permits Config.Impl {
     }
 
     final class Impl implements Config {
-        private final TreeMap<String, Section> sections = new TreeMap<>();
-        private final TreeMap<String, Node<?>> nodes = new TreeMap<>();
+        private final LinkedHashMap<String, Section> sections = new LinkedHashMap<>();
+        private final LinkedHashMap<String, Node<?>> nodes = new LinkedHashMap<>();
         private Settings settings = Settings.settings();
 
         void test() {
@@ -116,7 +118,37 @@ public sealed interface Config permits Config.Impl {
 
         @Override
         public void save(Path path) {
-            com.typesafe.config.ConfigObject config = ConfigFactory.empty().root();
+            com.typesafe.config.Config config = ConfigFactory.empty();
+            final List<Node<?>> nodes = List.copyOf(this.nodes.values());
+            for (Node<?> value : nodes) {
+                if (check(value)) {
+                    continue;
+                }
+                config = config.withValue(value.name(), ConfigValueFactory.fromAnyRef(value.value()));
+            }
+            final List<Section> sections = new ArrayList<>(this.sections().stream().toList());
+            Collections.reverse(sections);
+            for (Section value : sections) {
+                final List<ConfigElement> elements = new ArrayList<>(value.elements().stream().toList());
+                for (ConfigElement element : elements) {
+                    System.out.println(value.name() + " " + element.name());
+                    if (!(element instanceof Node<?> node) || check(node)) {
+                        continue;
+                    }
+                    config = config.withValue(value.name() + "." + node.name(), ConfigValueFactory.fromAnyRef(node.value()));
+                }
+            }
+            ConfigRenderOptions options = ConfigRenderOptions.defaults()
+                    .setOriginComments(false)
+                    .setJson(false);
+            String renderedConfig = config.root().render(options);
+            try {
+                Files.write(path, renderedConfig.getBytes());
+                System.out.println(renderedConfig);
+            } catch (IOException e) {
+
+            }
+            /*com.typesafe.config.ConfigObject config = ConfigFactory.empty().root();
             for (Node<?> value : nodes.values()) {
                 if (check(value)) {
                     continue;
@@ -136,7 +168,7 @@ public sealed interface Config permits Config.Impl {
                 Files.write(path, List.of(config.render(configRenderOptions)));
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
+            }*/
         }
 
         private static boolean check(Node<?> node) {

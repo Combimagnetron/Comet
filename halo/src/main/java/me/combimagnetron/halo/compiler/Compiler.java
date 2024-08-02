@@ -7,6 +7,7 @@ import me.combimagnetron.comet.communication.Message;
 import me.combimagnetron.comet.internal.network.ByteBuffer;
 import me.combimagnetron.comet.util.Values;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.LoggerFactory;
 
 import javax.lang.model.element.Modifier;
 import java.io.File;
@@ -33,6 +34,7 @@ public class Compiler {
                 javaFile.writeTo(Path.of(args[1]));
             }
         }
+        LoggerFactory.getLogger(Compiler.class).info("test");
     }
 
     private static JavaFile compile(Path path) {
@@ -91,20 +93,21 @@ public class Compiler {
             lines.forEach(builder::append);
             String all = builder.toString();
             String file = find(Token.Type.CLASS, all, 1);
+            System.out.println(path.toFile().getName());
+            if (file == null) {
+                throw new RuntimeException("Halo class " + path.toFile().getName() + " could not be read. Please look for syntax errors.");
+            }
             ProtocolDirection direction = ProtocolDirection.find(file.split("-")[0]);
             String name = Token.Type.OBJECT.pattern().matcher(file).results().findFirst().orElseThrow().group();
             Matcher matcher = Token.Type.METHOD_REFERENCE.pattern().matcher(file);
             List<Field> fields1 = new LinkedList<>();
-            System.out.println(matcher.results().peek(matchResult -> {
-                System.out.println("aa");
+            matcher.results().peek(matchResult -> {
                 String[] strings = matchResult.group().split(" ");
                 Transformer<?> type = Transformer.find(strings[0]);
                 String varName = strings[1];
                 fields1.add(new Field(type.clazz(), varName, type));
-                System.out.println(matchResult);
-            }).count());
+            });
             matcher.results().forEach(result -> {
-                System.out.println("aa");
                 String[] strings = result.group().split(" ");
                 Transformer<?> type = Transformer.find(strings[0]);
                 String varName = strings[1];
@@ -117,7 +120,6 @@ public class Compiler {
                 String varName = strings[1];
                 return new Field(type.clazz(), varName, type);
             }).toList();
-            System.out.println(fields1.size());
             return new HaloClass(name, direction, fields1, null);
         }
 
@@ -145,7 +147,6 @@ public class Compiler {
                 }
                 builder1.append(", " + field.varName);
             }
-            System.out.println(builder1);
             ClassName className = ClassName.get("me.combimagnetron.generated", name + "Message");
             MethodSpec.Builder statics = MethodSpec.methodBuilder("of")
                     .addParameters(specs)
@@ -167,7 +168,7 @@ public class Compiler {
                     .addAnnotation(Override.class)
                     .addCode("return $L;", protocolDirection.next());
             CodeBlock.Builder codeBuilder = CodeBlock.builder();
-            fields.forEach(field -> codeBuilder.add("\nbuffer.write($T.$L, $L);", ByteBuffer.Adapter.class, field.transformer.identifier().toUpperCase(), field.varName));
+            fields.forEach(field -> codeBuilder.add("\nbuffer.write($T.$L, $L);", ByteBuffer.Adapter.class, field.transformer.adapterName(), field.varName));
             methodSpecBuilder.addCode(codeBuilder.build());
             builder.addMethod(
                     methodSpecBuilder.build()

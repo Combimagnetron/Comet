@@ -1,9 +1,9 @@
 package me.combimagnetron.comet.internal.menu;
 
 import me.combimagnetron.comet.CometBase;
-import me.combimagnetron.comet.feature.menu.element.Element;
-import me.combimagnetron.comet.feature.menu.element.Interactable;
-import me.combimagnetron.comet.feature.menu.element.Position;
+import me.combimagnetron.comet.game.menu.element.Element;
+import me.combimagnetron.comet.game.menu.element.Interactable;
+import me.combimagnetron.comet.game.menu.element.Position;
 import me.combimagnetron.comet.internal.entity.impl.display.Display;
 import me.combimagnetron.comet.internal.entity.impl.display.TextDisplay;
 import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
