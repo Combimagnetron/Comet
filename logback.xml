@@ -1,4 +1,4 @@
-<configuration debug="true">
+<configuration debug="false">
     <appender name="Logtail" class="com.logtail.logback.LogtailAppender">
         <appName>Comet</appName>
         <sourceToken>SECRET</sourceToken>

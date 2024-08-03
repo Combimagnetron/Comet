@@ -23,6 +23,6 @@ public record StartServiceMessage(Identifier identifier) implements Message {
 
     @Override
     public int id() {
-        return 1;
+        return 4;
     }
 }

@@ -1,5 +1,6 @@
 package me.combimagnetron.comet.user;
 
+import me.combimagnetron.comet.internal.network.ByteBuffer;
 import net.kyori.adventure.audience.Audience;
 
 import java.util.Collection;
@@ -17,5 +18,7 @@ public interface UserHandler<T extends Audience> {
     Collection<User<T>> users();
 
     Collection<User<T>> global();
+
+    User<T> deserialize(ByteBuffer buffer);
 
 }

@@ -131,7 +131,6 @@ public sealed interface Config permits Config.Impl {
             for (Section value : sections) {
                 final List<ConfigElement> elements = new ArrayList<>(value.elements().stream().toList());
                 for (ConfigElement element : elements) {
-                    System.out.println(value.name() + " " + element.name());
                     if (!(element instanceof Node<?> node) || check(node)) {
                         continue;
                     }
@@ -144,31 +143,9 @@ public sealed interface Config permits Config.Impl {
             String renderedConfig = config.root().render(options);
             try {
                 Files.write(path, renderedConfig.getBytes());
-                System.out.println(renderedConfig);
             } catch (IOException e) {
 
             }
-            /*com.typesafe.config.ConfigObject config = ConfigFactory.empty().root();
-            for (Node<?> value : nodes.values()) {
-                if (check(value)) {
-                    continue;
-                }
-                config.put(value.name(), ConfigValueFactory.fromAnyRef(value.value()));
-            }
-            for (Section value : sections.values()) {
-                for (Object element : value.elements()) {
-                    if (!(element instanceof Node<?> node) || check(node)) {
-                        continue;
-                    }
-                    config.put(value.name() + "." + node.name(), ConfigValueFactory.fromAnyRef(node.value()));
-                }
-            }
-            ConfigRenderOptions configRenderOptions = ConfigRenderOptions.defaults().setOriginComments(false).setJson(false).setFormatted(true);
-            try {
-                Files.write(path, List.of(config.render(configRenderOptions)));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }*/
         }
 
         private static boolean check(Node<?> node) {

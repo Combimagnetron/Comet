@@ -2,6 +2,7 @@ package me.combimagnetron.comet;
 
 import me.combimagnetron.comet.event.EventBus;
 import me.combimagnetron.comet.event.EventSubscription;
+import me.combimagnetron.comet.internal.network.ByteBuffer;
 import me.combimagnetron.comet.user.User;
 import me.combimagnetron.comet.user.UserHandler;
 import org.bukkit.entity.Player;
@@ -54,6 +55,11 @@ public class UserManager implements Listener, UserHandler<Player> {
     @Override
     public Collection<User<Player>> global() {
         return null;
+    }
+
+    @Override
+    public User<Player> deserialize(ByteBuffer buffer) {
+        return new PaperUser(buffer);
     }
 
 }

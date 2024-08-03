@@ -5,7 +5,7 @@ import me.combimagnetron.comet.communication.MessageListener;
 import me.combimagnetron.generated.DeployServiceMessage;
 import me.combimagnetron.pilot.Pilot;
 
-@MessageHandler(filter = DeployServiceMessage.class, channel = "service:handler")
+@MessageHandler(filter = DeployServiceMessage.class)
 public class DeployServiceMessageListener implements MessageListener<DeployServiceMessage> {
     private final Pilot pilot = Pilot.pilot();
 

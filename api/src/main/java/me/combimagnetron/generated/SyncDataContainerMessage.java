@@ -28,6 +28,6 @@ public record SyncDataContainerMessage(Identifier identifier, UUID sync,
 
     @Override
     public int id() {
-        return 3;
+        return 6;
     }
 }

@@ -2,6 +2,7 @@ package me.combimagnetron.comet;
 
 import me.combimagnetron.comet.communication.Channels;
 import me.combimagnetron.comet.event.EventBus;
+import me.combimagnetron.comet.instance.InstanceHandler;
 import me.combimagnetron.comet.internal.network.Network;
 import me.combimagnetron.comet.resourcepack.ResourcePackManager;
 import me.combimagnetron.comet.service.ServiceHandler;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.util.UUID;
 
 public interface CometBase<T> {
 
@@ -20,13 +22,15 @@ public interface CometBase<T> {
 
     Network network();
 
-    EventBus eventBus();
-
     UserHandler<? extends Audience> users();
 
     ServiceHandler services();
 
     ResourcePackManager resourcePacks();
+
+    UUID instanceUuid();
+
+    InstanceHandler instances();
 
     Channels channels();
 

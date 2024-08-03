@@ -23,6 +23,6 @@ public record UserGetServerMessage(UUID uuid) implements Message {
 
     @Override
     public int id() {
-        return 0;
+        return 2;
     }
 }

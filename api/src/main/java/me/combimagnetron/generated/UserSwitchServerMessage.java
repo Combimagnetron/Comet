@@ -25,6 +25,6 @@ public record UserSwitchServerMessage(UUID userId, Integer serverType) implement
 
     @Override
     public int id() {
-        return 1;
+        return 3;
     }
 }

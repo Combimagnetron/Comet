@@ -12,11 +12,12 @@ import org.slf4j.LoggerFactory;
 import javax.lang.model.element.Modifier;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 
@@ -80,7 +81,7 @@ public class Compiler {
         }
     }
 
-    public record HaloClass(String name, ProtocolDirection protocolDirection, Collection<Field> fields, @Nullable Type[] types) {
+    public record HaloClass(String name, ProtocolDirection protocolDirection, Collection<Field<?>> fields, @Nullable Type[] types) {
 
         public static HaloClass haloClass(Path path) {
             List<String> lines;
@@ -92,6 +93,7 @@ public class Compiler {
             StringBuilder builder = new StringBuilder();
             lines.forEach(builder::append);
             String all = builder.toString();
+            all = Token.Type.COMMENT.pattern().matcher(all).replaceAll("").replaceAll(Token.Type.COMMENT_BLOCK.pattern().pattern(), "");
             String file = find(Token.Type.CLASS, all, 1);
             System.out.println(path.toFile().getName());
             if (file == null) {
@@ -100,26 +102,27 @@ public class Compiler {
             ProtocolDirection direction = ProtocolDirection.find(file.split("-")[0]);
             String name = Token.Type.OBJECT.pattern().matcher(file).results().findFirst().orElseThrow().group();
             Matcher matcher = Token.Type.METHOD_REFERENCE.pattern().matcher(file);
-            List<Field> fields1 = new LinkedList<>();
-            matcher.results().peek(matchResult -> {
+            List<Field<?>> fields1 = new LinkedList<>();
+            /*matcher.results().peek(matchResult -> {
                 String[] strings = matchResult.group().split(" ");
                 Transformer<?> type = Transformer.find(strings[0]);
                 String varName = strings[1];
                 fields1.add(new Field(type.clazz(), varName, type));
-            });
+            });*/
             matcher.results().forEach(result -> {
                 String[] strings = result.group().split(" ");
+                boolean repeated = false;
+                System.out.println(Arrays.toString(strings));
+                if (strings[0].equals("repeated")) {
+                    repeated = true;
+                    strings = new String[]{strings[1], strings[2]};
+                }
+                System.out.println(repeated);
                 Transformer<?> type = Transformer.find(strings[0]);
                 String varName = strings[1];
                 varName = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, varName);
-                fields1.add(new Field(type.clazz(), varName, type));
+                fields1.add(new Field(type.clazz(), varName, type, repeated));
             });
-            List<Field> fieldList = matcher.results().map(result -> {
-                String[] strings = result.group().split(" ");
-                Transformer<?> type = Transformer.find(strings[0]);
-                String varName = strings[1];
-                return new Field(type.clazz(), varName, type);
-            }).toList();
             return new HaloClass(name, direction, fields1, null);
         }
 
@@ -134,12 +137,13 @@ public class Compiler {
 
         public JavaFile javaFile() {
             TypeSpec.Builder builder = TypeSpec.recordBuilder(name + "Message").addModifiers(Modifier.PUBLIC).addSuperinterface(Message.class);
-            List<ParameterSpec> specs = fields.stream().map(field -> ParameterSpec.builder(field.type, field.varName).build()).toList();
+            List<ParameterSpec> specs = fields.stream().map(field -> ParameterSpec.builder(field.type(), field.varName).build()).toList();
             specs.stream().forEachOrdered(builder::addRecordComponent);
             final StringBuilder builder1 = new StringBuilder();
             Class<?>[] classes = fields.stream().map(field -> field.type).distinct().toArray(Class[]::new);
             boolean first = true;
             for (Field field : fields) {
+                String varName = field.varName;
                 if (first) {
                     builder1.append(field.varName);
                     first = false;
@@ -168,7 +172,13 @@ public class Compiler {
                     .addAnnotation(Override.class)
                     .addCode("return $L;", protocolDirection.next());
             CodeBlock.Builder codeBuilder = CodeBlock.builder();
-            fields.forEach(field -> codeBuilder.add("\nbuffer.write($T.$L, $L);", ByteBuffer.Adapter.class, field.transformer.adapterName(), field.varName));
+            fields.forEach(field -> {
+                String write = "write";
+                if (field.repeated) {
+                    write = "writeCollection";
+                }
+                codeBuilder.add("\nbuffer." + write + "($T.$L, $L);", ByteBuffer.Adapter.class, field.transformer.adapterName(), field.varName);
+            });
             methodSpecBuilder.addCode(codeBuilder.build());
             builder.addMethod(
                     methodSpecBuilder.build()
@@ -180,7 +190,57 @@ public class Compiler {
         }
 
 
-        public record Field(Class<?> type, String varName, Transformer<?> transformer) {
+        public static final class Field<T> {
+            private final Class<T> type;
+            private final String varName;
+            private final Transformer<?> transformer;
+            private final boolean repeated;
+
+            public Field(Class<T> type, String varName, Transformer<?> transformer, boolean repeated) {
+                this.type = type;
+                this.varName = varName;
+                this.transformer = transformer;
+                this.repeated = repeated;
+            }
+
+                    public Field(Class<T> type, String varName, Transformer<?> transformer) {
+                        this(type, varName, transformer, false);
+                    }
+
+            public TypeName type() {
+                if (repeated) {
+                    try {
+                        Constructor<TypeName> constructor = TypeName.class.getDeclaredConstructor(String.class);
+                        constructor.setAccessible(true);
+                        return constructor.newInstance("java.util.List<" + type.getName() + ">");
+                    } catch (InstantiationException e) {
+                        throw new RuntimeException(e);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    } catch (InvocationTargetException e) {
+                        throw new RuntimeException(e);
+                    } catch (NoSuchMethodException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                return TypeName.get(type);
+            }
+
+            public List<T> dummy() {
+                return null;
+            }
+
+            public String varName() {
+                return varName;
+            }
+
+            public Transformer<?> transformer() {
+                return transformer;
+            }
+
+            public boolean repeated() {
+                return repeated;
+            }
 
         }
 

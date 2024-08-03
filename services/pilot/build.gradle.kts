@@ -37,21 +37,21 @@ comet {
         }
     }
 }
-
-val dockerUsername: String by project
-val dockerPassword: String by project
-val dockerEmail: String by project
-
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(22))
 }
+
+val service = "pilot"
+val dockerUsername: String by project
+val dockerPassword: String by project
+val dockerEmail: String by project
 
 docker {
     javaApplication {
         baseImage.set("azul/zulu-openjdk:21-jre")
         maintainer.set("Alec \"Combimagnetron\" van der Veen")
         ports.set(listOf(6162, 6162))
-        images.add("alecvdveen/cosmorise:pilot")
+        images.add("alecvdveen/cosmorise:service-$service")
         jvmArgs.set(listOf("-Xms256m", "-Xmx256m"))
         args.set(listOf("172.17.0.1", "6379"))
     }

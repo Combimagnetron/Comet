@@ -2,18 +2,18 @@ package me.combimagnetron.generated;
 
 import java.lang.Override;
 import me.combimagnetron.comet.communication.Message;
-import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.internal.network.ByteBuffer;
+import me.combimagnetron.comet.user.User;
 
-public record StopServiceMessage(Identifier identifier) implements Message {
+public record UserInfoResponseMessage(User user) implements Message {
     @Override
     public void write() {
         final ByteBuffer buffer = buffer();
-        buffer.write(ByteBuffer.Adapter.IDENTIFIER, identifier);
+        buffer.write(ByteBuffer.Adapter.USER, user);
     }
 
-    public static StopServiceMessage of(Identifier identifier) {
-        return new StopServiceMessage(identifier);
+    public static UserInfoResponseMessage of(User user) {
+        return new UserInfoResponseMessage(user);
     }
 
     @Override
@@ -23,6 +23,6 @@ public record StopServiceMessage(Identifier identifier) implements Message {
 
     @Override
     public int id() {
-        return 5;
+        return 7;
     }
 }

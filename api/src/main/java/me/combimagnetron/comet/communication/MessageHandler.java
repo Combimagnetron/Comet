@@ -7,8 +7,6 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MessageHandler {
-    @NotNull Class<? extends Message> filter() default Message.class;
-
-    @NotNull String channel() default "comet:generic";
+    @NotNull Class<? extends Message>[] filter() default Message.class;
 
 }

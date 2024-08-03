@@ -95,6 +95,11 @@ public class Pilot implements Service {
 
     }
 
+    @Override
+    public Deployment deployment() {
+        return null;
+    }
+
     public static GitHub gitHub() {
         return GIT_HUB;
     }

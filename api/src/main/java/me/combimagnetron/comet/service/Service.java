@@ -12,4 +12,6 @@ public interface Service {
 
     void tick();
 
+    Deployment deployment();
+
 }

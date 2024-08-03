@@ -1,3 +1,4 @@
 server-bound message UserJoinNetwork {
     Uuid uuid
+    Uuid instance
 }

@@ -16,7 +16,7 @@ public class RemoteServiceHandler implements ServiceHandler {
 
     public RemoteServiceHandler(CometBase<?> base) {
         this.base = base;
-        this.messageChannel = CometBase.comet().channels().client().channel(Identifier.of("service", "handler"));
+        this.messageChannel = CometBase.comet().channels().serviceChannel();
     }
 
     @Override
@@ -27,10 +27,10 @@ public class RemoteServiceHandler implements ServiceHandler {
     @Override
     public Service deploy(Deployment deployment, Identifier identifier) {
         messageChannel.send(DeployServiceMessage.of(identifier, deployment));
-        return map.put(identifier, new DummyService(identifier, messageChannel));
+        return map.put(identifier, new DummyService(identifier, messageChannel, deployment));
     }
 
-    private record DummyService(Identifier identifier, MessageChannel messageChannel) implements Service {
+    private record DummyService(Identifier identifier, MessageChannel messageChannel, Deployment deployment) implements Service {
 
         @Override
         public void stop() {
@@ -46,6 +46,7 @@ public class RemoteServiceHandler implements ServiceHandler {
         public void tick() {
 
         }
+
     }
 
 }

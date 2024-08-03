@@ -1,22 +1,38 @@
 package me.combimagnetron.comet;
 
 import me.combimagnetron.comet.communication.Channels;
+import me.combimagnetron.comet.communication.MessageClient;
+import me.combimagnetron.comet.communication.message.redis.RedisMessageClient;
+import me.combimagnetron.comet.data.Identifier;
+import me.combimagnetron.comet.event.Dispatcher;
+import me.combimagnetron.comet.event.Event;
 import me.combimagnetron.comet.event.EventBus;
+import me.combimagnetron.comet.instance.InstanceHandler;
 import me.combimagnetron.comet.internal.network.Network;
 import me.combimagnetron.comet.resourcepack.ResourcePackManager;
+import me.combimagnetron.comet.service.RemoteServiceHandler;
 import me.combimagnetron.comet.service.Service;
 import me.combimagnetron.comet.service.ServiceHandler;
 import me.combimagnetron.comet.user.UserHandler;
+import me.combimagnetron.generated.InitialInstanceHeartbeatMessage;
 import org.slf4j.Logger;
 
 import java.nio.file.Path;
+import java.util.UUID;
 
 public class CometBaseImpl<T extends Service> implements CometBase<T> {
+    private final UUID instanceUuid = UUID.randomUUID();
+    private final HeartbeatDispatcher heartbeatDispatcher = new HeartbeatDispatcher();
+    private final MessageClient messageClient = MessageClient.redis("redis://localhost/");
+    private final RemoteUserHandlerImpl userHandler = new RemoteUserHandlerImpl();
     private final T service;
     private final NetworkImpl network = new NetworkImpl();
+    private final Dispatcher<?> dispatcher = new Dispatcher.SimpleDispatcher<>();
+    private final RemoteServiceHandler serviceHandler = new RemoteServiceHandler(this);
 
     public CometBaseImpl(T service) {
         this.service = service;
+        channels().serviceChannel().send(InitialInstanceHeartbeatMessage.of(instanceUuid, service.deployment()));
     }
 
     @Override
@@ -25,18 +41,17 @@ public class CometBaseImpl<T extends Service> implements CometBase<T> {
     }
 
     @Override
-    public EventBus eventBus() {
-        return null;
-    }
-
-    @Override
     public UserHandler<? extends net.kyori.adventure.audience.Audience> users() {
-        return null;
+        return userHandler;
     }
 
     @Override
     public ServiceHandler services() {
-        return null;
+        return serviceHandler;
+    }
+
+    public UUID instanceUuid() {
+        return instanceUuid;
     }
 
     @Override
@@ -45,13 +60,18 @@ public class CometBaseImpl<T extends Service> implements CometBase<T> {
     }
 
     @Override
-    public Channels channels() {
+    public InstanceHandler instances() {
         return null;
     }
 
     @Override
+    public Channels channels() {
+        return new Channels(messageClient.channel(Identifier.of("service")), messageClient.channel(Identifier.of("chat")), messageClient);
+    }
+
+    @Override
     public Path dataFolder() {
-        return null;
+        return Path.of("");
     }
 
     @Override

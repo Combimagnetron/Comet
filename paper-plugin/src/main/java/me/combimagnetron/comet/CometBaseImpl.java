@@ -4,6 +4,7 @@ import me.combimagnetron.comet.communication.Channels;
 import me.combimagnetron.comet.config.annotation.Config;
 import me.combimagnetron.comet.connection.NetworkImpl;
 import me.combimagnetron.comet.event.EventBus;
+import me.combimagnetron.comet.instance.InstanceHandler;
 import me.combimagnetron.comet.internal.network.Network;
 import me.combimagnetron.comet.resourcepack.ResourcePackManager;
 import me.combimagnetron.comet.service.ServiceHandler;
@@ -15,9 +16,11 @@ import org.slf4j.Logger;
 
 import javax.inject.Singleton;
 import java.nio.file.Path;
+import java.util.UUID;
 
 @Singleton
 public class CometBaseImpl implements CometBase<JavaPlugin> {
+    private final UUID instanceUuid = UUID.randomUUID();
     private final UserManager userManager = new UserManager();
     private final Network network = new NetworkImpl();
     private final CometPlugin cometPlugin;
@@ -33,11 +36,6 @@ public class CometBaseImpl implements CometBase<JavaPlugin> {
     }
 
     @Override
-    public EventBus eventBus() {
-        return null;
-    }
-
-    @Override
     public UserHandler<? extends Audience> users() {
         return userManager;
     }
@@ -49,6 +47,16 @@ public class CometBaseImpl implements CometBase<JavaPlugin> {
 
     @Override
     public ResourcePackManager resourcePacks() {
+        return null;
+    }
+
+    @Override
+    public UUID instanceUuid() {
+        return instanceUuid;
+    }
+
+    @Override
+    public InstanceHandler instances() {
         return null;
     }
 

@@ -1,21 +1,28 @@
 package me.combimagnetron.comet.event;
 
+import me.combimagnetron.comet.communication.Message;
+import me.combimagnetron.comet.event.impl.internal.MessageEvent;
+import me.combimagnetron.comet.internal.network.packet.Packet;
+
 import java.util.function.Consumer;
 
-sealed public interface EventSubscription<V extends Event> permits EventSubscription.Impl, EventSubscription.FilteredImpl {
+sealed public interface EventSubscription<V extends Event> permits EventSubscription.Impl, EventSubscription.FilteredImpl, EventSubscription.MessageImpl, EventSubscription.PacketImpl {
 
     Consumer<? super V> handler();
 
     Class<V> getEventClass();
 
-    void close();
+    default void close() {
+        Dispatcher.dispatcher().manager().unsubscribe(this);
+    }
 
-    boolean active();
+    default boolean active() {
+        return Dispatcher.dispatcher().manager().subscriptions().contains(this);
+    }
 
     final class Impl<V extends Event> implements EventSubscription<V> {
         private final Class<V> eventClass;
         private final Consumer<? super V> handler;
-        private boolean active;
 
         Impl(Class<V> eventClass, Consumer<? super V> handler) {
             this.eventClass = eventClass;
@@ -34,23 +41,11 @@ sealed public interface EventSubscription<V extends Event> permits EventSubscrip
         public Class<V> getEventClass() {
             return eventClass;
         }
-
-        @Override
-        public void close() {
-            this.active = false;
-
-        }
-
-        @Override
-        public boolean active() {
-            return active;
-        }
     }
 
     final class FilteredImpl<V extends Event> implements EventSubscription<V> {
         private final Class<V> eventClass;
         private final Consumer<? super V> handler;
-        private boolean active;
 
         FilteredImpl(Class<V> eventClass, EventFilter filter, Consumer<? super V> handler) {
             this.eventClass = eventClass;
@@ -67,16 +62,48 @@ sealed public interface EventSubscription<V extends Event> permits EventSubscrip
             return eventClass;
         }
 
-        @Override
-        public void close() {
-            this.active = false;
+    }
 
+    final class MessageImpl<M extends Message, V extends Event> implements EventSubscription<V> {
+        private final Class<M> eventClass;
+        private final Consumer<? super V> handler;
+
+        MessageImpl(Class<M> eventClass, Consumer<? super V> handler) {
+            this.eventClass = eventClass;
+            this.handler = handler;
         }
 
         @Override
-        public boolean active() {
-            return active;
+        public Consumer<? super V> handler() {
+            return handler;
         }
+
+        @Override
+        public Class<V> getEventClass() {
+            return (Class<V>) MessageEvent.class;
+        }
+
+    }
+
+    final class PacketImpl<P extends Packet, V extends Event> implements EventSubscription<V> {
+        private final Class<P> eventClass;
+        private final Consumer<? super V> handler;
+
+        PacketImpl(Class<P> eventClass, Consumer<? super V> handler) {
+            this.eventClass = eventClass;
+            this.handler = handler;
+        }
+
+        @Override
+        public Consumer<? super V> handler() {
+            return handler;
+        }
+
+        @Override
+        public Class<V> getEventClass() {
+            return (Class<V>) MessageEvent.class;
+        }
+
     }
 
 }

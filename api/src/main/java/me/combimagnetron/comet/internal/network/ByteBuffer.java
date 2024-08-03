@@ -3,16 +3,21 @@ package me.combimagnetron.comet.internal.network;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import me.combimagnetron.comet.CometBase;
 import me.combimagnetron.comet.communication.Message;
+import me.combimagnetron.comet.data.DataContainer;
 import me.combimagnetron.comet.data.DataObject;
 import me.combimagnetron.comet.data.Identifier;
+import me.combimagnetron.comet.data.impl.UserDataContainer;
 import me.combimagnetron.comet.internal.Item;
 import me.combimagnetron.comet.service.Deployment;
 import me.combimagnetron.comet.service.ServiceFile;
 import me.combimagnetron.comet.service.broker.BrokerAgreement;
+import me.combimagnetron.comet.user.User;
 import me.combimagnetron.comet.util.ProtocolUtil;
 import me.combimagnetron.comet.util.Values;
 import me.combimagnetron.comet.util.Version;
+import net.kyori.adventure.audience.Audience;
 import org.jglrxavpok.hephaistos.nbt.CompressedProcesser;
 import org.jglrxavpok.hephaistos.nbt.NBTException;
 import org.jglrxavpok.hephaistos.nbt.NBTReader;
@@ -23,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -132,6 +138,7 @@ public class ByteBuffer {
         Adapter<Double> DOUBLE = Impl.of(ByteArrayDataInput::readDouble, ByteArrayDataOutput::writeDouble);
         Adapter<Float> FLOAT = Impl.of(ByteArrayDataInput::readFloat, ByteArrayDataOutput::writeFloat);
         Adapter<Integer> INT = Impl.of(ByteArrayDataInput::readInt, ByteArrayDataOutput::writeInt);
+        Adapter<User> USER = Impl.of(input -> CometBase.comet().users().deserialize(ByteBuffer.of(input.readUTF().getBytes())), (output, user) -> output.write(user.serialize().bytes()));
         Adapter<Identifier> IDENTIFIER = Impl.of(input -> {
             String[] parts = input.readUTF().split(":");
             return Identifier.of(parts[0], parts[1]);
@@ -181,6 +188,25 @@ public class ByteBuffer {
         Adapter<UUID> UUID = Impl.of(input -> new UUID(input.readLong(), input.readLong()), (output, uuid) -> {
             output.writeLong(uuid.getMostSignificantBits());
             output.writeLong(uuid.getLeastSignificantBits());
+        });
+        Adapter<DataContainer> DATA_CONTAINER = Impl.of(input -> {
+            UserDataContainer container = new UserDataContainer();
+            java.util.UUID syncId = UUID.read(input);
+            int size = input.readInt();
+            for (int i = 0; i < size; i++) {
+                Identifier key = IDENTIFIER.read(input);
+                DataObject<?> dataObject = DATA_OBJECT.read(input);
+                container.add(key, dataObject);
+            }
+            container.syncId(syncId);
+            return container;
+        }, (output, container) -> {
+            UUID.write(output, container.syncId());
+            output.writeInt(container.size());
+            for (Map.Entry<Identifier, DataObject<?>> key : container.values().entrySet()) {
+                IDENTIFIER.write(output, key.getKey());
+                DATA_OBJECT.write(output, key.getValue());
+            }
         });
         Adapter<org.jglrxavpok.hephaistos.nbt.NBT> NBT = Impl.of(
             input -> {

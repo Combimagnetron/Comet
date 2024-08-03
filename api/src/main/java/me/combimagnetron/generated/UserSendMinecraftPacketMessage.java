@@ -23,6 +23,6 @@ public record UserSendMinecraftPacketMessage(Byte[] data) implements Message {
 
     @Override
     public int id() {
-        return 2;
+        return 3;
     }
 }

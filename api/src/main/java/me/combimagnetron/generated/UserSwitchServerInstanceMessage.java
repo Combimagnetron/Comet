@@ -31,6 +31,6 @@ public record UserSwitchServerInstanceMessage(UUID uuid, Deployment deployment, 
 
     @Override
     public int id() {
-        return 4;
+        return 8;
     }
 }
