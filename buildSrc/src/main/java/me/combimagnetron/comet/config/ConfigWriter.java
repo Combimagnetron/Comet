@@ -1,6 +1,6 @@
-package me.combimagnetron.comet;
+package me.combimagnetron.comet.config;
 
-import me.combimagnetron.comet.config.Config;
+import me.combimagnetron.comet.CometPlugin;
 import me.combimagnetron.comet.config.element.Node;
 import me.combimagnetron.comet.config.element.Section;
 import org.gradle.api.Project;

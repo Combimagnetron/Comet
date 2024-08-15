@@ -1,5 +1,4 @@
 service-bound message SyncDataContainer {
     Identifier identifier,
-    Uuid syncId,
-    DataObject dataObject
+    DataContainer dataObject
 }

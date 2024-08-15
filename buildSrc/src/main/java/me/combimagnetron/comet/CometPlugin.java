@@ -1,9 +1,11 @@
 package me.combimagnetron.comet;
 
+import me.combimagnetron.comet.config.ConfigWriter;
+import me.combimagnetron.comet.satellite.compiler.SatelliteCompiler;
+import me.combimagnetron.comet.task.CopyFileTask;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import me.combimagnetron.comet.CopyFileTask;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class CometPlugin implements Plugin<Project> {
                 ConfigWriter.of(cometExtension, project);
             }
             project.getTasksByName("build", false).forEach(task -> task.dependsOn("copyFileToSubprojects"));
+            new SatelliteCompiler().transform(project.getRootProject().file("halos/format.sat").toPath());
         });
     }
 

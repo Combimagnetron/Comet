@@ -1,4 +1,4 @@
-package me.combimagnetron.comet;
+package me.combimagnetron.comet.task;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
