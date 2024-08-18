@@ -1,4 +1,4 @@
-package me.combimagnetron.comet.resourcepack;
+package me.combimagnetron.comet.game.resourcepack;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

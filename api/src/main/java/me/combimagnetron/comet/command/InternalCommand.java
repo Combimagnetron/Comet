@@ -1,12 +1,11 @@
 package me.combimagnetron.comet.command;
 
-import me.combimagnetron.comet.condition.Condition;
+import me.combimagnetron.comet.util.condition.Condition;
 import me.combimagnetron.comet.user.User;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 
 public interface InternalCommand {

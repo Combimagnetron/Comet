@@ -4,7 +4,7 @@ import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.game.menu.Pos2D;
 
 import java.awt.image.BufferedImage;
-import me.combimagnetron.comet.game.menu.Canvas;
+import me.combimagnetron.comet.image.Canvas;
 
 public abstract class SimpleBufferedElement implements Element {
     private final BufferedImage image;

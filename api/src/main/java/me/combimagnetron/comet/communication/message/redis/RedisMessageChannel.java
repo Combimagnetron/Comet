@@ -5,7 +5,6 @@ import me.combimagnetron.comet.communication.Message;
 import me.combimagnetron.comet.communication.message.MessageChannel;
 import me.combimagnetron.comet.communication.message.MessageRecipient;
 import me.combimagnetron.comet.data.Identifier;
-import me.combimagnetron.comet.operation.Operation;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -47,11 +46,4 @@ public class RedisMessageChannel extends RedisPubSubAdapter<byte[], byte[]> impl
         return messageRecipientSet;
     }
 
-    @Override
-    public Operation<Void> await(Class<? extends Message> type, Consumer<Message> execute) {
-        return Operation.await(() -> {
-            execute.accept(lastMessage);
-            return null;
-        }, () -> this.lastMessage.getClass().getName().equals(type.getName()));
-    }
 }

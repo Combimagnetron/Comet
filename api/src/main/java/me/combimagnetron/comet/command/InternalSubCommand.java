@@ -1,6 +1,6 @@
 package me.combimagnetron.comet.command;
 
-import me.combimagnetron.comet.condition.Condition;
+import me.combimagnetron.comet.util.condition.Condition;
 import org.jetbrains.annotations.Nullable;
 
 public interface InternalSubCommand {

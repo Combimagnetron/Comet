@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import me.combimagnetron.comet.game.entity.parser.blockbench.BlockBenchElement;
 import me.combimagnetron.comet.game.entity.parser.blockbench.BlockBenchModel;
 import me.combimagnetron.comet.game.entity.parser.blockbench.BlockBenchTexture;
-import me.combimagnetron.comet.file.Folder;
-import me.combimagnetron.comet.resourcepack.ResourcePackFeature;
+import me.combimagnetron.comet.util.file.Folder;
+import me.combimagnetron.comet.game.resourcepack.ResourcePackFeature;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

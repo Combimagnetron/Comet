@@ -1,7 +1,7 @@
 package me.combimagnetron.comet.game.menu.element.impl;
 
 import me.combimagnetron.comet.data.Identifier;
-import me.combimagnetron.comet.game.menu.Canvas;
+import me.combimagnetron.comet.image.Canvas;
 import me.combimagnetron.comet.game.menu.Pos2D;
 import me.combimagnetron.comet.game.menu.element.Element;
 import me.combimagnetron.comet.game.menu.element.Position;

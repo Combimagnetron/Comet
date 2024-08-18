@@ -8,6 +8,7 @@ import me.combimagnetron.comet.communication.Message;
 import me.combimagnetron.comet.data.DataContainer;
 import me.combimagnetron.comet.data.DataObject;
 import me.combimagnetron.comet.data.Identifier;
+import me.combimagnetron.comet.data.Type;
 import me.combimagnetron.comet.data.impl.UserDataContainer;
 import me.combimagnetron.comet.internal.Item;
 import me.combimagnetron.comet.service.Deployment;
@@ -26,6 +27,7 @@ import org.jglrxavpok.hephaistos.nbt.NBTWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +145,30 @@ public class ByteBuffer {
             String[] parts = input.readUTF().split(":");
             return Identifier.of(parts[0], parts[1]);
         }, (output, identifier) -> output.writeUTF(identifier.string()));
+        Adapter<Type<?>> TYPE = Impl.of(input -> {
+            Class<?> clazz;
+            try {
+                clazz = Class.forName(input.readUTF());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            int size = input.readInt();
+            byte[] bytes = new byte[size];
+            for (int i = 0; i < size; i++) {
+                bytes[i] = input.readByte();
+            }
+            try {
+                return (Type<?>) clazz.getDeclaredConstructor(byte[].class).newInstance(bytes);
+            } catch (InstantiationException | NoSuchMethodException | InvocationTargetException |
+                     IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }, (output, type) -> {
+            byte[] bytes = type.serialize();
+            output.writeUTF(type.type().getName());
+            output.write(bytes.length);
+            output.write(bytes);
+        });
         Adapter<Deployment> DEPLOYMENT = Impl.of(input -> {
             String[] parts = input.readUTF().split("%");
             return Deployment.of(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4]));
@@ -258,7 +284,7 @@ public class ByteBuffer {
         }));
         Adapter<Integer> VAR_INT = Impl.of(ProtocolUtil::readVarInt, ProtocolUtil::writeVarInt);
         Adapter<Long> VAR_LONG = Impl.of(ProtocolUtil::readVarLong, ProtocolUtil::writeVarLong);
-        Values<Adapter<?>> VALUES = Values.of(STRING, LONG, DOUBLE, FLOAT, INT, IDENTIFIER, DEPLOYMENT, UNSIGNED_BYTE, BOOLEAN, BYTE, SHORT, DATA_OBJECT, UUID, NBT, ITEM, VAR_INT, VAR_LONG);
+        Values<Adapter<?>> VALUES = Values.of(STRING, TYPE, LONG, DOUBLE, FLOAT, INT, IDENTIFIER, DEPLOYMENT, UNSIGNED_BYTE, BOOLEAN, BYTE, SHORT, DATA_OBJECT, UUID, NBT, ITEM, VAR_INT, VAR_LONG);
         T read(ByteArrayDataInput byteArrayDataInput);
         void write(ByteArrayDataOutput output, T object);
         final class Impl<V> implements Adapter<V> {

@@ -1,4 +1,4 @@
-package me.combimagnetron.comet.moderation;
+package me.combimagnetron.comet.game.moderation;
 
 import me.combimagnetron.comet.user.User;
 

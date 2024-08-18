@@ -2,7 +2,7 @@ package me.combimagnetron.comet.game.entity;
 
 import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.game.Feature;
-import me.combimagnetron.comet.file.Folder;
+import me.combimagnetron.comet.util.file.Folder;
 
 public class EntityFeature implements Feature {
     private final Folder folder = Folder.empty("entity-feature");

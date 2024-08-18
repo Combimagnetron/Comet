@@ -4,10 +4,7 @@ import me.combimagnetron.comet.communication.Message;
 import me.combimagnetron.comet.event.impl.internal.MessageEvent;
 import me.combimagnetron.comet.event.impl.internal.PacketEvent;
 import me.combimagnetron.comet.internal.network.packet.Packet;
-import me.combimagnetron.comet.operation.Operation;
-import me.combimagnetron.generated.UserJoinNetworkMessage;
 
-import java.util.Set;
 import java.util.function.Consumer;
 
 public interface EventBus {

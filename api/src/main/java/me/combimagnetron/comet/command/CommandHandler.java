@@ -5,7 +5,7 @@ import me.combimagnetron.comet.command.annotations.Execute;
 import me.combimagnetron.comet.command.annotations.Requires;
 import me.combimagnetron.comet.command.annotations.SubCommand;
 import me.combimagnetron.comet.command.argument.Argument;
-import me.combimagnetron.comet.condition.Condition;
+import me.combimagnetron.comet.util.condition.Condition;
 import me.combimagnetron.comet.user.User;
 import org.reflections.Reflections;
 

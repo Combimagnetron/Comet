@@ -2,8 +2,8 @@ package me.combimagnetron.comet.communication.serializer.impl;
 
 import me.combimagnetron.comet.internal.network.ByteBuffer;
 import me.combimagnetron.comet.communication.serializer.Adapter;
-import me.combimagnetron.comet.file.File;
-import me.combimagnetron.comet.file.Folder;
+import me.combimagnetron.comet.util.file.File;
+import me.combimagnetron.comet.util.file.Folder;
 
 public class FolderAdapter implements Adapter<Folder> {
     private ByteBuffer byteBuffer;

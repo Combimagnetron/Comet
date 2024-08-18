@@ -1,7 +1,7 @@
-package me.combimagnetron.comet.resourcepack.font.sprite;
+package me.combimagnetron.comet.game.resourcepack.font.sprite;
 
 import me.combimagnetron.comet.game.menu.Pos2D;
-import me.combimagnetron.comet.image.PixelRaster;
+import me.combimagnetron.comet.image.Canvas;
 import me.combimagnetron.comet.data.Identifier;
 
 import java.awt.*;
@@ -11,11 +11,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SpriteSheet {
-    private final PixelRaster raster;
+    private final Canvas raster;
     private final Pos2D tileSize;
     private final Map<Identifier, Sprite> sprites = new LinkedHashMap<>();
 
-    protected SpriteSheet(PixelRaster raster, BufferedImage dataImage, Pos2D tileSize) {
+    protected SpriteSheet(Canvas raster, BufferedImage dataImage, Pos2D tileSize) {
         this.raster = raster;
         this.tileSize = tileSize;
         if (raster.dimensions().x() % tileSize.x() != 0 || raster.dimensions().y() % tileSize.y() != 0)

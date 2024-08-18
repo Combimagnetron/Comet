@@ -1,7 +1,7 @@
 package me.combimagnetron.comet.game;
 
 import me.combimagnetron.comet.data.Identifier;
-import me.combimagnetron.comet.file.Folder;
+import me.combimagnetron.comet.util.file.Folder;
 
 public interface Feature {
 

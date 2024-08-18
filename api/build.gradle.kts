@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("comet")
     //id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -8,6 +9,12 @@ version = "1.0-SNAPSHOT"
 
 val kotlinVersion = "1.7.22"
 val daggerVersion = "2.48"
+
+tasks {
+    build {
+        dependsOn("compileSatelliteFiles")
+    }
+}
 
 dependencies {
     compileOnly("com.google.code.gson:gson:2.10")

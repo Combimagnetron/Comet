@@ -1,10 +1,9 @@
 package me.combimagnetron.comet;
 
 import me.combimagnetron.comet.communication.Channels;
-import me.combimagnetron.comet.event.EventBus;
 import me.combimagnetron.comet.instance.InstanceHandler;
 import me.combimagnetron.comet.internal.network.Network;
-import me.combimagnetron.comet.resourcepack.ResourcePackManager;
+import me.combimagnetron.comet.game.resourcepack.ResourcePackManager;
 import me.combimagnetron.comet.service.ServiceHandler;
 import me.combimagnetron.comet.user.UserHandler;
 import net.kyori.adventure.audience.Audience;

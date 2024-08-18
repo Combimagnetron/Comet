@@ -1,6 +1,7 @@
-package me.combimagnetron.comet.game.menu;
+package me.combimagnetron.comet.image;
 
 import me.combimagnetron.comet.concurrency.Scheduler;
+import me.combimagnetron.comet.game.menu.Pos2D;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;

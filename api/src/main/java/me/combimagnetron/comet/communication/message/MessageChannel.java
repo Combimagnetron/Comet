@@ -2,10 +2,8 @@ package me.combimagnetron.comet.communication.message;
 
 import me.combimagnetron.comet.communication.Message;
 import me.combimagnetron.comet.data.Identifier;
-import me.combimagnetron.comet.operation.Operation;
 
 import java.util.Collection;
-import java.util.function.Consumer;
 
 public interface MessageChannel {
 
@@ -21,7 +19,5 @@ public interface MessageChannel {
      * @return All the message recipients currently listening to the channel.
      */
     Collection<MessageRecipient> recipients();
-
-    Operation<Void> await(Class<? extends Message> type, Consumer<Message> execute);
 
 }

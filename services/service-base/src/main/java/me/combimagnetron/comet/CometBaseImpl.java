@@ -2,20 +2,16 @@ package me.combimagnetron.comet;
 
 import me.combimagnetron.comet.communication.Channels;
 import me.combimagnetron.comet.communication.MessageClient;
-import me.combimagnetron.comet.communication.message.redis.RedisMessageClient;
 import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.event.Dispatcher;
-import me.combimagnetron.comet.event.Event;
-import me.combimagnetron.comet.event.EventBus;
 import me.combimagnetron.comet.instance.InstanceHandler;
 import me.combimagnetron.comet.internal.network.Network;
-import me.combimagnetron.comet.resourcepack.ResourcePackManager;
+import me.combimagnetron.comet.game.resourcepack.ResourcePackManager;
 import me.combimagnetron.comet.service.RemoteServiceHandler;
 import me.combimagnetron.comet.service.Service;
 import me.combimagnetron.comet.service.ServiceHandler;
 import me.combimagnetron.comet.user.UserHandler;
 import me.combimagnetron.generated.InitialInstanceHeartbeatMessage;
-import org.slf4j.Logger;
 
 import java.nio.file.Path;
 import java.util.UUID;

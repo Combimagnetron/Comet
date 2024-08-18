@@ -1,9 +1,9 @@
-package me.combimagnetron.comet.resourcepack.font.sprite;
+package me.combimagnetron.comet.game.resourcepack.font.sprite;
 
-import me.combimagnetron.comet.image.PixelRaster;
+import me.combimagnetron.comet.game.resourcepack.ResourcePackPath;
+import me.combimagnetron.comet.image.Canvas;
 import me.combimagnetron.comet.util.Pair;
 import me.combimagnetron.comet.data.Identifier;
-import me.combimagnetron.comet.resourcepack.ResourcePackPath;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -16,7 +16,7 @@ public interface Sprite {
 
     ResourcePackPath path();
 
-    PixelRaster raster();
+    Canvas raster();
 
     /**
      * @return Pair with the height and ascent, the shift value and null or null.
@@ -112,8 +112,8 @@ public interface Sprite {
                 }
 
                 @Override
-                public PixelRaster raster() {
-                    return new PixelRaster(image.getWidth() , height, image);
+                public Canvas raster() {
+                    return new Canvas(image.getWidth() , height, image);
                 }
 
                 @Override

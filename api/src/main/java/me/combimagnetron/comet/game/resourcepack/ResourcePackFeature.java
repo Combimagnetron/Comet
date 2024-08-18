@@ -1,7 +1,7 @@
-package me.combimagnetron.comet.resourcepack;
+package me.combimagnetron.comet.game.resourcepack;
 
 import me.combimagnetron.comet.CometBase;
-import me.combimagnetron.comet.file.Folder;
+import me.combimagnetron.comet.util.file.Folder;
 
 import java.nio.file.Path;
 
