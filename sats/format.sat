@@ -2,7 +2,7 @@ namespace Comet;
 
 service SatelliteServiceExample extends BaseService {
 
-    responseless message TestMessage(A a, B b, C c)
+    responseless message TestMessage(String string, Int i)
 
     message AnotherTestMessage(String string, TestType testType)
 
@@ -10,5 +10,5 @@ service SatelliteServiceExample extends BaseService {
         String name,
         Int age
     }
-]
+
 }

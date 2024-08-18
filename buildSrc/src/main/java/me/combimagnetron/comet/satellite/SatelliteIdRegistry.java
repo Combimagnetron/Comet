@@ -8,42 +8,47 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 public class SatelliteIdRegistry {
     private final LinkedHashMap<Integer, SatelliteField.MessageField> registry = new LinkedHashMap<>();
     private final Path path;
     private int i = 0;
     private File registryFile;
+    private Config config;
 
 
     public SatelliteIdRegistry(Path path) {
         this.path = path;
-        if (!path.toFile().isDirectory()) return;
-        File[] files = path.toFile().listFiles();
-        if (files == null) {
-            return;
-        }
-        for (File file : files) {
-            if (!file.isFile()) return;
-            String name = file.getName();
-            if (!name.equals("registry.json")) return;
-            this.registryFile = file;
-        }
+        File file = path.toFile();
+        if (!file.isFile()) return;
+        String name = file.getName();
+        if (!name.equals("registry.cmt")) return;
+        this.registryFile = file;
+        this.config = Config.file(registryFile.toPath());
+        i = adjust(Config.file(path));
     }
 
     public void save(SatelliteField.MessageField field) {
-        registry.put(i++, field);
+        int next;
+        if (config.nodes().stream().anyMatch(node -> anyMatch(node, field))) {
+            next = Integer.parseInt(config.nodes().stream().filter(node -> anyMatch(node, field)).findFirst().get().name());
+        } else {
+            next = i++;
+        }   
+        registry.put(next, field);
+        field.id(next);
+    }
+    
+    private boolean anyMatch(Node<?> node, SatelliteField.MessageField field) {
+        String message = (String) node.value();
+        return Objects.requireNonNull(message).equals(field.name());
     }
 
     public void write() {
-        Config config = Config.file(registryFile.toPath());
-        i = adjust(config);
         for (var entry : registry.entrySet()) {
             Collection<Node<?>> nodes = config.nodes();
-            if (nodes.stream().anyMatch(node -> {
-                String message = (String) node.value();
-                return message.equals(entry.getValue().name());
-            })) return;
+            if (nodes.stream().anyMatch(node -> anyMatch(node, entry.getValue()))) return;
             config.node(Node.required(i++ + "", entry.getValue().name()));
         }
         config.save(registryFile.toPath());

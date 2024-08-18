@@ -1,7 +1,12 @@
 package me.combimagnetron.comet;
 
 import me.combimagnetron.comet.config.ConfigWriter;
+import me.combimagnetron.comet.satellite.SatelliteIdRegistry;
+import me.combimagnetron.comet.satellite.compiler.RegisteredType;
+import me.combimagnetron.comet.satellite.compiler.SatelliteClass;
 import me.combimagnetron.comet.satellite.compiler.SatelliteCompiler;
+import me.combimagnetron.comet.satellite.compiler.SatelliteField;
+import me.combimagnetron.comet.task.CompileSatelliteTask;
 import me.combimagnetron.comet.task.CopyFileTask;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
@@ -10,6 +15,7 @@ import org.gradle.api.Project;
 import java.util.List;
 
 public class CometPlugin implements Plugin<Project> {
+    public static Project PROJECT;
 
     @Override
     public void apply(Project project) {
@@ -18,13 +24,14 @@ public class CometPlugin implements Plugin<Project> {
             task.setGroup("comet");
             task.setDescription("Copies a specified file to all subprojects");
         });
+        project.getTasks().register("compileSatelliteFiles", CompileSatelliteTask.class);
         project.afterEvaluate((action) -> {
             if (project.getName().contains("service") || project.getName().contains("pilot")) {
                 ConfigWriter.of(cometExtension, project);
             }
             project.getTasksByName("build", false).forEach(task -> task.dependsOn("copyFileToSubprojects"));
-            new SatelliteCompiler().transform(project.getRootProject().file("halos/format.sat").toPath());
         });
+        PROJECT = project;
     }
 
     public static class CometExtension {

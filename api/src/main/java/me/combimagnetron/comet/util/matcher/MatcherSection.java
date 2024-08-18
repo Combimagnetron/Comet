@@ -1,4 +1,4 @@
-package me.combimagnetron.comet.satellite.matcher;
+package me.combimagnetron.comet.util.matcher;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

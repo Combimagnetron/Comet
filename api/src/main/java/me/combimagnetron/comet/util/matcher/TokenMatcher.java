@@ -1,4 +1,4 @@
-package me.combimagnetron.comet.satellite.matcher;
+package me.combimagnetron.comet.util.matcher;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Range;

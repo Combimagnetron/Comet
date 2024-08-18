@@ -1,4 +1,4 @@
-package me.combimagnetron.comet.satellite.matcher;
+package me.combimagnetron.comet.util.matcher;
 
 import me.combimagnetron.comet.util.Values;
 

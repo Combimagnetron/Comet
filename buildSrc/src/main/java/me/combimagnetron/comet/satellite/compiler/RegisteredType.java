@@ -23,15 +23,15 @@ public interface RegisteredType<T> {
 
     String name();
 
-    Class<T> clazz();
+    Class<T> type();
 
     ByteBuffer.Adapter<T> adapter();
 
-    static <T> RegisteredType<T> of(String name, Class<T> value, ByteBuffer.Adapter<T> adapter) {
-        return new RegisteredTypeImpl<>(name, value, adapter);
+    static <T> RegisteredType<T> of(String name, Class<?> value, ByteBuffer.Adapter<T> adapter) {
+        return new RegisteredTypeImpl<>(name, (Class<T>) value, adapter);
     }
 
-    record RegisteredTypeImpl<T>(String name, Class<T> clazz, ByteBuffer.Adapter<T> adapter) implements RegisteredType<T> {
+    record RegisteredTypeImpl<T>(String name, Class<T> type, ByteBuffer.Adapter<T> adapter) implements RegisteredType<T> {
     }
 
     static void add(RegisteredType<?> type) {

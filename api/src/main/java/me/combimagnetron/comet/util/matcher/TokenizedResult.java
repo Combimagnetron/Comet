@@ -1,4 +1,4 @@
-package me.combimagnetron.comet.satellite.matcher;
+package me.combimagnetron.comet.util.matcher;
 
 import org.jetbrains.annotations.NotNull;
 
