@@ -13,7 +13,7 @@ public record TestMessage(java.lang.String string, java.lang.Integer i) implemen
 
     @Override()
     public int id() {
-        return 3;
+        return 1;
     }
 
     @Override()

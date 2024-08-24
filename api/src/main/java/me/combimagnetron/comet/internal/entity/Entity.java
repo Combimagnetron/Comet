@@ -72,7 +72,6 @@ public interface Entity {
         public AbstractEntity(Vector3d position) {
             this.position = position;
             prepare();
-            metadata = Metadata.merge(metadata, extend());
         }
 
         public void onFire(boolean onFire) {
@@ -255,7 +254,7 @@ public interface Entity {
     }
 
     record EntityId(int intValue) {
-        private static final AtomicInteger INTEGER = new AtomicInteger(Integer.MIN_VALUE);
+        private static final AtomicInteger INTEGER = new AtomicInteger(0);
 
         public static EntityId next() {
             return new EntityId(INTEGER.getAndIncrement());

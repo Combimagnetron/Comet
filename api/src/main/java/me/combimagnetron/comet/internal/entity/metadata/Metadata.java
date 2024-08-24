@@ -120,7 +120,7 @@ public interface Metadata {
         public ByteBuffer bytes() {
             final ByteBuffer buffer = ByteBuffer.empty();
             holder().metadataTypes.forEach((index, type) -> {
-                System.out.println(index + " " + type.index + " " + type.type.bytes().length);
+                System.out.println(index + " " + type.index + " " + type.type.bytes().length + " " + type.type.getClass().getName());
                 buffer.write(ByteBuffer.Adapter.UNSIGNED_BYTE, index);
                 buffer.write(ByteBuffer.Adapter.VAR_INT, type.index);
                 buffer.write(type.type.bytes());

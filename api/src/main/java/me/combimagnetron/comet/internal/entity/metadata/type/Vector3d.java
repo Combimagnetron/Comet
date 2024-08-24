@@ -8,6 +8,10 @@ public record Vector3d(double x, double y, double z) implements MetadataType {
         return new Vector3d(x, y, z);
     }
 
+    public static Vector3d vec3(double all) {
+        return new Vector3d(all, all, all);
+    }
+
     @Override
     public byte[] bytes() {
         final ByteBuffer buffer = ByteBuffer.empty();

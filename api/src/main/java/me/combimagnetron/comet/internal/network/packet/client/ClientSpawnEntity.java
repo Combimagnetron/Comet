@@ -64,7 +64,7 @@ public class ClientSpawnEntity implements ClientPacket {
                 .write(ByteBuffer.Adapter.BYTE, (byte) (rotation.y() * 256 / 360))
                 .write(ByteBuffer.Adapter.BYTE, (byte) (rotation.z() * 256 / 360));
 
-        write(ByteBuffer.Adapter.VAR_INT, data.i());
+        write(ByteBuffer.Adapter.VAR_INT, 0);//data.i());
 
         write(ByteBuffer.Adapter.SHORT,(short) velocity.x())
                 .write(ByteBuffer.Adapter.SHORT,(short) velocity.y())

@@ -23,7 +23,7 @@ public class Canvas {
 
     protected Canvas(int width, int height) {
         this.bufferedImage = new BufferedImage(width, height, 2);
-        image = (TextComponent[][]) Array.newInstance(TextComponent.class, height, width);
+        image = (TextComponent[][]) Array.newInstance(TextComponent.class, width, height);
         this.width = width;
         this.height = height;
     }
@@ -56,7 +56,7 @@ public class Canvas {
 
     public Component render() {
         Component component = Component.empty();
-        for (int row = 0; row < image.length; row++) {
+        for (int row = image.length - 1; row > 0; row--) {
             for (int col = 0; col < image[row].length; col++) {
                 component = component.append(image[row][col]).append(Component.text("x")).font(Key.key(NAMESPACE + ":dynamic"));
             }
@@ -70,20 +70,23 @@ public class Canvas {
     }
 
     public static Canvas image(BufferedImage image) {
-        Canvas canvas = new Canvas(image.getHeight(), image.getWidth(), image);
-        SampleColor lastColor = SampleColor.of(0, 0, 2);
+        Canvas canvas = new Canvas(image.getWidth(), image.getHeight(), image);
+        SampleColor lastColor = SampleColor.of(0, 0, 0);
         int i = 57344;
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
-                TextColor color = TextColor.color(image.getRGB(x, y));
+                Color c = new Color(image.getRGB(x, y), true);
+                TextColor color = TextColor.color(c.getRGB());
                 SampleColor currentColor = SampleColor.of(color);
-                if (currentColor.skip(lastColor)) {
-                    canvas.image[x][y] = Component.text((char) i);
-                    continue;
+                if (c.getAlpha() == 0) {
+                    canvas.image[x][y] = Component.text(' ');
+                /*} else if (currentColor.skip(lastColor)) {
+                    canvas.image[x][y] = Component.text((char) i);*/
+                } else {
+                    canvas.image[x][y] = Component.text((char) i, color);
+                    lastColor = currentColor;
                 }
-                canvas.image[x][y] = Component.text((char) i, color);
                 i++;
-                lastColor = currentColor;
             }
             i = 57344;
         }
@@ -115,7 +118,12 @@ public class Canvas {
         }
 
         public boolean skip(SampleColor other) {
-            return isClose(other, 0);
+            //return isClose(other, 0);
+            if (other.r == 256 && other.g == 256 && other.b == 256) {
+                return true;
+            }
+
+            return similar(color(), other.color(), 0);
         }
 
         private boolean isClose(SampleColor sampleColor, int threshold) {
@@ -123,6 +131,16 @@ public class Canvas {
             var local = color();
             int r = external.getRed() - local.getRed(), g = external.getGreen() - local.getGreen(), b = external.getBlue()- local.getBlue();
             return (r*r + g*g + b*b) <= threshold*threshold;
+        }
+
+        public static boolean similar(Color color1, Color color2, int threshold) {
+            int redDiff = Math.abs(color1.getRed() - color2.getRed());
+            int greenDiff = Math.abs(color1.getGreen() - color2.getGreen());
+            int blueDiff = Math.abs(color1.getBlue() - color2.getBlue());
+
+            int totalDifference = redDiff + greenDiff + blueDiff;
+
+            return totalDifference <= threshold;
         }
 
     }

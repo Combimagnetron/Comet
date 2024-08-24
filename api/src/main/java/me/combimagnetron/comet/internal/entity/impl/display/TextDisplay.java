@@ -3,13 +3,13 @@ package me.combimagnetron.comet.internal.entity.impl.display;
 import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.internal.entity.metadata.Metadata;
 import me.combimagnetron.comet.internal.entity.metadata.type.*;
-import me.combimagnetron.comet.internal.entity.metadata.type.Boolean;
 import me.combimagnetron.comet.internal.entity.metadata.type.Byte;
-import me.combimagnetron.comet.internal.entity.metadata.type.Float;
 import me.combimagnetron.comet.internal.network.packet.client.ClientEntityMetadata;
 import me.combimagnetron.comet.internal.network.packet.client.ClientSpawnEntity;
 import me.combimagnetron.comet.user.User;
 import net.kyori.adventure.text.Component;
+
+import java.util.function.Consumer;
 
 @SuppressWarnings(value = "unused")
 public class TextDisplay extends Display {
@@ -17,10 +17,10 @@ public class TextDisplay extends Display {
     private int lineWidth = Integer.MAX_VALUE;
     private int backgroundColor = 0x40000000;
     private byte textOpacity = -1;
-    private static Options options = Options.options();
+    private Options options = Options.options();
 
-    public TextDisplay(Vector3d position) {
-        super(position);
+    public TextDisplay(Vector3d position, Consumer<Display> loaded) {
+        super(position, loaded);
     }
 
     public Component text() {
@@ -28,7 +28,11 @@ public class TextDisplay extends Display {
     }
 
     public static TextDisplay textDisplay(Vector3d position) {
-        return new TextDisplay(position);
+        return new TextDisplay(position, display -> {});
+    }
+
+    public static TextDisplay textDisplay(Vector3d position, Consumer<Display> loaded) {
+        return new TextDisplay(position, loaded);
     }
 
     public static TextDisplay nonTracked(Vector3d position, User<?> viewer) {
@@ -73,7 +77,7 @@ public class TextDisplay extends Display {
 
     @Override
     public Type type() {
-        return new Type.Impl(100, Identifier.of("minecraft", "text_display"), extend());
+        return new Type.Impl(100, Identifier.of("minecraft", "text_display"), this.extend());
     }
 
     public static class Options {
@@ -149,7 +153,8 @@ public class TextDisplay extends Display {
         private final User<?> viewer;
 
         protected NonTracked(Vector3d position, User<?> viewer) {
-            super(position);
+            super(position, display -> {
+            });
             this.viewer = viewer;
             viewer.connection().send(ClientSpawnEntity.spawnEntity(this));
             viewer.connection().send(ClientEntityMetadata.entityMetadata(this));

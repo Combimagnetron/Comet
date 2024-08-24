@@ -10,7 +10,7 @@ public record OptPosition(@Nullable Position position) implements MetadataType {
         final boolean present = position != null;
         buffer.write(ByteBuffer.Adapter.BOOLEAN, present);
         if (present) {
-            buffer.output().write(position.bytes());
+            buffer.nio().put(position.bytes());
         }
         return buffer.bytes();
     }

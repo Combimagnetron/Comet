@@ -31,6 +31,10 @@ public interface ChestMenu {
 
     void click(ServerClickContainer packet);
 
+    static ChestMenu menu(User<?> viewer) {
+        return new Impl(viewer);
+    }
+
     final class Impl implements ChestMenu {
         private final Contents contents = new Contents(c -> this.refresh());
         private final int windowId = WindowIdProvider.next(this);
