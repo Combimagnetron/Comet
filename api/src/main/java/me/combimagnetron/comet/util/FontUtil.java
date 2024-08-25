@@ -13,17 +13,6 @@ public class FontUtil {
     private static final String OFFSET_FONT_NAME = "comet:offset";
     private static final String NAMESPACE = "comet";
     private static final Map<Integer, Character> OFFSET_MAP;
-    private static final Map<WindowPiece, Character> PIECE_MAP = Map.of(
-            WindowPiece.TOP_LEFT, 'a',
-            WindowPiece.TOP_MIDDLE, 'b',
-            WindowPiece.TOP_RIGHT, 'c',
-            WindowPiece.CENTER_LEFT, 'd',
-            WindowPiece.CENTER_MIDDLE, 'e',
-            WindowPiece.CENTER_RIGHT, 'f',
-            WindowPiece.BOTTOM_LEFT, 'g',
-            WindowPiece.BOTTOM_MIDDLE, 'h',
-            WindowPiece.BOTTOM_RIGHT, 'i'
-    );
     static {
         OFFSET_MAP = new HashMap<>();
         OFFSET_MAP.put(-1, 'a');
@@ -70,7 +59,7 @@ public class FontUtil {
         return text.color(TextColor.color(250, x, y));
     }
 
-    private static String getOffsetText(int pixels) {
+    public static String getOffsetText(int pixels) {
         final StringBuilder builder = new StringBuilder();
         if (pixels == 0)
             return builder.toString();
@@ -232,48 +221,5 @@ public class FontUtil {
     public static Component offsetToZero(String message) {
         return offset(-width(message) - 1);
     }
-
-    public static TextComponent background(int width, int height) {
-        TextComponent component = Component.empty();
-        width = width - width % 4;
-        height = height - height % 4;
-        for (int y = 0; y <= height; y++) {
-            for (int x = 0; x <= width; x++) {
-                component = component.append(Component.text(windowPiece(x, y, width, height)).font(font(y)));
-            }
-        }
-        return component;
-    }
-
-    private static Key font(int row) {
-        return Key.key(NAMESPACE + "window/" + row);
-    }
-
-    private static String windowPiece(int x, int y, int width, int height) {
-        if (x == width && y == height) return PIECE_MAP.get(WindowPiece.BOTTOM_RIGHT).toString();
-        if (x == width && y == 0) return PIECE_MAP.get(WindowPiece.TOP_RIGHT).toString();
-        if (x == width) return PIECE_MAP.get(WindowPiece.CENTER_RIGHT).toString();
-        if (y == height && x == 0) return PIECE_MAP.get(WindowPiece.BOTTOM_LEFT).toString();
-        if (y == height) return PIECE_MAP.get(WindowPiece.BOTTOM_MIDDLE).toString();
-        if (y == 0 && x == 0) return PIECE_MAP.get(WindowPiece.TOP_LEFT).toString();
-        if (y != 0 && x == 0) return PIECE_MAP.get(WindowPiece.CENTER_LEFT).toString();
-        if (y == 0) return PIECE_MAP.get(WindowPiece.TOP_MIDDLE).toString();
-        return PIECE_MAP.get(WindowPiece.CENTER_MIDDLE).toString();
-    }
-
-
-
-    public enum WindowPiece {
-        TOP_LEFT,
-        TOP_MIDDLE,
-        TOP_RIGHT,
-        CENTER_LEFT,
-        CENTER_MIDDLE,
-        CENTER_RIGHT,
-        BOTTOM_LEFT,
-        BOTTOM_MIDDLE,
-        BOTTOM_RIGHT
-    }
-
 
 }

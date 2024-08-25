@@ -3,6 +3,7 @@ package me.combimagnetron.comet;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.stmt.BlockStmt;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -15,6 +16,8 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Generator {
 
@@ -24,8 +27,13 @@ public class Generator {
         BufferedImage bufferedImage = ImageIO.read(resource);
         CompilationUnit compilationUnit = new CompilationUnit();
         compilationUnit.setPackageDeclaration("me.combimagnetron.comet.image");
+        compilationUnit.addImport(Map.class);
+        compilationUnit.addImport(HashMap.class);
         ClassOrInterfaceDeclaration classOrInterfaceDeclaration = compilationUnit.addClass("CanvasSection");
         classOrInterfaceDeclaration.setInterface(true);
+        FieldDeclaration map = classOrInterfaceDeclaration.addField("Map<String, CanvasSection>", "VALUES");
+        map.getVariable(0).setInitializer("new HashMap<>()");
+        HashMap<String, String> fields = new HashMap<>();
         int ch = 57344;
         StringBuilder chars = new StringBuilder();
         for (int x = 0; x < bufferedImage.getHeight(); x = x + 3) {
@@ -46,12 +54,18 @@ public class Generator {
                 }
                 int[] size = calculateTrimmedSize(section);
                 DecimalFormat formatter = new DecimalFormat("00");
-                FieldDeclaration fieldDeclaration = classOrInterfaceDeclaration.addField("CanvasSection", "R" + formatter.format(x/3) + "_" + formatter.format(y/3));
+                String name = "R" + formatter.format(x/3) + "_" + formatter.format(y/3);
+                FieldDeclaration fieldDeclaration = classOrInterfaceDeclaration.addField("CanvasSection", name);
                 int filled = String.join("", pattern).replaceAll("0", "").length();
+                fields.put(String.join("", pattern), name);
                 fieldDeclaration.getVariable(0).setInitializer("of(new String[] {\"" + pattern[0] + "\", \"" + pattern[1] + "\", \"" + pattern[2] + "\"}," + filled + ", " + size[0] + ", Pos2D.of(" + y/3 + ", " + x/3 + "), '" + (char)ch + "')");
                 chars.append((char)ch);
                 ch++;
             }
+        }
+        BlockStmt blockStmt = classOrInterfaceDeclaration.addStaticInitializer();
+        for (Map.Entry<String, String> entry : fields.entrySet()) {
+            blockStmt.addStatement("VALUES.put(\"" + entry.getKey() + "\", " + entry.getValue() + ");");
         }
         String[] splitString = splitString(chars.toString());
 
