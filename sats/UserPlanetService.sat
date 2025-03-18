@@ -1,0 +1,15 @@
+namespace Comet;
+
+service UserPlanetService extends BaseService {
+
+    message LoadPlanetMessage(User user, UUID planetId)
+
+    message CreatePlanetMessage(User user, String name, Vector3d position)
+
+    message DeletePlanetMessage(User user, UUID planetId)
+
+    message ListPlanetsMessage(User user)
+
+    message SavePlanetMessage(User user, UUID planetId, String data)
+
+}

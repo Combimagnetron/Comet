@@ -1,0 +1,11 @@
+namespace Comet;
+
+service DeploymentService extends BaseService {
+
+    message DeployServiceMessage(Deployment deployment)
+
+    message DeploymentStatusMessage(Identifier identifier)
+
+    message StopServiceMessage(Identifier identifier)
+
+}

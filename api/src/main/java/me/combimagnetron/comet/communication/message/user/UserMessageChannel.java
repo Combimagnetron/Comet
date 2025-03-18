@@ -6,7 +6,6 @@ import me.combimagnetron.comet.communication.message.redis.RedisMessageChannel;
 import me.combimagnetron.comet.communication.message.redis.RedisMessageClient;
 import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.service.broker.BrokerAgreement;
-import me.combimagnetron.comet.service.broker.Brokered;
 import me.combimagnetron.comet.user.User;
 
 import java.util.HashSet;

@@ -5,23 +5,18 @@ import me.combimagnetron.comet.game.menu.Pos2D;
 import me.combimagnetron.comet.game.menu.element.Position;
 import me.combimagnetron.comet.game.menu.element.SimpleBufferedElement;
 import me.combimagnetron.comet.game.menu.style.Text;
+import me.combimagnetron.comet.image.Canvas;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-
-public class TextElement extends SimpleBufferedElement {
+public class TextElement extends SimpleBufferedElement<TextElement> {
     private final Text text;
 
-    public static TextElement textElement(Identifier identifier, Position position, Text text) {
+    public static TextElement textElement(Position position, Identifier identifier, Text text) {
         return new TextElement(identifier, position, Pos2D.of(256, 256), text);
     }
 
-    private TextElement(Identifier identifier, Position position, Pos2D size, Text text) {
+    TextElement(Identifier identifier, Position position, Pos2D size, Text text) {
         super(size, identifier, position);
         this.text = text;
-        Graphics2D graphics = image().createGraphics();
-        graphics.setFont(text.font().internal());
-        graphics.drawString(text.content(), 0, 0);
 
     }
 
@@ -30,7 +25,7 @@ public class TextElement extends SimpleBufferedElement {
     }
 
     @Override
-    protected BufferedImage render(BufferedImage image) {
+    protected Canvas render(Canvas image) {
         return null;
     }
 }

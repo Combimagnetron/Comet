@@ -20,10 +20,12 @@ public sealed interface Dispatcher<T extends Event> permits Dispatcher.SimpleDis
 
     void post(Class<T> type, T event);
 
-    EventSubscriptionManager<? extends EventSubscription<T>> manager();
+    void post(T event);
+
+    EventSubscriptionManager<T> manager();
 
     final class SimpleDispatcher<T extends Event> implements Dispatcher<T> {
-        private final EventSubscriptionManager<? extends EventSubscription<T>> subscriptionManager = new EventSubscriptionManager.Impl<>();
+        private final EventSubscriptionManager<T> subscriptionManager = new EventSubscriptionManager.Impl<>();
 
         @Override
         public void postCancellable(Class<T> type, T event) {
@@ -41,7 +43,12 @@ public sealed interface Dispatcher<T extends Event> permits Dispatcher.SimpleDis
         }
 
         @Override
-        public EventSubscriptionManager<? extends EventSubscription<T>> manager() {
+        public void post(T event) {
+            post((Class<T>) event.getClass(), event);
+        }
+
+        @Override
+        public EventSubscriptionManager<T> manager() {
             return subscriptionManager;
         }
 

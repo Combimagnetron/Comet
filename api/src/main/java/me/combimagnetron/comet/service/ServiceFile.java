@@ -39,7 +39,7 @@ public class ServiceFile {
         agreement.monitor((BrokerAgreement.MessageReference.MonitorMessageReference<?>[]) monitor.stream().map(ServiceFile::find).map(BrokerAgreement.MessageReference.MonitorMessageReference::new).toArray());
 
         Section deploy = reader.section("deployment");
-        deployment = Deployment.of(service.string(), deploy.find("image"), Integer.parseInt(deploy.find("min-instance-count")), Integer.parseInt(deploy.find("max-instance-count")), Integer.parseInt(deploy.find("player-instance-threshold")));
+        deployment = Deployment.of(Identifier.split(service.string()), deploy.find("image"), Integer.parseInt(deploy.find("min-instance-count")), Integer.parseInt(deploy.find("max-instance-count")), Integer.parseInt(deploy.find("player-instance-threshold")));
     }
 
     public ServiceInfo serviceInfo() {

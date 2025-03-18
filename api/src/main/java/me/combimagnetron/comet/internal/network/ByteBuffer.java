@@ -189,7 +189,7 @@ public class ByteBuffer {
         });
         Adapter<Deployment> DEPLOYMENT = Impl.of(input -> {
             String[] parts = STRING.read(input).split("%");
-            return Deployment.of(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4]));
+            return Deployment.of(Identifier.split(parts[0]), parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4]));
         }, (output, deployment) -> STRING.write(output, deployment.name() + "%" + deployment.image() + "%" + deployment.minReplicas() + "%" + deployment.maxReplicas() + "%" + deployment.playerInstanceThreshold()));
         Adapter<Version> VERSION = Impl.of(input -> {
             String[] parts = STRING.read(input).split("\\.");

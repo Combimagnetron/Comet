@@ -14,6 +14,10 @@ public interface Position {
         return new RelativePosition(x, y);
     }
 
+    static UnitPosition unit(double unit) {
+        return new UnitPosition(unit);
+    }
+
     record PixelPosition(double x, double y) implements Position {
 
     }
@@ -41,6 +45,30 @@ public interface Position {
         @Override
         public double y() {
             return relativeY * y;
+        }
+    }
+
+    final class UnitPosition implements Position {
+        private final double unit;
+        private double x, y = 0;
+
+        UnitPosition(double unit) {
+            this.unit = unit;
+        }
+
+        public void calculate(int x, int y) {
+            this.x = x * unit;
+            this.y = y * unit;
+        }
+
+        @Override
+        public double x() {
+            return x;
+        }
+
+        @Override
+        public double y() {
+            return y;
         }
     }
 

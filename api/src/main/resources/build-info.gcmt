@@ -1,5 +1,5 @@
 artifact {
-    type = "service"
+    privacy = "service"
     identifier = "service:punishment"
     version = "1.0.0"
     size = 25491204

@@ -22,12 +22,22 @@ public interface Platform {
         return new Impl(Type.PAPER, UUID.randomUUID());
     }
 
+    static Platform service() {
+        return new Impl(Type.SERVICE, UUID.randomUUID());
+    }
+
+    static Platform pilot() {
+        return new Impl(Type.PILOT, UUID.randomUUID());
+    }
+
     record Impl(Type type, UUID uniqueIdentifier) implements Platform {
 
     }
 
     interface Type {
         Type PAPER = Type.of(false, Identifier.of("comet", "paper"));
+        Type SERVICE = Type.of(false, Identifier.of("comet", "service"));
+        Type PILOT = Type.of(false, Identifier.of("comet", "pilot"));
         Type VELOCITY = Type.of(true, Identifier.of("comet", "velocity"));
 
         boolean proxy();

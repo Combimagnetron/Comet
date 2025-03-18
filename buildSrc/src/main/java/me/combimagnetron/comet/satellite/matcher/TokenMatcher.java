@@ -66,7 +66,7 @@ public interface TokenMatcher {
                     entries = multipleMap;
                 } else {
                     Optional<MatchResult> optionalResult = matcher.results().findFirst();
-                    if (optionalResult.isEmpty() && token instanceof MatcherToken.RequiredMatcherToken) {
+                    if (optionalResult.isEmpty() && token instanceof MatcherToken.RequiredMatcherToken || optionalResult.isEmpty() && token instanceof MatcherToken.OptionalMatcherToken) {
                         continue;
                     } else if (optionalResult.isEmpty()) {
                         throw new SatelliteSyntaxError("Token not found: " + type);

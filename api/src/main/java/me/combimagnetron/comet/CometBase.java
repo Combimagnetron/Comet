@@ -1,6 +1,8 @@
 package me.combimagnetron.comet;
 
 import me.combimagnetron.comet.communication.Channels;
+import me.combimagnetron.comet.data.database.Database;
+import me.combimagnetron.comet.data.storage.StorageProvider;
 import me.combimagnetron.comet.instance.InstanceHandler;
 import me.combimagnetron.comet.internal.network.Network;
 import me.combimagnetron.comet.game.resourcepack.ResourcePackManager;
@@ -34,6 +36,10 @@ public interface CometBase<T> {
     Channels channels();
 
     Path dataFolder();
+
+    StorageProvider storageProvider();
+
+    Database database();
 
     default Logger logger() {
         return LoggerFactory.getLogger(CometBase.class);

@@ -1,6 +1,7 @@
 package me.combimagnetron.comet.user;
 
 import me.combimagnetron.comet.communication.message.user.UserMessageChannel;
+import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.instance.Instance;
 import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
 import me.combimagnetron.comet.internal.network.ByteBuffer;
@@ -33,6 +34,10 @@ public interface User<T extends Audience> {
 
      Vector3d position();
 
+     Identifier location();
+
+     me.combimagnetron.generated.baseservice.User sat();
+
      /*
      1. UUID -> Unique Identifier
      2. String -> Name
@@ -40,6 +45,7 @@ public interface User<T extends Audience> {
      4. Identifier -> Message Channel
      5. DataContainer -> Player Data
      6. 3x Double -> Vector3d Position
+     7. Identifier -> Location
       */
      default ByteBuffer serialize() {
           ByteBuffer buffer = ByteBuffer.empty();
@@ -49,6 +55,7 @@ public interface User<T extends Audience> {
           buffer.write(ByteBuffer.Adapter.IDENTIFIER, messageChannel().identifier());
           buffer.write(ByteBuffer.Adapter.DATA_CONTAINER, playerData());
           buffer.write(ByteBuffer.Adapter.DOUBLE, position().x()).write(ByteBuffer.Adapter.DOUBLE, position().y()).write(ByteBuffer.Adapter.DOUBLE, position().z());
+          buffer.write(ByteBuffer.Adapter.IDENTIFIER, location());
           return buffer;
      }
 

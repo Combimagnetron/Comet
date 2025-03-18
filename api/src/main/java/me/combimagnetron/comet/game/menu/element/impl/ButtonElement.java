@@ -7,13 +7,13 @@ import me.combimagnetron.comet.game.menu.Pos2D;
 import me.combimagnetron.comet.game.menu.element.Interactable;
 import me.combimagnetron.comet.game.menu.element.Position;
 import me.combimagnetron.comet.game.menu.element.SimpleBufferedElement;
+import me.combimagnetron.comet.image.Canvas;
 import me.combimagnetron.comet.user.User;
 
-import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
 
-public class ButtonElement extends SimpleBufferedElement implements Interactable {
-    private BufferedImage icon;
+public class ButtonElement extends SimpleBufferedElement<ButtonElement> implements Interactable {
+    private Canvas icon;
 
     private Consumer<UserHoverElementEvent> hoverElementEventConsumer = (x) -> {};
     private Consumer<UserClickElementEvent> clickElementEventConsumer = (x) -> {};
@@ -22,7 +22,21 @@ public class ButtonElement extends SimpleBufferedElement implements Interactable
         super(Pos2D.of(width, 10), identifier, position);
     }
 
-    public void icon(BufferedImage icon) {
+    public ButtonElement(Pos2D size, Position position, Identifier identifier) {
+        super(size, identifier, position);
+    }
+
+    public static ButtonElement buttonElement(int width, Position position, Identifier identifier) {
+        return new ButtonElement(width, position, identifier);
+    }
+
+    public static ButtonElement buttonElement(Position position, Identifier identifier, Canvas icon) {
+        ButtonElement buttonElement = new ButtonElement(icon.size(), position, identifier);
+        buttonElement.icon(icon);
+        return buttonElement;
+    }
+
+    public void icon(Canvas icon) {
         this.icon = icon;
     }
 
@@ -45,11 +59,10 @@ public class ButtonElement extends SimpleBufferedElement implements Interactable
     }
 
     @Override
-    protected BufferedImage render(BufferedImage image) {
+    protected Canvas render(Canvas image) {
         if (icon != null) {
-            image.getGraphics().drawImage(icon, 0, 0, null);
+            image = image.place(icon, Pos2D.of(0, 0));
         }
-
-        return null;
+        return image;
     }
 }

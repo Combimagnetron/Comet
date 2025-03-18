@@ -1,12 +1,35 @@
 package me.combimagnetron.comet.service;
 
 import me.combimagnetron.comet.config.annotation.Config;
+import me.combimagnetron.comet.data.Identifier;
 
 @Config
-public record Deployment(String name, String image, int minReplicas, int maxReplicas, int playerInstanceThreshold) {
+public interface Deployment {
 
-    public static Deployment of(String name, String image, int minReplicas, int maxReplicas, int playerInstanceThreshold) {
-        return new Deployment(name, image, minReplicas, maxReplicas, playerInstanceThreshold);
+    Identifier name();
+
+    String image();
+
+    int minReplicas();
+
+    int maxReplicas();
+
+    int playerInstanceThreshold();
+
+    static Deployment of(Identifier name, String image, int minReplicas, int maxReplicas, int playerInstanceThreshold) {
+        return new Impl(name, image, minReplicas, maxReplicas, playerInstanceThreshold);
+    }
+
+    static Deployment of(me.combimagnetron.generated.baseservice.Deployment deployment) {
+        return of(deployment.name(), deployment.image(), deployment.minReplicas(), deployment.maxReplicas(), deployment.playerInstanceThreshold());
+    }
+
+    record Impl(Identifier name, String image, int minReplicas, int maxReplicas, int playerInstanceThreshold) implements Deployment {
+
+        public me.combimagnetron.generated.baseservice.Deployment satellite() {
+            return new me.combimagnetron.generated.baseservice.Deployment(name, image, minReplicas, maxReplicas, playerInstanceThreshold);
+        }
+
     }
 
 }

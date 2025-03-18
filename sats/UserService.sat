@@ -1,0 +1,17 @@
+namespace Comet;
+
+service UserService extends BaseService {
+
+    message CreateUserMessage(User user)
+
+    message GetUserMessage(UUID uuid) : User
+
+    message UpdateUserMessage(User user)
+
+    message DeleteUserMessage(UUID uuid)
+
+    message UserJoinedMessage(UUID uuid)
+
+    message UserLeftMessage(UUID uuid)
+
+}

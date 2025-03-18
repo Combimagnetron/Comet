@@ -12,9 +12,9 @@ deployment {
 
 component {
     monitor {
-        type = [StartServiceMessage, StopServiceMessage]
+        privacy = [StartServiceMessage, StopServiceMessage]
     }
     intercept {
-        type = [UserJoinNetworkMessage, UserSwitchServerMessage, UserPunishmentUpdateMessage, UserChatMessage]
+        privacy = [UserJoinNetworkMessage, UserSwitchServerMessage, UserPunishmentUpdateMessage, UserChatMessage]
     }
 }

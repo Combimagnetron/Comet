@@ -1,21 +1,19 @@
 package me.combimagnetron.comet.game.menu;
 
-import me.combimagnetron.comet.image.Canvas;
-import me.combimagnetron.comet.internal.entity.impl.display.Display;
+import me.combimagnetron.comet.image.SimpleCanvas;
 import me.combimagnetron.comet.internal.entity.impl.display.TextDisplay;
 import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
 import me.combimagnetron.comet.user.User;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.entity.Player;
-import net.minestom.server.network.player.PlayerSocketConnection;
 
 import java.util.Collection;
 import java.util.List;
 
 public interface CanvasRenderer {
 
-    static EntityReference render(Canvas canvas, User<Player> user) {
-        final Component component = canvas.render();
+    static EntityReference render(SimpleCanvas simpleCanvas, User<Player> user) {
+        final Component component = simpleCanvas.render();
         final TextDisplay main = TextDisplay.nonTracked(Vector3d.vec3(0), user);
         main.text(component);
         final TextDisplay edges = TextDisplay.nonTracked(Vector3d.vec3(0), user);

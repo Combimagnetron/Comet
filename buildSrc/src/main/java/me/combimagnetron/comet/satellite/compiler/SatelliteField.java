@@ -15,17 +15,19 @@ public interface SatelliteField {
 
     String name();
 
+    String packageName();
+
     Collection<VariableParameter> parameters();
 
-    static SatelliteField message(String name, VariableParameter... parameters) {
-        return new MessageField(name, parameters);
+    static SatelliteField message(String name, String variableName, VariableParameter... parameters) {
+        return new MessageField(name, variableName, parameters);
     }
 
-    static SatelliteField type(String name, VariableParameter... parameters) {
-        return new TypeField(name, parameters);
+    static SatelliteField type(String name, String variableName, VariableParameter... parameters) {
+        return new TypeField(name, variableName, parameters);
     }
 
-    static SatelliteField field(TokenizedResult result) {
+    static SatelliteField field(TokenizedResult result, String packageName) {
         boolean repeated = result.ordered().next().token().captured().startsWith("repeated");
         String name = result.content(Token.Type.OBJECT);
         String type = result.content(Token.Type.KEYWORD);
@@ -34,23 +36,30 @@ public interface SatelliteField {
         }
         VariableParameter[] parameters = result.all(Token.Type.KEYWORD_OBJECT_PAIR).stream().map(pair -> {
             String[] split = pair.token().captured().split(" ");
-            return new VariableParameter(split[1], RegisteredType.VALUES.stream().filter(registeredType -> registeredType.name().equals(split[0])).findFirst().orElseThrow());
+            return new VariableParameter(split[1], RegisteredType.VALUES.stream().filter(registeredType -> registeredType.name().equals(split[0])).findFirst().orElseThrow(() -> new IllegalArgumentException("Unknown type: " + split[0])));
         }).toArray(VariableParameter[]::new);
         if (Objects.equals(type, "message")) {
-            return new MessageField(name, parameters);
+            return new MessageField(name, packageName, parameters);
         } else if (Objects.equals(type, "type")) {
-            return new TypeField(name, parameters);
+            return new TypeField(name, packageName, parameters);
+        } else if (Objects.equals(type, "method")) {
+            System.out.println(result.content(Token.Type.of("( : \\w+[\\<\\w\\>]+)")));
+            String typeName = result.content(Token.Type.of("( : \\w+[\\<\\w\\>]+)")).contains(":") ? result.content(Token.Type.of("( : \\w+[\\<\\w\\>]+)")).replace(" : ", "") : "Void";
+            System.out.println(typeName);
+            return new MethodField(name, packageName, RegisteredType.find(typeName), parameters);
         }
         throw new IllegalArgumentException("Unknown type: " + type);
     }
 
     final class MessageField implements SatelliteField {
         private final String name;
+        private final String packageName;
         private final List<VariableParameter> parameters;
         private int id;
 
-        public MessageField(String name, VariableParameter... parameters) {
+        public MessageField(String name, String packageName, VariableParameter... parameters) {
             this.name = name;
+            this.packageName = packageName;
             this.parameters = Arrays.stream(parameters).toList();
             Satellite.registry().save(this);
         }
@@ -58,6 +67,11 @@ public interface SatelliteField {
         @Override
         public String name() {
             return name;
+        }
+
+        @Override
+        public String packageName() {
+            return packageName;
         }
 
         public Collection<VariableParameter> parameters() {
@@ -74,7 +88,7 @@ public interface SatelliteField {
 
     }
 
-    record TypeField(String name, VariableParameter... parametersArray) implements SatelliteField {
+    record TypeField(String name, String packageName, VariableParameter... parametersArray) implements SatelliteField {
 
         @Override
         public Collection<VariableParameter> parameters() {
@@ -83,6 +97,19 @@ public interface SatelliteField {
 
         interface Dummy {
 
+        }
+
+    }
+
+    record MethodField(String name, String packageName, RegisteredType<?> type, VariableParameter... parametersArray) implements SatelliteField {
+
+        @Override
+        public Collection<VariableParameter> parameters() {
+            return Arrays.stream(parametersArray).toList();
+        }
+
+        public MessageField message() {
+            return new MessageField(name + "Message", packageName, parametersArray);
         }
 
     }

@@ -11,8 +11,8 @@ import java.util.Optional;
 public interface SatelliteDependencyResolver {
 
     static SatelliteDependency resolve(TokenizedResult result) {
-        if (Objects.equals(result.content(5), "extends")) {
-            return SatelliteDependency.of(result.content(6));
+        if (Objects.equals(result.content(4), "extends")) {
+            return SatelliteDependency.of(result.content(5));
         }
 
         return null;

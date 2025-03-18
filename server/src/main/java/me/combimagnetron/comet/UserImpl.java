@@ -1,6 +1,7 @@
 package me.combimagnetron.comet;
 
 import me.combimagnetron.comet.communication.message.user.UserMessageChannel;
+import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.data.impl.UserDataContainer;
 import me.combimagnetron.comet.instance.Instance;
 import me.combimagnetron.comet.internal.entity.metadata.type.Vector3d;
@@ -63,5 +64,15 @@ public class UserImpl implements User<Player> {
     @Override
     public Vector3d position() {
         return new Vector3d(player.getPosition().x(), player.getPosition().y(), player.getPosition().z());
+    }
+
+    @Override
+    public Identifier location() {
+        return null;
+    }
+
+    @Override
+    public me.combimagnetron.generated.baseservice.User sat() {
+        return null;
     }
 }

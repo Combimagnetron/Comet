@@ -17,9 +17,10 @@ public interface RegisteredType<T> {
     RegisteredType<Double> DOUBLE = of("Double", Double.class, ByteBuffer.Adapter.DOUBLE);
     RegisteredType<Identifier> IDENTIFIER = of("Identifier", Identifier.class, ByteBuffer.Adapter.IDENTIFIER);
     RegisteredType<UUID> UUID = of("UUID", UUID.class, ByteBuffer.Adapter.UUID);
+    RegisteredType<Byte[]> BYTE_ARRAY = of("ByteArray", Byte[].class, ByteBuffer.Adapter.BYTE_ARRAY);
     //RegisteredType<User<?>> USER = of("User", User.class, ByteBuffer.Adapter.USER);
 
-    Values<RegisteredType<?>> VALUES = Values.of(STRING, INT, BOOLEAN, BYTE, SHORT, LONG, FLOAT, DOUBLE, IDENTIFIER, UUID);
+    Values<RegisteredType<?>> VALUES = Values.of(STRING, INT, BOOLEAN, BYTE, SHORT, LONG, FLOAT, DOUBLE, IDENTIFIER, UUID, BYTE_ARRAY);
 
     String name();
 
@@ -29,6 +30,13 @@ public interface RegisteredType<T> {
 
     static <T> RegisteredType<T> of(String name, Class<?> value, ByteBuffer.Adapter<T> adapter) {
         return new RegisteredTypeImpl<>(name, (Class<T>) value, adapter);
+    }
+
+    static <T> RegisteredType<T> find(String name) {
+        if (name.contains("mul<")) {
+            return new RegisteredTypeImpl(name, Object.class, ByteBuffer.Adapter.BYTE_ARRAY);
+        }
+        return (RegisteredType<T>) VALUES.stream().filter(registeredType -> registeredType.name().equals(name)).findFirst().orElseThrow(() -> new IllegalArgumentException("Unknown type: " + name));
     }
 
     record RegisteredTypeImpl<T>(String name, Class<T> type, ByteBuffer.Adapter<T> adapter) implements RegisteredType<T> {

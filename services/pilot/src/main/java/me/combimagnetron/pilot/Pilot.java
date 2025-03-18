@@ -16,6 +16,7 @@ import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.service.AutoService;
 import me.combimagnetron.comet.service.Deployment;
 import me.combimagnetron.comet.service.Service;
+import me.combimagnetron.pilot.listener.MessageListener;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 
@@ -25,6 +26,7 @@ import java.io.IOException;
 public class Pilot implements Service {
     private static final GitHub GIT_HUB;
     private final MessageChannel channel;
+    private final MessageListener listener = new MessageListener();
     private final CoreV1Api api;
 
     static Pilot instance;
@@ -61,13 +63,13 @@ public class Pilot implements Service {
             api.createNamespacedPod("services",
                     Pod.builder()
                             .spec(PodSpec.builder()
-                                    .addToContainers(Container.builder().image(deployment.image()).name(deployment.name()).build()).build()
+                                    .addToContainers(Container.builder().image(deployment.image()).name(deployment.name().string()).build()).build()
                             )
                             .metadata(ObjectMeta.builder()
-                                    .name(deployment.name()).namespace("services").build())
+                                    .name(deployment.name().string()).namespace("services").build())
                             .build()).get();
             api.listNamespacedPod("services").watch()
-                    .filter(watchEvent -> watchEvent.getObject().getMetadata().getName().equals(deployment.name()))
+                    .filter(watchEvent -> watchEvent.getObject().getMetadata().getName().equals(deployment.name().string()))
                     .takeUntil(watchEvent -> watchEvent.getType() == WatchEvent.Type.ADDED)
                     .subscribe();
         } catch (IOException e) {

@@ -3,6 +3,8 @@ package me.combimagnetron.comet;
 import me.combimagnetron.comet.communication.Channels;
 import me.combimagnetron.comet.config.annotation.Config;
 import me.combimagnetron.comet.connection.NetworkImpl;
+import me.combimagnetron.comet.data.database.Database;
+import me.combimagnetron.comet.data.storage.StorageProvider;
 import me.combimagnetron.comet.instance.InstanceHandler;
 import me.combimagnetron.comet.internal.network.Network;
 import me.combimagnetron.comet.game.resourcepack.ResourcePackManager;
@@ -66,6 +68,16 @@ public class CometBaseImpl implements CometBase<JavaPlugin> {
     @Override
     public Path dataFolder() {
         return plugin().getDataPath();
+    }
+
+    @Override
+    public StorageProvider storageProvider() {
+        return null;
+    }
+
+    @Override
+    public Database database() {
+        return null;
     }
 
     @Override

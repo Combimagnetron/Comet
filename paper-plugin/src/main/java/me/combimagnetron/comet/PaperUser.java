@@ -99,6 +99,15 @@ public class PaperUser implements User<Player> {
         return Vector3d.vec3(location.x(), location.y(), location.z());
     }
 
+    @Override
+    public Identifier location() {
+        return null;
+    }
+
+    @Override
+    public me.combimagnetron.generated.baseservice.User sat() {
+        return null;
+    }
 
 
     public User<Player> deserialize(ByteBuffer buffer) {

@@ -1,6 +1,7 @@
 package me.combimagnetron.comet.game.entity.generator;
 
 import com.google.gson.Gson;
+import me.combimagnetron.comet.data.Identifier;
 import me.combimagnetron.comet.game.entity.parser.blockbench.BlockBenchElement;
 import me.combimagnetron.comet.game.entity.parser.blockbench.BlockBenchModel;
 import me.combimagnetron.comet.game.entity.parser.blockbench.BlockBenchTexture;
@@ -13,6 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.Override;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,5 +69,10 @@ public class EntityModelGenerator implements ResourcePackFeature<EntityModelGene
     @java.lang.Override
     public Folder folder() {
         return Folder.empty("engine");
+    }
+
+    @Override
+    public Identifier identifier() {
+        return null;
     }
 }

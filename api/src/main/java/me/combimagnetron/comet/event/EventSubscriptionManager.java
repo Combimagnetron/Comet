@@ -6,37 +6,36 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public sealed interface EventSubscriptionManager<T extends EventSubscription<? extends Event>> permits EventSubscriptionManager.Impl {
+public sealed interface EventSubscriptionManager<V extends Event> permits EventSubscriptionManager.Impl {
 
-    void subscription(T subscription);
+    void subscription(EventSubscription<V> subscription);
 
-    Collection<T> subscriptions();
+    Collection<EventSubscription<V>> subscriptions();
 
-    Map<Class<? extends Event>, T> subscriptionMap();
+    Map<Class<? extends Event>, EventSubscription<V>> subscriptionMap();
 
-    <V extends Event> void unsubscribe(EventSubscription<V> vEventSubscription);
+    void unsubscribe(EventSubscription<V> vEventSubscription);
 
-    final class Impl<T extends EventSubscription<? extends Event>> implements EventSubscriptionManager<T> {
-        private final Map<Class<? extends Event>, T> subscriptions = new ConcurrentHashMap<>();
+    final class Impl<V extends Event> implements EventSubscriptionManager<V> {
+        private final Map<Class<? extends Event>, EventSubscription<V>> subscriptions = new ConcurrentHashMap<>();
 
         @Override
-        public void subscription(T subscription) {
+        public void subscription(EventSubscription<V> subscription) {
             subscriptions.put(subscription.getEventClass(), subscription);
         }
 
-
         @Override
-        public Collection<T> subscriptions() {
+        public Collection<EventSubscription<V>> subscriptions() {
             return subscriptions.values();
         }
 
         @Override
-        public Map<Class<? extends Event>, T> subscriptionMap() {
+        public Map<Class<? extends Event>, EventSubscription<V>> subscriptionMap() {
             return subscriptions;
         }
 
         @Override
-        public <V extends Event> void unsubscribe(EventSubscription<V> subscription) {
+        public void unsubscribe(EventSubscription<V> subscription) {
             subscriptions.remove(subscription.getEventClass(), subscription);
         }
 

@@ -5,6 +5,13 @@ public interface CustomBlockProvider {
     class NoteBlockProvider implements CustomBlockProvider {
 
 
+    }
+
+    class StringBlockProvider implements CustomBlockProvider {
+
+    }
+
+    class RedstoneDustBlockProvider implements CustomBlockProvider {
 
     }
 

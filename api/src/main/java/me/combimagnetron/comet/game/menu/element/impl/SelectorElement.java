@@ -1,27 +1,38 @@
 package me.combimagnetron.comet.game.menu.element.impl;
 
 import me.combimagnetron.comet.data.Identifier;
+import me.combimagnetron.comet.game.menu.element.SimpleBufferedElement;
 import me.combimagnetron.comet.image.Canvas;
 import me.combimagnetron.comet.game.menu.Pos2D;
-import me.combimagnetron.comet.game.menu.element.Element;
 import me.combimagnetron.comet.game.menu.element.Position;
 
-import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
-public class SelectorElement implements Element {
+public class SelectorElement extends SimpleBufferedElement<SelectorElement> {
     private final LinkedList<ButtonElement> buttons = new LinkedList<>();
+    private Canvas canvas;
     private Pos2D size;
 
     protected SelectorElement(Pos2D size, Identifier identifier, Position position) {
-
+        super(size, identifier, position);
+        render();
     }
 
-    protected BufferedImage render() {
-        int x = buttons.get(0).size().xi();
-        int y = buttons.size() * 10 + (buttons.size() + 1) * 2 + 2;
-
+    @Override
+    protected Canvas render(Canvas image) {
         return null;
+    }
+
+    protected void render() {
+        int x = buttons.getFirst().size().xi();
+        int y = buttons.size() * 10 + (buttons.size() + 1) * 2 + 2;
+        Canvas canvas = Canvas.image(Pos2D.of(x, y));
+        int yCoord = 1;
+        for (ButtonElement button : buttons) {
+            yCoord += 11;
+            canvas = canvas.place(button.canvas(), Pos2D.of(2, yCoord));
+        }
+        this.canvas = canvas;
     }
 
     public static Builder selectorElement(Pos2D pos2D, Identifier identifier, Position position) {
@@ -31,11 +42,6 @@ public class SelectorElement implements Element {
     @Override
     public Identifier identifier() {
         return null;
-    }
-
-    @Override
-    public Canvas canvas() {
-        return Canvas.image(render());
     }
 
     @Override

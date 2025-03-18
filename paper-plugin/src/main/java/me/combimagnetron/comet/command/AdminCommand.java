@@ -30,7 +30,7 @@ public class AdminCommand {
                         Quaternion.of(0, 0, 0, 0)
                 )
         );
-        //ChestMenu chestMenu = new ChestMenu.Impl(user);
+        //ChestMenu chestMenu = new ChestMenu.StaticImpl(user);
         user.message(Component.text("Spawned!"));
         */
     }

@@ -13,7 +13,7 @@ sealed public interface EventSubscription<V extends Event> permits EventSubscrip
     Class<V> getEventClass();
 
     default void close() {
-        Dispatcher.dispatcher().manager().unsubscribe(this);
+        Dispatcher.dispatcher().manager().unsubscribe((EventSubscription<Event>) this);
     }
 
     default boolean active() {
@@ -30,6 +30,7 @@ sealed public interface EventSubscription<V extends Event> permits EventSubscrip
             if (eventClass.isAssignableFrom(Event.FilteredEvent.class)) {
                 throw new IllegalArgumentException("FilteredEvent implementations can only be used with EventFilters present!");
             }
+            Dispatcher.dispatcher().manager().subscription((EventSubscription<Event>) this);
         }
 
         @Override
@@ -50,6 +51,7 @@ sealed public interface EventSubscription<V extends Event> permits EventSubscrip
         FilteredImpl(Class<V> eventClass, EventFilter filter, Consumer<? super V> handler) {
             this.eventClass = eventClass;
             this.handler = handler;
+            Dispatcher.dispatcher().manager().subscription((EventSubscription<Event>) this);
         }
 
         @Override
@@ -71,6 +73,7 @@ sealed public interface EventSubscription<V extends Event> permits EventSubscrip
         MessageImpl(Class<M> eventClass, Consumer<? super V> handler) {
             this.eventClass = eventClass;
             this.handler = handler;
+            Dispatcher.dispatcher().manager().subscription((EventSubscription<Event>) this);
         }
 
         @Override
@@ -92,6 +95,7 @@ sealed public interface EventSubscription<V extends Event> permits EventSubscrip
         PacketImpl(Class<P> eventClass, Consumer<? super V> handler) {
             this.eventClass = eventClass;
             this.handler = handler;
+            Dispatcher.dispatcher().manager().subscription((EventSubscription<Event>) this);
         }
 
         @Override

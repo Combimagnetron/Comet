@@ -10,6 +10,7 @@ import me.combimagnetron.generated.RequestUserMessage;
 import me.combimagnetron.generated.UserInfoResponseMessage;
 import me.combimagnetron.generated.UserJoinNetworkMessage;
 import me.combimagnetron.generated.UserLeaveNetworkMessage;
+import me.combimagnetron.generated.entityservice.EntityService;
 import net.kyori.adventure.audience.Audience;
 
 import java.util.*;
@@ -17,13 +18,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 public class RemoteUserHandlerImpl implements UserHandler<Audience> {
     private final Map<UUID, User<Audience>> users = new ConcurrentHashMap<>();
 
     public RemoteUserHandlerImpl() {
-        EventBus.message(UserJoinNetworkMessage.class, this::join);
+        //EventBus.message(UserJoin.class, this::join);
         EventBus.message(UserLeaveNetworkMessage.class, this::leave);
     }
 

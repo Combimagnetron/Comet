@@ -3,10 +3,13 @@ package me.combimagnetron.comet.service;
 import me.combimagnetron.comet.communication.message.MessageChannel;
 import me.combimagnetron.comet.CometBase;
 import me.combimagnetron.comet.data.Identifier;
-import me.combimagnetron.generated.DeployServiceMessage;
-import me.combimagnetron.generated.StartServiceMessage;
-import me.combimagnetron.generated.StopServiceMessage;
+import me.combimagnetron.generated.baseservice.Entity;
+import me.combimagnetron.generated.deploymentservice.StopServiceMessage;
+import me.combimagnetron.generated.deploymentservice.DeployServiceMessage;
+import me.combimagnetron.generated.entityservice.EntityService;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RemoteServiceHandler implements ServiceHandler {
@@ -24,9 +27,20 @@ public class RemoteServiceHandler implements ServiceHandler {
         return map.get(identifier);
     }
 
+    public void test() {
+        EntityService entityService = CometBase.comet().services().service(EntityService.class).stream().findFirst().orElseThrow();
+        List<Entity> entities = entityService.userTrackedMobs(CometBase.comet().users().user("Combimagnetron").get().sat());
+
+    }
+
+    @Override
+    public <T extends Service> Collection<T> service(Class<T> service) {
+        return map.values().stream().filter(service1 -> service1.getClass() == service).map(service::cast).toList();
+    }
+
     @Override
     public Service deploy(Deployment deployment, Identifier identifier) {
-        messageChannel.send(DeployServiceMessage.of(identifier, deployment));
+        messageChannel.send(DeployServiceMessage.of(((Deployment.Impl)deployment).satellite()));
         return map.put(identifier, new DummyService(identifier, messageChannel, deployment));
     }
 
@@ -39,7 +53,7 @@ public class RemoteServiceHandler implements ServiceHandler {
 
         @Override
         public void start() {
-            messageChannel.send(StartServiceMessage.of(identifier));
+            messageChannel.send(DeployServiceMessage.of(((Deployment.Impl) deployment).satellite()));
         }
 
         @Override

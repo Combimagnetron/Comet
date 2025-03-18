@@ -14,7 +14,7 @@ public class DeploymentRegistryImpl implements DeploymentRegistry {
     }
 
     public void add(Deployment deployment) {
-        this.deployment.put(deployment.name(), deployment);
+        this.deployment.put(deployment.name().string(), deployment);
     }
 
 }

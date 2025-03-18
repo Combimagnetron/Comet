@@ -10,9 +10,9 @@ repositories {
 }
 
 dependencies {
-    implementation(project(mapOf("path" to ":api")))
+    implementation(project(":api"))
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(22))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(23))
 }

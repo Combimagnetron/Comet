@@ -22,14 +22,6 @@ public class CompileSatelliteTask extends DefaultTask {
     public void compileSatellite() {
         SatelliteCompiler compiler = new SatelliteCompiler();
         Path path = project.getRootProject().file("sats").toPath();
-        try (Stream<Path> stream = Files.list(path)) {
-            stream.forEach(file -> {
-                if (!file.toString().endsWith(".sat")) return;
-                SatelliteClass clazz = compiler.transform(file);
-                compiler.compile(clazz, project.getRootProject().file("api/src/main/java/me/combimagnetron/generated").toPath());
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        compiler.generate(path, project.getRootProject().file("api/src/main/java/me/combimagnetron/generated").toPath());
     }
 }

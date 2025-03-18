@@ -10,11 +10,16 @@ version = "1.0.0"
 
 dependencies {
     implementation(project(mapOf("path" to ":api")))
+    implementation(project(":services:service-base"))
     implementation("org.kohsuke:github-api:1.315")
     implementation("io.avaje:avaje-inject:9.4")
     implementation("com.marcnuri.yakc:kubernetes-api:0.0.28")
     implementation("com.marcnuri.yakc:kubernetes-client:0.0.28")
     annotationProcessor("io.avaje:avaje-inject-generator:9.4")
+    implementation("net.infumia:agones4j:2.0.2")
+    implementation("io.grpc:grpc-stub:1.64.0")
+    implementation("io.grpc:grpc-protobuf:1.64.0")
+    implementation("org.apache.tomcat:annotations-api:6.0.53")
 }
 
 comet {
@@ -38,7 +43,7 @@ comet {
     }
 }
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(22))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(23))
 }
 
 val service = "pilot"

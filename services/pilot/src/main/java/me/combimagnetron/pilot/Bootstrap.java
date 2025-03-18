@@ -12,7 +12,7 @@ public class Bootstrap {
         int port = Integer.parseInt(args[1]);
         System.out.println(" aaa");
         MessageClient messageClient = MessageClient.redis(args[0], port, "");
-        Pilot.instance = new Pilot(messageClient);
+        Pilot.instance = new Pilot();
     }
 
 }

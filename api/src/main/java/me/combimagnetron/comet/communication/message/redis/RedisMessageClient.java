@@ -4,6 +4,7 @@ import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.codec.ByteArrayCodec;
+import io.lettuce.core.pubsub.RedisPubSubAdapter;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands;
 import io.netty.util.AsciiString;
@@ -23,18 +24,21 @@ public class RedisMessageClient implements MessageClient {
     private final HashSet<MessageChannel> channels = new HashSet<>();
     private final ExecutorService executor;
     private final RedisClient redisClient;
-    private final StatefulRedisConnection<byte[],byte[]> pubSub;
+    private final StatefulRedisPubSubConnection<byte[],byte[]> pubSub;
+    private final RedisPubSubAdapter<byte[],byte[]> listener = new MessageListener();
 
     protected RedisMessageClient(String host, int port, String password) {
         this.executor = Executors.newSingleThreadExecutor();
         this.redisClient = RedisClient.create(RedisURI.builder().withHost(host).withAuthentication("", password).withDatabase(0).withTimeout(Duration.ofSeconds(30000)).build());
         this.pubSub = redisClient.connectPubSub(new ByteArrayCodec());
+        pubSub.addListener(listener);
     }
 
     protected RedisMessageClient(String uri) {
         this.executor = Executors.newSingleThreadExecutor();
         this.redisClient = RedisClient.create(uri);
         this.pubSub = redisClient.connectPubSub(new ByteArrayCodec());
+        pubSub.addListener(listener);
     }
 
     public static RedisMessageClient of(String host, int port, String password) {
@@ -80,9 +84,8 @@ public class RedisMessageClient implements MessageClient {
 
     private void registerChannelInternal(MessageChannel channel) {
         if (channel instanceof RedisMessageChannel messageChannel) {
-            StatefulRedisPubSubConnection<byte[],byte[]> connection = redisClient.connectPubSub(new ByteArrayCodec());
-            connection.addListener(messageChannel);
-            RedisPubSubCommands<byte[],byte[]> pubSubCommands = connection.sync();
+            pubSub.addListener(messageChannel);
+            RedisPubSubCommands<byte[],byte[]> pubSubCommands = pubSub.sync();
             pubSubCommands.subscribe(messageChannel.identifier().string().getBytes());
             this.channels.add(channel);
         }
@@ -92,6 +95,13 @@ public class RedisMessageClient implements MessageClient {
         RedisMessageChannel channel = new RedisMessageChannel(this, identifier);
         registerChannelInternal(channel);
         return channel;
+    }
+
+    class MessageListener extends RedisPubSubAdapter<byte[], byte[]> {
+        @Override
+        public void message(byte[] channel, byte[] message) {
+
+        }
     }
 
 
