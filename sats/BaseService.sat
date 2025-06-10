@@ -1,0 +1,55 @@
+namespace Comet;
+
+service BaseService {
+
+    message RegisterUser(User user)
+
+    type Deployment {
+        Identifier name, String image, Int minReplicas, Int maxReplicas, Int playerInstanceThreshold
+    }
+
+    type Platform {
+        String name,
+        UUID uuid,
+        Boolean isProxy
+    }
+
+    type Instance {
+        UUID uuid,
+        Platform platform
+    }
+
+    type Vector3d {
+        double x,
+        double y,
+        double z
+    }
+
+    type DataContainer {
+        String data
+    }
+
+    type Entity {
+        String data
+    }
+
+    type Packet {
+        Int type,
+        String data
+    }
+
+    type Void {
+        String v
+    }
+
+    type User {
+        UUID uuid,
+        String username,
+        UUID instance,
+        Identifier channel,
+        DataContainer data,
+        Vector3d position,
+        Identifier location
+    }
+
+}

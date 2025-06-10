@@ -17,11 +17,13 @@ pluginManagement {
     }
 }
 
-include("service-sharding")
 include("api")
 include("paper-plugin")
 include("paper-v1_19_R3")
 include("proxy-plugin")
-include("service-kiwiscript")
-include("service-discord-link")
-include("pilot")
+include("services:service-discord-link")
+include("services:pilot")
+include("halo")
+include("services:service-modelagent")
+include("services:service-base")
+include("server")

@@ -1,0 +1,26 @@
+proxy-bound message UserSwitchServer {
+    Uuid user_id,
+    VarInt server_type
+}
+
+service-bound message ChangeServiceState {
+    Identifier service,
+    State state
+
+    type State {
+        ON, OFF, IDLE
+    }
+}
+
+instance-bound message LoadWorld {
+    Position position,
+    World world
+
+    type Position(Int x, Int y, Int z) }
+
+    }
+
+    type World(Text file_name, Uuid uuid) {
+
+    }
+}

@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
+    id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -12,14 +12,24 @@ dependencies {
     implementation("org.spongepowered:configurate-hocon:4.0.0")
     implementation(project(":api"))
     implementation(project(":paper-v1_19_R3", configuration = "reobf"))
+    implementation(project(mapOf("path" to ":paper-v1_19_R3")))
+    compileOnly("net.kyori:adventure-api:4.16.0")
+    compileOnly("net.kyori:adventure-text-serializer-gson:4.16.0")
+    compileOnly("com.github.luben:zstd-jni:1.5.2-5")
     //implementation(project(mapOf("path" to ":paper-v1_19_R3")))
-    compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT") {
+        exclude("net.kyori")
+    }
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 bukkit {
-    name = "Lagoon"
-    main = "me.combimagnetron.lagoon.LagoonPlugin"
-    apiVersion = "1.19"
+    name = "Comet"
+    main = "me.combimagnetron.comet.CometPlugin"
+    apiVersion = "1.20"
 }
 
 tasks {

@@ -1,0 +1,14 @@
+artifact {
+    privacy = "service"
+    identifier = "service:punishment"
+    version = "1.0.0"
+    size = 25491204
+    //todo make gradle plugin for manifest.cmt and build-info.gcmt
+    sha1-checksum = ""
+}
+
+build-info {
+    time = 1721913996070
+    id = "7a07f2a8bf3d40f0a6b2a17f44b056c3"
+    ci-cd = true
+}

@@ -1,0 +1,4 @@
+service-bound message InitialInstanceHeartbeat {
+    Uuid instance,
+    Deployment deployment
+}

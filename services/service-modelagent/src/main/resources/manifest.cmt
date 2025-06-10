@@ -1,0 +1,16 @@
+component {
+    intercept=[
+        UserSendMinecraftPacket
+    ]
+    monitor=[]
+}
+deployment {
+    image=self
+    max-instance-count=8
+    min-instance-count=1
+    player-instance-threshold=75
+}
+service {
+    identifier="service:modelagent"
+    version=unspecified
+}

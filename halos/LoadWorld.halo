@@ -1,0 +1,3 @@
+server-bound message LoadWorld {
+    String name
+}

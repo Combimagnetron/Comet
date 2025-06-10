@@ -1,0 +1,31 @@
+namespace Comet;
+service EntityService extends BaseService {
+
+    type Model {
+        Identifier name,
+        Identifier model
+    }
+
+    method SpawnEntity(User user, Entity entity) : Void
+
+    method DespawnEntity(User user, Entity entity) : Void
+
+    method GetEntity(UUID uuid) : Entity
+
+    method GetEntities() : mul<Entity>
+
+    method GetEntitiesInRadius(Vector3d position, Double radius) : mul<Entity>
+
+    method GetEntitiesInBox(Vector3d min, Vector3d max) : mul<Entity>
+
+    method MoveEntity(Entity entity, Vector3d position) : Void
+
+    method RotateEntity(Entity entity, Vector3d rotation) : Void
+
+    method ScaleEntity(Entity entity, Vector3d scale) : Void
+
+    method UpdateEntity(Entity entity) : Void
+
+    method UserTrackedMobs(User user) : mul<Entity>
+
+}

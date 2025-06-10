@@ -1,0 +1,3 @@
+proxy-bound message RequestOnlineUsers {
+    String scope
+}

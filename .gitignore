@@ -12,6 +12,13 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+*.env
+
+gradle.properties
+
+*/src/main/resources/logback.xml
+services/*/src/main/resources/logback.xml
+
 # AWS User-specific
 .idea/**/aws.xml
 
@@ -172,3 +179,5 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij
+profile.jfr
+.profileconfig.json

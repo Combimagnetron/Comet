@@ -1,0 +1,4 @@
+server-bound message UserLeaveNetwork {
+    Uuid uuid
+    Uuid instance
+}

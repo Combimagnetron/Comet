@@ -1,0 +1,4 @@
+service-bound message DeployService {
+    Identifier identifier,
+    Deployment deployment
+}
